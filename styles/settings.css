@@ -87,6 +87,61 @@
     line-height: 1.25rem;
 }
 
+.font-scale-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+    padding: 12px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--md-sys-shape-corner-medium);
+    background: var(--md-sys-color-surface-container-low);
+}
+
+.font-scale-preview__row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
+    padding: 4px 0;
+}
+
+.font-scale-preview__label {
+    min-width: 96px;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.75rem;
+    letter-spacing: 0.025rem;
+    text-transform: uppercase;
+}
+
+.font-scale-preview__sample {
+    display: inline-block;
+    line-height: 1.2;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.font-scale-preview__sample--general {
+    font-size: calc(1rem * var(--app-general-font-scale));
+    color: var(--md-sys-color-on-surface);
+}
+
+.font-scale-preview__sample--greek {
+    font-size: calc(1.5rem * var(--app-greek-font-scale));
+    direction: ltr;
+    unicode-bidi: isolate;
+    color: var(--md-sys-color-on-surface);
+}
+
+.font-scale-preview__sample--hebrew {
+    font-size: calc(1.5rem * var(--app-hebrew-font-scale));
+    direction: rtl;
+    unicode-bidi: isolate;
+    color: var(--md-sys-color-on-surface);
+}
+
 /* Какой курс открыт сейчас — над кнопкой «Сменить курс». */
 .settings-course {
     margin-bottom: 16px;
