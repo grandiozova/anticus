@@ -645,6 +645,9 @@
 .word-bank--script, .build-area--script {
     direction: var(--md-ref-script-direction);
 }
+.font-scale-compat--small {
+    font-size: max(0.9375rem, var(--md-ref-script-min-size));
+}
 .word-bank--script .chip, .build-area--script .token {
     font-family: var(--md-ref-typeface-script);
     font-size: max(0.9375rem, var(--md-ref-script-min-size));
@@ -713,7 +716,7 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: max(1.0625rem, var(--md-ref-script-min-size));
+    font-size: calc(max(1.0625rem, var(--md-ref-script-min-size)) * var(--app-current-script-font-scale));
     line-height: 1.5rem;
     color: var(--md-sys-color-on-surface);
     margin-bottom: 4px;

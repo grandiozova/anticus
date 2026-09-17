@@ -57,6 +57,36 @@
     color: var(--md-sys-color-on-surface-variant);
 }
 
+.font-scale-setting {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 16px;
+}
+.font-scale-setting:first-of-type { margin-top: 12px; }
+.font-scale-setting__label {
+    color: var(--md-sys-color-on-surface);
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.015625rem;
+}
+.font-scale-setting__control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.font-scale-setting__control input[type="range"] {
+    flex: 1;
+    accent-color: var(--md-sys-color-primary);
+}
+.font-scale-setting__value {
+    min-width: 52px;
+    text-align: right;
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
 /* Какой курс открыт сейчас — над кнопкой «Сменить курс». */
 .settings-course {
     margin-bottom: 16px;

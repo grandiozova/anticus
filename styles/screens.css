@@ -14,11 +14,14 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: 1.75rem;
+    font-size: calc(1.75rem * var(--app-current-script-font-scale));
     line-height: 2.25rem;
     text-align: center;
     margin: 16px 0;
     color: var(--md-sys-color-on-surface);
+}
+.font-scale-compat--prompt {
+    font-size: max(1.0625rem, var(--md-ref-script-min-size));
 }
 .md-prompt-ru {
     font-size: 1.25rem;
@@ -71,7 +74,7 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: max(1.0625rem, var(--md-ref-script-min-size));
+    font-size: calc(max(1.0625rem, var(--md-ref-script-min-size)) * var(--app-current-script-font-scale));
     letter-spacing: 0;
 }
 .option-btn:disabled { cursor: default; }
@@ -215,7 +218,7 @@
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
     font-weight: 600;
-    font-size: max(1rem, var(--md-ref-script-min-size));
+    font-size: calc(max(1rem, var(--md-ref-script-min-size)) * var(--app-current-script-font-scale));
     line-height: 1.5rem;
     color: var(--md-sys-color-on-surface);
 }

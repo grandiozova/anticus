@@ -17,7 +17,7 @@
     <!-- Material Symbols только теми иконками, что реально используются (icon_names).
          Полный набор — 5.4 МБ, и при display=block интерфейс стоит без иконок, пока он не придёт.
          Добавляя новую иконку в разметку или в JS, допишите её имя в этот список. -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=abc,account_tree,add_link,arrow_back,arrow_forward,auto_stories,balance,brightness_auto,cancel,category,check,check_circle,chevron_right,close,compare,contrast,dark_mode,delete,delete_sweep,dictionary,edit,edit_note,edit_off,error,expand_more,flip,g_translate,hearing,help,home,hourglass_top,inbox,info,insights,label,light_mode,link,local_library,menu_book,open_in_new,person_pin,play_arrow,push_pin,quiz,record_voice_over,restart_alt,resume,rocket_launch,rule,scatter_plot,school,search,search_off,segment,settings,settings_backup_restore,style,swap_horiz,target,task_alt,text_fields,translate,undo,visibility,warning&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=abc,account_tree,add_link,arrow_back,arrow_forward,auto_stories,balance,brightness_auto,cancel,category,check,check_circle,chevron_right,close,compare,contrast,dark_mode,delete,delete_sweep,dictionary,edit,edit_note,edit_off,error,expand_more,flip,format_size,g_translate,hearing,help,home,hourglass_top,inbox,info,insights,label,light_mode,link,local_library,menu_book,open_in_new,person_pin,play_arrow,push_pin,quiz,record_voice_over,restart_alt,resume,rocket_launch,rule,scatter_plot,school,search,search_off,segment,settings,settings_backup_restore,style,swap_horiz,target,task_alt,text_fields,translate,undo,visibility,warning&display=block" rel="stylesheet">
     <link rel="manifest" href="manifest.webmanifest">
     <!-- Иконка вкладки — по теме, как theme-color выше: эти варианты по системной
          теме нужны до запуска скриптов, дальше applyTheme() ставит одну по выбору
@@ -195,6 +195,32 @@
             </button>
         </div>
         <p class="md-body-medium settings-hint" id="themeHint"></p>
+    </div>
+
+    <div class="card">
+        <h3><span class="msym">format_size</span>Размер текста</h3>
+        <div class="font-scale-setting">
+            <label class="font-scale-setting__label" for="generalFontScale">Общий</label>
+            <div class="font-scale-setting__control">
+                <input id="generalFontScale" type="range" min="0.75" max="1.5" step="0.05" value="1" data-font-scale="general" oninput="setGeneralFontScale(this.value)">
+                <span id="generalFontScaleValue" class="font-scale-setting__value">100%</span>
+            </div>
+        </div>
+        <div class="font-scale-setting">
+            <label class="font-scale-setting__label" for="greekFontScale">Греческий</label>
+            <div class="font-scale-setting__control">
+                <input id="greekFontScale" type="range" min="0.75" max="1.5" step="0.05" value="1" data-font-scale="greek" oninput="setGreekFontScale(this.value)">
+                <span id="greekFontScaleValue" class="font-scale-setting__value">100%</span>
+            </div>
+        </div>
+        <div class="font-scale-setting">
+            <label class="font-scale-setting__label" for="hebrewFontScale">Еврейский</label>
+            <div class="font-scale-setting__control">
+                <input id="hebrewFontScale" type="range" min="0.75" max="1.5" step="0.05" value="1" data-font-scale="hebrew" oninput="setHebrewFontScale(this.value)">
+                <span id="hebrewFontScaleValue" class="font-scale-setting__value">100%</span>
+            </div>
+        </div>
+        <p class="md-body-medium settings-hint">Греческий и еврейский размеры не затрагивают карточки запоминания.</p>
     </div>
 
     <div class="card">

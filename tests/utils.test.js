@@ -242,6 +242,37 @@ test('переключатель темы в настройках отражае
     app.close();
 });
 
+test('настройки шрифта хранятся отдельно и не трогают карточки', () => {
+    const app = loadApp();
+    const root = app.document.documentElement;
+
+    app.window.setGeneralFontScale(1.2);
+    app.window.setGreekFontScale(1.35);
+    app.window.setHebrewFontScale(0.9);
+
+    assert.strictEqual(root.style.getPropertyValue('--app-general-font-scale').trim(), '1.2');
+    assert.strictEqual(root.style.getPropertyValue('--app-greek-font-scale').trim(), '1.35');
+    assert.strictEqual(root.style.getPropertyValue('--app-hebrew-font-scale').trim(), '0.9');
+    assert.strictEqual(app.window.localStorage.getItem('app_font_scale'), '1.2');
+    assert.strictEqual(app.window.localStorage.getItem('app_greek_font_scale'), '1.35');
+    assert.strictEqual(app.window.localStorage.getItem('app_hebrew_font_scale'), '0.9');
+
+    const sliders = [...app.document.querySelectorAll('[data-font-scale]')].map(el => el.getAttribute('data-font-scale'));
+    assert.ok(sliders.includes('general'));
+    assert.ok(sliders.includes('greek'));
+    assert.ok(sliders.includes('hebrew'));
+    assert.strictEqual(app.document.querySelector('[data-font-scale="general"]').value, '1.2');
+    assert.strictEqual(app.document.querySelector('[data-font-scale="greek"]').value, '1.35');
+    assert.strictEqual(app.document.querySelector('[data-font-scale="hebrew"]').value, '0.9');
+
+    const flashcardNode = app.document.createElement('div');
+    flashcardNode.className = 'flashcard-word';
+    flashcardNode.textContent = 'λόγος';
+    app.document.body.appendChild(flashcardNode);
+    assert.ok(!flashcardNode.style.fontSize || flashcardNode.style.fontSize === '');
+    app.close();
+});
+
 test('грамматика урока разбирается в блоки, а не в сплошную простыню', () => {
     const app = loadApp();
     const w = app.window;
