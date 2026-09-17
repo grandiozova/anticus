@@ -23,6 +23,7 @@ function showSettings() {
     showSection('settingsSection');
     syncCourseControls();
     syncThemeControls();
+    syncFontScaleControls();
     renderLicenses();
 }
 

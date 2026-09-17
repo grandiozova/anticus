@@ -74,7 +74,7 @@ function loadApp(opts = {}) {
 
     const dom = new JSDOM(html, {
         runScripts: 'dangerously',
-        url: 'http://localhost/greek_bot/',
+        url: 'http://localhost/anticus/',
         pretendToBeVisual: true,
         virtualConsole,
         beforeParse(w) {

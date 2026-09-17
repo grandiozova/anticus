@@ -17,7 +17,7 @@
     <!-- Material Symbols только теми иконками, что реально используются (icon_names).
          Полный набор — 5.4 МБ, и при display=block интерфейс стоит без иконок, пока он не придёт.
          Добавляя новую иконку в разметку или в JS, допишите её имя в этот список. -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=abc,account_tree,add_link,arrow_back,arrow_forward,auto_stories,balance,brightness_auto,cancel,category,check,check_circle,chevron_right,close,compare,contrast,dark_mode,delete,delete_sweep,dictionary,edit,edit_note,edit_off,error,expand_more,flip,g_translate,hearing,help,home,hourglass_top,inbox,info,insights,label,light_mode,link,local_library,menu_book,open_in_new,person_pin,play_arrow,push_pin,quiz,record_voice_over,restart_alt,resume,rocket_launch,rule,scatter_plot,school,search,search_off,segment,settings,settings_backup_restore,style,swap_horiz,target,task_alt,text_fields,translate,undo,visibility,warning&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=abc,account_tree,add_link,arrow_back,arrow_forward,auto_stories,balance,brightness_auto,cancel,category,check,check_circle,chevron_right,close,compare,contrast,dark_mode,delete,delete_sweep,dictionary,edit,edit_note,edit_off,error,expand_more,flip,format_size,g_translate,hearing,help,home,hourglass_top,inbox,info,insights,label,light_mode,link,local_library,menu_book,open_in_new,person_pin,play_arrow,push_pin,quiz,record_voice_over,restart_alt,resume,rocket_launch,rule,scatter_plot,school,search,search_off,segment,settings,settings_backup_restore,style,swap_horiz,target,task_alt,text_fields,translate,undo,visibility,warning&display=block" rel="stylesheet">
     <link rel="manifest" href="manifest.webmanifest">
     <!-- Иконка вкладки — по теме, как theme-color выше: эти варианты по системной
          теме нужны до запуска скриптов, дальше applyTheme() ставит одну по выбору
@@ -198,6 +198,58 @@
     </div>
 
     <div class="card">
+        <h3><span class="msym">format_size</span>Размер текста</h3>
+        <p class="md-body-medium settings-hint">Греческий и еврейский следуют за общим размером,
+            пока вы не зададите их отдельно. Еврейский крупнее: огласовка — это точки под буквой
+            и внутри неё, и мелким кеглем их не разобрать.</p>
+
+        <div class="font-scale">
+            <div class="font-scale__head">
+                <label class="font-scale__label" for="generalFontScale">Общий</label>
+                <span class="font-scale__value" id="generalFontScaleValue">100%</span>
+            </div>
+            <input class="md-slider" type="range" id="generalFontScale"
+                   min="0.8" max="1.6" step="0.05" value="1"
+                   data-font-scale="general" oninput="setFontScale('general', this.value)">
+            <p class="font-scale__preview">Образец текста интерфейса</p>
+        </div>
+
+        <div class="font-scale">
+            <div class="font-scale__head">
+                <label class="font-scale__label" for="greekFontScale">Греческий</label>
+                <span class="font-scale__state" id="greekFontScaleState">как общий</span>
+                <span class="font-scale__value" id="greekFontScaleValue">100%</span>
+                <button type="button" class="md-icon-button font-scale__reset" id="greekFontScaleReset"
+                        hidden onclick="resetFontScale('greek')" title="Вернуть к общему размеру"
+                        aria-label="Вернуть греческий к общему размеру">
+                    <span class="msym">restart_alt</span>
+                </button>
+            </div>
+            <input class="md-slider" type="range" id="greekFontScale"
+                   min="0.8" max="1.6" step="0.05" value="1"
+                   data-font-scale="greek" oninput="setFontScale('greek', this.value)">
+            <p class="font-scale__preview"><span class="font-scale__sample greek">ἄνθρωπος</span><span class="font-scale__gloss">— человек</span></p>
+        </div>
+
+        <div class="font-scale">
+            <div class="font-scale__head">
+                <label class="font-scale__label" for="hebrewFontScale">Еврейский</label>
+                <span class="font-scale__state" id="hebrewFontScaleState">как общий +20%</span>
+                <span class="font-scale__value" id="hebrewFontScaleValue">120%</span>
+                <button type="button" class="md-icon-button font-scale__reset" id="hebrewFontScaleReset"
+                        hidden onclick="resetFontScale('hebrew')" title="Вернуть к общему размеру"
+                        aria-label="Вернуть еврейский к общему размеру">
+                    <span class="msym">restart_alt</span>
+                </button>
+            </div>
+            <input class="md-slider" type="range" id="hebrewFontScale"
+                   min="0.8" max="1.6" step="0.05" value="1.2"
+                   data-font-scale="hebrew" oninput="setFontScale('hebrew', this.value)">
+            <p class="font-scale__preview"><span class="font-scale__sample hebrew">מִשְׁפָּט</span><span class="font-scale__gloss">— правосудие</span></p>
+        </div>
+    </div>
+
+    <div class="card">
         <h3><span class="msym">settings_backup_restore</span>Управление данными</h3>
         <p class="md-body-medium">Прогресс хранится только в этом браузере и никуда не отправляется.
             Сброс удалит статистику ответов и список ошибок. Отменить это действие нельзя.</p>
@@ -323,6 +375,7 @@
 <script src="js/ui.js"></script>
 <script src="js/shell.js"></script>
 <script src="js/theme.js"></script>
+<script src="js/fontscale.js"></script>
 <script src="js/lesson.js"></script>
 <script src="js/declension.js"></script>
 <script src="js/exercises.js"></script>

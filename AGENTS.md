@@ -4,14 +4,16 @@ Guidance for AI agents working in this repository.
 
 ## What this repo is
 
-**Anticus** — a biblical-languages learning web app, Ancient Greek and Biblical Hebrew, published to GitHub Pages. The name is the product name only; the repository, the Pages URL and the `greek_*` storage keys predate it and are unchanged.
+**Anticus** — a biblical-languages learning web app, Ancient Greek and Biblical Hebrew, published to GitHub Pages at <https://grandiozova.github.io/anticus/>. The repository was renamed from `greek_bot` to match, so the Pages subpath is `/anticus/`; a clone of the old URL still redirects, but nothing in the repo should say `greek_bot` any more.
+
+The `greek_*` storage keys are **not** a leftover of that name and must not be renamed with it. `greek_stats` is simply what `courseKey('stats')` produces for the Greek course, exactly as `hebrew_stats` is for Hebrew — see "Courses". The one true legacy key is `greek_theme`, still read once as a fallback for `app_theme`.
 
 | Part | Files | Notes |
 |---|---|---|
 | Markup shell | `index.html` | `<head>`, the screens, and the tag list that loads everything else. No logic, no styles, no data. |
 | Styles | `styles/*.css` | The design system, seven files. See "Project layout". |
 | Lesson content | `data/*.js` | Vocabulary, grammar, exercises, prayer, licences, the course registry. |
-| Logic | `js/*.js` | Sixteen files, one per feature area. |
+| Logic | `js/*.js` | Seventeen files, one per feature area. |
 | Offline shell | `sw.js`, `manifest.webmanifest`, `icon.svg`, `icon-dark.svg` | Service worker + PWA metadata. Small, rarely touched — see "Offline shell" below. |
 | Source textbooks | `reference/machen-nt-greek/`, `reference/nbbs-hebrew/` | The books the lessons come from, as text. Reference only — never loaded by the app. See "Source textbooks" below. |
 
@@ -35,7 +37,7 @@ breaking something you did not look at.
 1. **Find the section of this file that covers your task and read it.** The task table
    under "Project layout" names the file; the sections below it name the traps. Most
    bugs this repo has had were an invariant written down here and not read.
-2. **Run `npm test` first** (215 tests, ~30 s). A failure afterwards is then known to be
+2. **Run `npm test` first** (241 tests, ~30 s). A failure afterwards is then known to be
    yours. If the baseline is already red, say so before you start.
 3. **Read the code directly.** There are about thirty source files and every function is
    global, so Grep for the name and Read the file. `reference/` is the large part — enter
@@ -82,6 +84,7 @@ online test. When you add:
 | a screen | markup + `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` |
 | an exercise kind | `EXERCISE_TYPES` + `LESSON_DRILL_GROUPS` and/or `TEST_TYPES` |
 | a colour role | `:root`, `[data-theme="dark"]` **and** `[data-theme="sepia"]` |
+| a `font-size` on studied-language text | `* var(--md-ref-script-scale)` on it — see "Text size" |
 | a part-of-speech `type` | `VOCAB_TYPE_ORDER` + `TYPE_LABELS` |
 | a cache that spans screens | a reset in `applyCourse()` |
 | a dependency, font or asset | an entry in `data/licenses.js` |
@@ -113,17 +116,17 @@ online test. When you add:
 ## Project layout
 
 ```
-index.html           338  <head>, разметка, порядок загрузки
+index.html           391  <head>, разметка, порядок загрузки
 styles/
-  tokens.css           280  :root, [data-theme=dark], [data-theme=sepia] и [data-script] — все переменные
-  base.css             350  сброс, типографика, метки языка (.script/.greek/.hebrew), каркас, app bar, icon button, nav bar, FAB, ripple
-  components.css       777  кнопки, list item урока, карточки, табы, search bar, text field, chips
+  tokens.css           307  :root, [data-theme=dark], [data-theme=sepia] и [data-script] — все переменные
+  base.css             385  сброс, типографика, метки языка (.script/.greek/.hebrew), каркас, app bar, icon button, nav bar, FAB, ripple
+  components.css       776  кнопки, list item урока, карточки, табы, search bar, text field, chips
   screens.css          862  вопрос/варианты, обратная связь, списки слов, таблицы и их прокрутка, ритм материала, flashcards и их оборот, статистика, «Отче наш», стартовый экран выбора курса
   dialogs.css           88  snackbar, dialog
-  layout.css            64  переходы экранов, утилиты, адаптивность (nav rail)
-  settings.css         156  segmented button темы и курса, карточка курса, список лицензий
+  layout.css            68  переходы экранов, утилиты, адаптивность (nav rail)
+  settings.css         312  segmented button темы и курса, карточка курса, ползунки размера текста, список лицензий
 data/
-  lessons.js         1,812  const LESSONS_DATA (греческий курс) и GREEK_ALPHABET — пул букв для уроков 1–2
+  lessons.js         1,811  const LESSONS_DATA (греческий курс) и GREEK_ALPHABET — пул букв для уроков 1–2
   hebrew-lessons.js    872  const HEBREW_LESSONS_DATA — главы 1–11: грамматика, словарь, упражнения; HEBREW_ALPHABET — пул букв и огласовок
   prayer.js            136  const PRAYER_DATA
   licenses.js           49  const LICENSES
@@ -135,17 +138,18 @@ js/
   ui.js                 92  ripple, showToast, mdDialog, progressHead, emptyState, resultBlock
   shell.js             238  SCREEN_META/DEST_SECTION/FAB_CONFIG, showSection, navigateTo, renderMainMenu
   theme.js             108  режимы темы, applyTheme, иконка вкладки по теме, initTheme
+  fontscale.js         174  размер текста: общий и языковые множители, «как общий», ползунки
   lesson.js            544  openLesson, меню разделов урока, вкладки, свайп, экран упражнения, разметка грамматики
   declension.js        197  парадигма как описание осей, отрисовка таблицы, перебор ячеек
   exercises.js         513  EXERCISE_TYPES — список видов упражнений, отрисовка вопроса, проверка ответа
-  flashcards.js        375  карточки: общие и урока, оборот карточки с тренировкой форм
-  test.js              193  тест
+  flashcards.js        374  карточки: общие и урока, оборот карточки с тренировкой форм
+  test.js              192  тест
   translation.js       230  перевод
   stats.js             107  статистика, ошибки, сброс прогресса
   prayer.js            237  «Отче наш»: разбор и упражнения
-  vocab.js             435  общий словарь, поиск, фильтр по частям речи
-  settings.js           28  showSettings, renderLicenses
-  boot.js               77  normalizeTranslationData, init*, глобальные слушатели
+  vocab.js             434  общий словарь, поиск, фильтр по частям речи
+  settings.js           29  showSettings, renderLicenses
+  boot.js               79  normalizeTranslationData, init*, глобальные слушатели
 ```
 
 **Load order is the contract.** Three rules, all enforced only by the order of tags in `index.html`:
@@ -179,6 +183,7 @@ Structural facts worth knowing before editing:
 - **`#partMaterial` holds the grammar card with the lesson's vocabulary card under it; `#partExercise` holds only the list of drills.** A drill is one entry in `LESSON_DRILL_GROUPS` (`js/lesson.js`) with a `kind` that says what runs it and where it draws: `exercise` → `startExercise()` into `#exerciseQuestion`, `translation` → `startTranslation()` into `#translationQuestion`, `flashcards` → `startFlashcards()` into `#flashcardContainer`. Those three containers live on **`#drillSection`, a screen of its own** — a chosen drill is a page, not a card appended under the list. `startLessonDrill()` shows the one container the chosen drill needs, clears the other two and calls `showSection('drillSection')`, so the three renderers keep their own ids and none of them had to change; `closeLessonDrill()` is the way back, and every drill's result block offers it. The app bar titles that screen from `currentDrill.label`, which is why `currentDrill` holds the drill **object**. Adding a drill means one entry in that catalogue — plus an availability rule in `lessonDrillAvailable()` if it is not an `exercises`/`translation` key.
 - **The grammar in `data/lessons.js` is a `<br>`-separated stream, and the app does not render it raw.** In the data, paragraphs are separated by pairs of `<br>`, a section heading is a line that is nothing but `<b>…</b>`, and a list is *either* lines starting with `•` *or* a real `<ul>` (lesson 5 is the one that uses tags). That shape makes vertical rhythm a function of how many `<br>` someone typed, and it puts a wrapped bullet's second line under the marker. `renderGrammarHtml()` (`js/lesson.js`) rebuilds it into real blocks at render time — `.grammar-h`, `.grammar-p`, `.grammar-list` — so spacing comes from CSS instead. It changes markup only, never text; `<b>Примечание:</b> …` with the sentence continuing on the same line stays a paragraph, which is why the heading test requires the bold element to span the **whole** line. Fix grammar spacing here or in `screens.css`, **not** by editing `<br>` runs in the content.
 - **`<table>`, `<ul>` and `<ol>` are lifted out of the stream before it is split** (`GRAMMAR_LIFT_RE` → placeholders → `grammarLiftedHtml()`). Two reasons, and both bite: `<br>` and `•` mean nothing inside them, and — the subtler one — a native `<ul>` in the source has no `<br>` around it, so without lifting, the paragraph before it, the list, and the paragraph after it all collapse into one `.grammar-p` with no spacing between them, and the `<ul>` never gets `.grammar-list`, which drops it through to the global `* { margin: 0; padding: 0 }` reset with no indent at all. A lifted table comes back wrapped in `.md-table-scroll`; a lifted list comes back carrying `.grammar-list`, the same class the `•` form produces. The lift regex is non-nesting — a list inside a list would break it, and there are none.
+- **Cells take their alignment from the strip, not from their own text** — `--md-table-align`, never `text-align: start`. See "Writing direction" for why the logical value is wrong here.
 - **A table wider than the screen scrolls inside its own strip; the page never scrolls sideways.** Every table sits in `.md-table-scroll` (`overflow-x: auto` plus `overscroll-behavior-x: contain`, so the gesture does not chain to the page), and `body` has `overflow-x: clip` as the backstop — `clip` rather than `hidden` because `hidden` would make `body` a scroll container and break the `window.scrollY` the app bar reads. Inside the strip the table is `width: auto; min-width: 100%` and its cells are `white-space: nowrap`: squeezing columns to fit would inflate a row to three lines because of a «Перевод» column that is off-screen anyway. All cells are left-aligned. If you add a table anywhere, wrap it.
 - **Horizontal swipe switches lesson sections on touch screens.** `initLessonSwipe()` (`js/lesson.js`, called from `boot.js`) listens on `#lessonSection`. The row it moves along is **the tab bar itself** — `lessonSwipeTabs()` reads the visible `#lessonTabs` buttons in markup order, so «Тест» is in it too, and intro lessons (whose exercise and test tabs are hidden via `style.display` — none at present, see `introLessons`) have nothing to swipe to. `swipeLessonPart()` ends by **clicking the tab it landed on** rather than calling `switchLessonPart()` directly: the test tab carries `startTest()`, not a panel switch, and a swipe must do exactly what a tap on that tab does. That is the whole reason the row is derived from the DOM instead of a list of part names — a hardcoded list silently drops any tab that is an action rather than a panel. A gesture is ignored when it is short, more vertical than horizontal, multi-touch, or started inside something that scrolls sideways itself (`SWIPE_BLOCKERS` — declension tables, the tab bar, chip rows, inputs). Both ends of the row are dead ends; the gesture never wraps.
 - `SCREEN_META`, `DEST_SECTION` and `FAB_CONFIG` (`js/shell.js`) drive the app bar title, back button, active nav destination and contextual FAB. Adding a screen means adding entries there, not just markup.
@@ -251,10 +256,14 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
 
 ## Settings screen
 
-`settingsSection` is the fifth navigation destination and the home for anything that is not study content: theme, data management, licenses.
+`settingsSection` is the fifth navigation destination and the home for anything that is not study content: theme, text size, data management, licenses.
 
 - **Course** is the first card: which course is open, a button back to the start screen, and `app_default_course` — whether the start screen asks on every load or drops straight into one course.
 - **Theme** is a four-way choice — `system` / `light` / `dark` / `sepia` — stored in `app_theme` as the *mode*, never as the resolved colour. `sepia` is a warm light scheme built on the same M3 tone map as `:root`, not a filter over it. Storing the resolved value is what breaks "follow the system": the app would pin whatever the OS happened to be on first run. `system` stays live via a `matchMedia` listener. A value written by an older build (`light`/`dark`) is still read as a valid manual choice, and the pre-courses key `greek_theme` is read as a fallback and migrated forward once.
+- **Text size** is three sliders — interface, Greek, Hebrew — where the two
+  language ones follow the interface one until they are moved, and a button
+  returns them to it. Hebrew follows it at 120% rather than 100%, for the niqqud.
+  Each has a live sample beside it. See "Text size".
 - **Licenses** come from the `LICENSES` array; add an entry when you add a dependency. Only the middle of that list is open licences: the app's own code is first and is all-rights-reserved (see `LICENSE`), and the course materials are last as their holders' copyright. Both are statements, not licences, and carry no `url`.
 - The nav bar now holds **five** destinations — the M3 maximum. A sixth needs a different pattern, not a sixth item. That is exactly why the course picker is a full-screen overlay rather than a destination.
 
@@ -565,8 +574,9 @@ A few consequences worth knowing before you touch the rendering:
   in the interface font and drifted off the letter. A Russian answer («патах»,
   «[о]») got Noto Serif Hebrew, which has no Cyrillic. `stats.test.js` holds this.
 - **Niqqud have a floor on how small they may be set.** `--md-ref-script-min-size` is
-  `0` for Greek and `1.25rem` for Hebrew, and small studied-language text is written
-  `font-size: max(<its own size>, var(--md-ref-script-min-size))`. Hebrew vowel points
+  `0px` for Greek — the unit matters, see "Text size" — and `1.25rem` for Hebrew, and
+  small studied-language text is written
+  `font-size: calc(max(<its own size>, var(--md-ref-script-min-size)) * var(--md-ref-script-scale))`. Hebrew vowel points
   are dots below and inside the letter: at the 15px the word-bank chips use, the dagesh
   merges into the letter it sits in and qamets is not distinguishable from segol. Large
   text — the flashcard word, the drill prompt — is already above the floor and left
@@ -579,6 +589,21 @@ A few consequences worth knowing before you touch the rendering:
   `grammarLiftedHtml()` copies that `dir` onto the scroll strip. It has to: the strip
   is its own element, and a strip with `direction: ltr` would open a too-wide RTL
   table on its *last* column.
+- **In a table cell, alignment comes from the table, not from the cell's own text**,
+  and this is the one place where `text-align: start` is **wrong**. Cells carry
+  `unicode-bidi: plaintext` so that each takes its bidi direction from its own
+  content — a Russian «ед. ч.» must not have its full stop thrown to the far end
+  inside an RTL table. But `start` and `end` then resolve against *that same
+  per-cell* direction, so a Russian header flushes left while the Hebrew form under
+  it flushes right, and the heading stops sitting over its column. The two
+  properties are independent — `unicode-bidi` orders the glyphs, `text-align` only
+  picks the edge — so the fix is a **physical** value handed down by the strip:
+  `--md-table-align`, which is `left` by default, `right` on
+  `.md-table-scroll[dir="rtl"]`, and `var(--md-ref-script-align)` on a paradigm.
+  `--md-ref-script-align` sits beside `--md-ref-script-direction` in `tokens.css`
+  and exists only for cases like this one. This bit both kinds of table at once,
+  and also the chapter-1 alphabet table, where `א` sat 170px from its own «Буква»
+  heading. Do not "restore" the logical value.
 - **Interface chrome stays put.** The flashcard flip button, the tab bar, the swipe
   direction and the dictionary row layout are all part of the LTR interface, so none
   of them mirror. Use logical properties (`text-align: start`,
@@ -588,6 +613,76 @@ A few consequences worth knowing before you touch the rendering:
 over `HEBREW_LESSONS_DATA[3]`. The fixture exercises every RTL feature in one chapter
 and keeps the test independent of the authored content, so editing a real chapter cannot
 quietly change what the rendering is asserted against.
+
+## Text size
+
+Three sliders on the settings screen — interface, Greek, Hebrew — but **two
+multipliers in the CSS**, and the difference is the whole design. `js/fontscale.js`
+holds it; the tokens are in `styles/tokens.css`.
+
+- **The general scale is applied to the root, not to `body`.** `html { font-size:
+  calc(100% * var(--app-font-scale)) }`. The entire M3 type scale is written in
+  `rem`, and `rem` resolves against `<html>` — a scale on `body` reaches none of
+  those classes. That was the bug in the first attempt at this feature, and the
+  follow-up commit that tried to fix it did not either; both were reverted.
+  `100%` rather than a fixed size, because it is the user's own browser setting
+  that is being multiplied.
+- **The language multipliers are therefore relative.** The general scale is
+  already in every `rem`, so `--app-greek-scale` / `--app-hebrew-scale` are the
+  *extra* on top of it: `effective / general`. A language slider stores and shows
+  an **absolute** size ("Greek — 130%"); only the token is relative. At "follows
+  the general" the extra is exactly 1.
+- **"Follows the general" is stored as `'auto'`, not as a copy of the general
+  value.** A copy would freeze at whatever the general was when it was written and
+  stop following. Same reason `app_theme` stores `'system'` rather than the
+  resolved scheme. Keys are `app_font_scale`, `app_greek_font_scale`,
+  `app_hebrew_font_scale` — `app_` because size is an application setting, not a
+  per-course one.
+- **"Follows the general" is not the same as "equal to the general".**
+  `FONT_SCALE_AUTO_BASE` gives each language a baseline: 1 for Greek, **1.2 for
+  Hebrew**, because niqqud are dots under and inside the letter and the interface
+  size does not carry them — the same reason `--md-ref-script-min-size` exists.
+  So Hebrew ships at 120% and *still tracks* the general slider; it is a baseline
+  for `'auto'`, not a stored override, which is why no reset button shows on a
+  fresh install. The derived value goes through `clampFontScale()`, so it lands on
+  a step of the slider and cannot leave the range: at a general of 1.4 the Hebrew
+  1.68 is cut to 1.6, and the state label computes the real difference rather than
+  claiming "+20%" where the ceiling has eaten it.
+- **Every `font-size` on studied-language text must carry the multiplier**:
+  `font-size: calc(<size> * var(--md-ref-script-scale))`. `--md-ref-script-scale`
+  resolves to the current course's language, exactly like the typeface and the
+  direction, so no rule branches on the course. Where the *content* decides the
+  language rather than the course — `.greek` / `.hebrew` / `[lang="he"]`, and the
+  two samples on the settings screen — use `--app-greek-scale` /
+  `--app-hebrew-scale` by name instead. `fontscale.test.js` re-derives the list of
+  such rules from the stylesheets and fails on one without a multiplier.
+- **A rule that sets its own `font-size` on script text has to carry the
+  multiplier itself**, even if the element is already marked `.greek`. The marker
+  classes live in `base.css`; a later stylesheet with equal specificity silently
+  wins and drops the multiplier. That is how the settings preview came out frozen
+  at one size while its slider moved — caught in a browser, not by the suite,
+  because jsdom expands neither `calc()` nor `var()`.
+- **`--md-ref-script-min-size` is `0px`, and the unit is load-bearing.** Inside
+  `max()` every argument must be the same type, and a bare `0` is a `<number>`,
+  not a length: `max(1.0625rem, 0)` is invalid and the browser drops the whole
+  declaration. It was unitless until this feature, which means that in the Greek
+  course — the only one where the floor is zero — all eight of those script sizes
+  had never applied at all, and the text was rendering at its inherited size.
+  Hebrew was unaffected, its floor being `1.25rem`. The scale multiplies the
+  result of `max()`, so the floor scales with the slider rather than pinning it.
+- **The navigation bar's labels have a ceiling on how large they get**, in `px`
+  so the ceiling does not ride the same scale it is limiting. Five destinations
+  is the M3 maximum and the bar's height is fixed, so at 160% the labels collide.
+  The ceiling is written **twice** — `base.css` and the narrow-screen block in
+  `layout.css`, which overrides it — and the narrow screen is where they run out
+  of room first.
+
+Ranges: 0.8–1.6, step 0.05. The general and Greek defaults are 1, and at 1 every
+`calc()` above collapses to the original value, so their default rendering is
+unchanged down to the byte. Hebrew's default is 1.2 — the one deliberate
+exception. `--app-hebrew-scale` is therefore `1.2` in `tokens.css` too, matching
+what `initFontScale()` will set, so Hebrew does not flash at the smaller size
+before the scripts run.
 
 ## Offline shell
 
@@ -599,7 +694,7 @@ quietly change what the rendering is asserted against.
 
 **Adding any file under `styles/`, `data/` or `js/` means adding it to `CORE_ASSETS`.** Miss it and the app still works online, then cold-starts offline with no styles or empty screens — a failure you will not see in any online test.
 
-`manifest.webmanifest` uses **relative** `start_url` and `scope` because Pages serves this from the `/greek_bot/` subpath; absolute paths would break it. Its icons stay the light `icon.svg`: a manifest cannot switch icons by colour scheme in any shipping browser, and its `background_color` is the light surface anyway. Registration is guarded on `location.protocol` so opening the file over `file://` is still fine, and a failed registration is swallowed — offline is a bonus, never a precondition.
+`manifest.webmanifest` uses **relative** `start_url` and `scope` because Pages serves this from the `/anticus/` subpath; absolute paths would break it. Its icons stay the light `icon.svg`: a manifest cannot switch icons by colour scheme in any shipping browser, and its `background_color` is the light surface anyway. Registration is guarded on `location.protocol` so opening the file over `file://` is still fine, and a failed registration is swallowed — offline is a bonus, never a precondition.
 
 Bump `CACHE_VERSION` in `sw.js` when the cached set changes; `activate` deletes every cache that does not match.
 
@@ -619,7 +714,7 @@ Do not claim completion on a design change without checking it renders. At minim
 3. **Behaviour** — covered by `npm test`: every screen is exercised, every drill in every lesson is played to its result screen, and `undefined`/`NaN` leaking into markup fails the run. Add a test here rather than re-deriving a throwaway harness.
 4. **Render** — screenshot light, dark and sepia, mobile (412px) and desktop (1280px), and check for console errors and horizontal overflow.
 5. **Icon coverage** — covered by `npm test` (`icons.test.js`): it drives every screen, collects `.msym` text and diffs it against `icon_names=`. A missing name is invisible in jsdom and obvious to users.
-6. **Offline** — if you touched `sw.js`, the manifest, or anything in `<head>`: serve the repo over HTTP under a `/greek_bot/` subpath, load once, `setOffline(true)`, and confirm a cold load still boots and renders. Then confirm an edited `index.html` is still served when back online — a service worker that pins a stale build is worse than no service worker.
+6. **Offline** — if you touched `sw.js`, the manifest, or anything in `<head>`: serve the repo over HTTP under a `/anticus/` subpath, load once, `setOffline(true)`, and confirm a cold load still boots and renders. Then confirm an edited `index.html` is still served when back online — a service worker that pins a stale build is worse than no service worker.
 
 Points 2, 4 and 6 have no committed harness — they need a browser or a server,
 and are still written ad hoc. Ask before adding further tooling and dependencies

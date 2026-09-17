@@ -31,6 +31,9 @@ normalizeTranslationData();
 // выбранного курса.
 initCourse();
 initTheme();
+// До первой отрисовки: масштаб меняет font-size корня, и применить его
+// после renderMainMenu() значило бы показать страницу дважды разного размера.
+initFontScale();
 loadStats();
 // Начальное значение currentLesson задано в core.js под греческий курс —
 // в другом курсе такого урока может не быть.

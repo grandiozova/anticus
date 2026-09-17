@@ -219,23 +219,57 @@ test('таблица с dir="rtl" открывается с первой кол�
 
 test('таблица парадигмы разворачивается вместе с письмом курса', () => {
     const css = read('styles/screens.css');
-    assert.match(css, /\.word-details > \.md-table-scroll \{ direction: var\(--md-ref-script-direction\); \}/);
-    // Ячейка выравнивается по началу строки, а не по левому краю экрана.
-    assert.match(css, /\.grammar-text td, \.grammar-text th \{[\s\S]*?text-align: start;/);
+    assert.match(css, /\.word-details > \.md-table-scroll \{[\s\S]*?direction: var\(--md-ref-script-direction\);/);
+});
+
+test('выравнивание в ячейках задаёт таблица, а не текст в ячейке', () => {
+    // В ячейках стоит unicode-bidi: plaintext, и при нём логическое start
+    // разрешается по направлению текста САМОЙ ячейки. В еврейской таблице
+    // русская шапка «Муж. род» уезжала к левому краю, а форма под ней стояла
+    // у правого: заголовок оказывался не над своей колонкой. То же в таблице
+    // алфавита — буква א стояла в 170 пикселях от шапки «Буква».
+    // Поэтому значение физическое и приходит от полосы прокрутки.
+    const css = read('styles/screens.css');
+
+    assert.match(css, /\.word-details td, \.word-details th,\s*\n\.grammar-text td, \.grammar-text th \{[\s\S]*?text-align: var\(--md-table-align/,
+        'ячейки снова выравниваются логическим start — при plaintext он разъезжается');
+    assert.ok(!/\.grammar-text td, \.grammar-text th \{[\s\S]*?text-align: start;/.test(css),
+        'в правиле ячеек остался text-align: start');
+
+    // Три источника значения: обычная таблица, развёрнутая по dir из данных,
+    // и парадигма, которая разворачивается вместе с курсом.
+    assert.match(css, /\.md-table-scroll \{[\s\S]*?--md-table-align: left;/,
+        'полосе не задано выравнивание по умолчанию');
+    assert.match(css, /\.md-table-scroll\[dir="rtl"\] \{ --md-table-align: right; \}/,
+        'развёрнутой таблице из данных не задано выравнивание');
+    assert.match(css, /\.word-details > \.md-table-scroll \{[\s\S]*?--md-table-align: var\(--md-ref-script-align\);/,
+        'парадигме не задано выравнивание по письму курса');
+
+    // И сам токен — в обоих направлениях, как --md-ref-script-direction.
+    const tokens = read('styles/tokens.css');
+    assert.match(tokens, /:root \{[\s\S]*?--md-ref-script-align: left;/);
+    assert.match(tokens, /:root\[data-script-dir="rtl"\] \{[\s\S]*?--md-ref-script-align: right;/);
 });
 
 test('огласовке задан нижний предел кегля, и он свой у каждого письма', () => {
     // Точки под буквой на мелком кегле сливаются с ней: камец от сегола не
     // отличить, а половина упражнений главы 3 именно об этом.
     const css = read('styles/tokens.css');
-    assert.match(css, /--md-ref-script-min-size: 0;/, 'у греческого предела быть не должно');
+    // Ноль — но с единицей измерения. В max() все слагаемые одного типа, и
+    // голый 0 это <number>: max(1.0625rem, 0) браузер отвергает целиком, и
+    // весь мелкий греческий текст съезжает на унаследованный кегль. Отсюда
+    // и проверка на px, а не просто на ноль.
+    assert.match(css, /--md-ref-script-min-size: 0px;/,
+        'у греческого предел должен быть нулевым — и с единицей, иначе max() невалиден');
     assert.match(css, /:root\[data-script="hebrew"\] \{[\s\S]*?--md-ref-script-min-size: 1\.25rem;/,
         'еврейскому письму не задан нижний предел кегля');
 
     // Мелкий текст изучаемого языка обязан проходить через max(): без него
-    // предел ничего не удерживает.
+    // предел ничего не удерживает. calc(…) снаружи — множитель ползунка
+    // размера (js/fontscale.js); он масштабирует уже выбранный max(), так что
+    // предел остаётся на месте и в знаменателе не участвует.
     for (const file of ['styles/screens.css', 'styles/components.css']) {
-        const rules = read(file).match(/font-size: (max\()?[\d.]+rem/g) || [];
+        const rules = read(file).match(/font-size: (?:calc\()?(max\()?[\d.]+(?:rem|em)/g) || [];
         assert.ok(rules.some(r => r.includes('max(')), file + ' — предел кегля нигде не применён');
     }
     const bank = read('styles/components.css');

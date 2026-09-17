@@ -4,7 +4,17 @@
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; padding: 0; }
 
-html { -webkit-text-size-adjust: 100%; }
+/* Общий масштаб текста берётся здесь, у корня, а не у body — и это
+   принципиально: вся шкала типографики M3 ниже задана в rem, а rem считается
+   от html. Масштаб на body не дошёл бы ни до одного её класса, и «общий
+   размер» двигал бы только те редкие места, где кегль наследуется.
+   100% — размер шрифта по умолчанию в браузере, то есть настройка самого
+   пользователя; мы её множим, а не заменяем. Ползунок ставит --app-font-scale
+   (js/fontscale.js), по умолчанию 1 — тогда правило ничего не меняет. */
+html {
+    -webkit-text-size-adjust: 100%;
+    font-size: calc(100% * var(--app-font-scale));
+}
 
 body {
     font-family: var(--md-ref-typeface-plain);
@@ -61,20 +71,31 @@ body {
    isolate, а не просто direction: еврейское слово внутри русской фразы —
    это вставка, и её знаки препинания принадлежат фразе, а не вставке.
    Без изоляции точка в конце предложения уезжает к левому краю слова. */
+   Кегль: em, а не rem — вставка живёт внутри чужой строки и должна остаться
+   с ней соразмерной, а ползунок языка только добавляет к этому множитель.
+   Блоки, которые задают себе кегль сами (.md-prompt-strong, .flashcard-word
+   и прочие), перебивают это правило своим font-size — и берут тот же
+   множитель у себя, так что удвоения не выходит. */
 .script {
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
+    font-size: calc(1em * var(--md-ref-script-scale));
 }
+/* Здесь язык задан содержимым, а не курсом, — значит и множитель берётся
+   именной, а не «текущего курса». Иначе греческая строка в еврейской главе
+   поехала бы за еврейским ползунком. */
 .greek, .grammar-text table td:lang(el), [lang="grc"] {
     font-family: var(--md-ref-typeface-greek);
     direction: ltr;
     unicode-bidi: isolate;
+    font-size: calc(1em * var(--app-greek-scale));
 }
 .hebrew, .grammar-text table td:lang(he), [lang="he"] {
     font-family: var(--md-ref-typeface-hebrew);
     direction: rtl;
     unicode-bidi: isolate;
+    font-size: calc(1em * var(--app-hebrew-scale));
 }
 
 /* --- шкала типографики --- */
@@ -233,6 +254,9 @@ a { color: var(--md-sys-color-primary); }
 }
 .md-nav-item {
     flex: 1;
+    /* Без этого flex-элемент не ужимается ниже ширины своего содержимого,
+       и многоточие на подписи никогда не сработает. */
+    min-width: 0;
     max-width: 160px;
     height: var(--nav-bar-height);
     padding: 12px 0 16px;
@@ -270,11 +294,22 @@ a { color: var(--md-sys-color-primary); }
 }
 .md-nav-item:hover .md-nav-item__indicator::before { opacity: var(--md-sys-state-hover-opacity); }
 .md-nav-item:active .md-nav-item__indicator::before { opacity: var(--md-sys-state-pressed-opacity); }
+/* Подпись назначения растёт вместе с интерфейсом, но не безгранично: ряд
+   имеет фиксированную высоту по M3 (--nav-bar-height), а назначений в нём
+   пять — максимум, который спецификация допускает. На общем масштабе 160%
+   пять подписей перестают помещаться в ширину телефона и слипаются в одну
+   строку. Потолок задан в px нарочно: он не должен ехать за тем же
+   масштабом, который и ограничивает. Многоточие — страховка на узких
+   экранах и для длинных слов. */
 .md-nav-item__label {
-    font-size: 0.75rem;
+    font-size: min(0.75rem, 14px);
     line-height: 1rem;
     font-weight: 500;
     letter-spacing: 0.03125rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .md-nav-item.active { color: var(--md-sys-color-on-surface); }
 .md-nav-item.active .md-nav-item__indicator {

@@ -14,7 +14,7 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: 1.75rem;
+    font-size: calc(1.75rem * var(--md-ref-script-scale));
     line-height: 2.25rem;
     text-align: center;
     margin: 16px 0;
@@ -71,7 +71,7 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: max(1.0625rem, var(--md-ref-script-min-size));
+    font-size: calc(max(1.0625rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
     letter-spacing: 0;
 }
 .option-btn:disabled { cursor: default; }
@@ -215,7 +215,7 @@
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
     font-weight: 600;
-    font-size: max(1rem, var(--md-ref-script-min-size));
+    font-size: calc(max(1rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
     line-height: 1.5rem;
     color: var(--md-sys-color-on-surface);
 }
@@ -264,6 +264,16 @@
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
     margin: 16px 0;
+    /* Куда прижимать содержимое ячеек — решает таблица, а не текст в них.
+       Значение наследуется внутрь и применяется в правиле ячеек ниже.
+       По умолчанию влево: интерфейс левосторонний, <html> направления не
+       получает никогда (см. AGENTS.md, «Writing direction»). Развёрнутые
+       таблицы переопределяют это ниже.
+       Именно left, а не start: при unicode-bidi: plaintext логическое start
+       разрешается по тексту САМОЙ ячейки, и в таблице алфавита буква א
+       уезжала к правому краю колонки, за 170 пикселей от собственной
+       шапки «Буква». */
+    --md-table-align: left;
 }
 .word-details table, .grammar-text table {
     width: 100%;
@@ -286,7 +296,17 @@
    Таблицы из материала урока сюда не входят: они бывают и русскими, и
    разворачиваются только там, где в данных написано <table dir="rtl"> —
    этот атрибут переносит на полосу grammarLiftedHtml() (js/lesson.js). */
-.word-details > .md-table-scroll { direction: var(--md-ref-script-direction); }
+.word-details > .md-table-scroll {
+    direction: var(--md-ref-script-direction);
+    --md-table-align: var(--md-ref-script-align);
+}
+/* Таблица материала урока разворачивается только по <table dir="rtl"> в данных;
+   этот атрибут переносит на полосу grammarLiftedHtml() (js/lesson.js). Здесь же
+   и выравнивание: развёрнутая таблица прижимает ВСЕ ячейки вправо, включая
+   русские подписи строк и шапку, — иначе шапка расходится со своей колонкой.
+   Таблицы без dir не трогаем: у таблицы огласовок главы 2 ось латинская
+   (a/e/i/o/u), она читается слева направо и развороту не подлежит. */
+.md-table-scroll[dir="rtl"] { --md-table-align: right; }
 /* Формы в таблице парадигмы. Шрифт им даёт .script на самой ячейке
    (js/declension.js): подпись строки и колонка «Перевод» русские, и разворачивать
    вместе с формами их нельзя. Кегль остаётся табличным — 14px, — но не ниже
@@ -295,7 +315,7 @@
    языка был набран интерфейсным шрифтом: на греческом это было незаметно, на
    огласовке — нет. */
 .word-details td.script {
-    font-size: max(0.875rem, var(--md-ref-script-min-size));
+    font-size: calc(max(0.875rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
 }
 /* Подпись парадигмы. Именно <caption>, а не строка над таблицей: полоса
    прокрутки уезжает вбок вместе с содержимым, и заголовок вне таблицы от неё
@@ -314,8 +334,18 @@
 .grammar-text td, .grammar-text th {
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
     padding: 10px 12px;
-    /* start, а не left: у таблицы с dir="rtl" строка начинается справа */
-    text-align: start;
+    /* Выравнивание задаёт ТАБЛИЦА, а не содержимое ячейки, — отсюда
+       переменная вместо start.
+       start здесь не работает: ниже стоит unicode-bidi: plaintext, а при нём
+       start/end разрешаются по направлению текста самой ячейки. В еврейской
+       таблице русский «Муж. род» уезжал к левому краю, а форма טוֹב под ним
+       стояла у правого — заголовок оказывался не над своей колонкой.
+       Само значение ставит полоса прокрутки (--md-table-align ниже), и оно
+       физическое: любое логическое plaintext переосмыслит заново.
+       Запасное start — для обычных русских таблиц урока: они не
+       разворачиваются, и там это ровно прежнее поведение. Убрать объявление
+       совсем нельзя: у <th> собственный умолчательный center. */
+    text-align: var(--md-table-align, start);
     /* Направление каждая ячейка берёт из своего текста: в развёрнутой таблице
        колонка форм еврейская, а «Падеж» и «Перевод» русские, и точка в конце
        «ед. ч.» без этого уезжала бы в левый край ячейки. */
@@ -400,7 +430,7 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: 2.8125rem;
+    font-size: calc(2.8125rem * var(--md-ref-script-scale));
     line-height: 3.25rem;
     font-weight: 400;
     color: var(--md-sys-color-on-surface);
@@ -474,7 +504,7 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: 1.5rem;
+    font-size: calc(1.5rem * var(--md-ref-script-scale));
     line-height: 2rem;
     color: var(--md-sys-color-on-surface);
 }
@@ -617,7 +647,7 @@
 /* Строка списка — 14px, а огласовка на таком кегле сливается с буквой.
    Порог тот же, что у прочего мелкого текста изучаемого языка. */
 .error-item .script {
-    font-size: max(1em, var(--md-ref-script-min-size));
+    font-size: calc(max(1em, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
     line-height: 1.5;
 }
 .error-item .msym { color: var(--md-sys-color-error); }
@@ -683,7 +713,7 @@
     background: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface);
     font-family: var(--md-ref-typeface-script);
-    font-size: max(1.125rem, var(--md-ref-script-min-size));
+    font-size: calc(max(1.125rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
     line-height: 1.75rem;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
@@ -719,7 +749,7 @@
 .prayer-analysis strong {
     font-family: var(--md-ref-typeface-script);
     unicode-bidi: plaintext;
-    font-size: max(1.0625rem, var(--md-ref-script-min-size));
+    font-size: calc(max(1.0625rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
 }
 
 

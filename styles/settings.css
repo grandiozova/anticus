@@ -57,6 +57,162 @@
     color: var(--md-sys-color-on-surface-variant);
 }
 
+/* ============================================================
+   РАЗМЕР ТЕКСТА
+   ============================================================
+   Ползунок — это <input type="range">, а не свой элемент на div'ах: у
+   нативного уже есть роль, клавиатура, шаг и перетаскивание, а выглядит он
+   по M3 после стилизации псевдоэлементов. Своя реализация всё это повторяла
+   бы руками и неизбежно хуже. */
+.font-scale {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: var(--md-sys-shape-corner-large);
+    background: var(--md-sys-color-surface-container-high);
+}
+.font-scale__head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 24px;
+}
+.font-scale__label {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.009375rem;
+    color: var(--md-sys-color-on-surface);
+}
+/* «как общий» / «задан отдельно» — состояние, а не значение: оно объясняет,
+   почему ползунок стоит именно здесь, поэтому идёт сразу за подписью. */
+.font-scale__state {
+    flex: 1;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.03125rem;
+    color: var(--md-sys-color-on-surface-variant);
+}
+.font-scale__label + .font-scale__value { margin-left: auto; }
+.font-scale__value {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.00625rem;
+    color: var(--md-sys-color-primary);
+    font-variant-numeric: tabular-nums;
+}
+/* Кнопка возврата к общему. Размер и слой состояния берёт у .md-icon-button —
+   там уже 48dp и ::before; здесь только поля, чтобы она не растягивала строку,
+   и display при hidden: у .md-icon-button задан inline-flex, а он бьёт hidden. */
+.font-scale__reset {
+    margin: -12px -12px -12px 0;
+}
+.font-scale__reset[hidden] { display: none; }
+
+/* --- дорожка и ручка --- */
+/* Пройденную часть дорожки в WebKit рисовать нечем: ::-webkit-progress-value
+   у range нет. Поэтому заливка — градиент по --slider-fill, его ставит
+   syncFontScaleControls(). У Firefox для того же есть ::-moz-range-progress,
+   и ему градиент не нужен. */
+.md-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    /* Сама дорожка 4dp, но область нажатия — 48dp по M3. */
+    height: 48px;
+    margin: 4px 0 0;
+    background: transparent;
+    cursor: pointer;
+    --slider-fill: 0%;
+}
+.md-slider::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: var(--md-sys-shape-corner-full);
+    background:
+        linear-gradient(to right,
+            var(--md-sys-color-primary) var(--slider-fill),
+            var(--md-sys-color-surface-container-highest) var(--slider-fill));
+}
+.md-slider::-moz-range-track {
+    height: 4px;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-surface-container-highest);
+}
+.md-slider::-moz-range-progress {
+    height: 4px;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-primary);
+}
+.md-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    /* Дорожка 4dp, ручка 20dp: поднимаем на (20-4)/2, чтобы центры совпали. */
+    margin-top: -8px;
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-primary);
+    box-shadow: var(--md-sys-elevation-level1);
+    transition: box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+.md-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-primary);
+    box-shadow: var(--md-sys-elevation-level1);
+}
+/* Слой состояния у ручки: по M3 это ореол вокруг неё, а не смена её цвета.
+   Рисуем расплывшейся тенью — отдельного элемента у ручки нет. */
+.md-slider:hover::-webkit-slider-thumb { box-shadow: 0 0 0 8px color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent); }
+.md-slider:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 10px color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent); }
+.md-slider:active::-webkit-slider-thumb { box-shadow: 0 0 0 10px color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent); }
+.md-slider:hover::-moz-range-thumb { box-shadow: 0 0 0 8px color-mix(in srgb, var(--md-sys-color-primary) 8%, transparent); }
+.md-slider:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 10px color-mix(in srgb, var(--md-sys-color-primary) 10%, transparent); }
+.md-slider:focus { outline: none; }
+.md-slider:focus-visible { outline: none; }
+
+/* --- образец --- */
+/* Образец берёт размер оттуда же, откуда весь текст: общий масштаб приходит
+   от корня, языковой — от .greek/.hebrew (styles/base.css). Ничего пересчитывать
+   в JS не нужно, образец меняется вместе с токеном.
+   Кегль задан явно и крупнее строки интерфейса: огласовку на 14px не разглядеть,
+   а образец — ровно то место, где её и разглядывают. Своим --md-ref-script-min-size
+   тут не обойтись: он поднимается только в еврейском курсе, а образец на этом
+   экране показывается в обоих. */
+.font-scale__preview {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0 0;
+    padding: 12px 16px;
+    border-radius: var(--md-sys-shape-corner-medium);
+    background: var(--md-sys-color-surface-container-lowest);
+    color: var(--md-sys-color-on-surface);
+    font-size: 1rem;
+    line-height: 1.5;
+    /* Образец растёт вместе с настройкой и не должен тянуть карточку вбок. */
+    overflow-wrap: anywhere;
+}
+/* Множитель приходится повторять здесь. Кегль образца задан явно, а
+   .font-scale__sample и .greek/.hebrew (styles/base.css) — одинаковой
+   специфичности; settings.css подключается позже, и его font-size молча
+   затирает тот, что с множителем. Образец тогда остаётся одного размера при
+   любом положении ползунка — то есть перестаёт быть образцом. */
+.font-scale__sample { font-size: 1.25rem; line-height: 1.6; }
+.font-scale__sample.greek  { font-size: calc(1.25rem * var(--app-greek-scale)); }
+.font-scale__sample.hebrew { font-size: calc(1.25rem * var(--app-hebrew-scale)); }
+.font-scale__gloss {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
+
 /* Какой курс открыт сейчас — над кнопкой «Сменить курс». */
 .settings-course {
     margin-bottom: 16px;
