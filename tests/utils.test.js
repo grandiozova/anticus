@@ -2,6 +2,8 @@
 // ЧИСТЫЕ ФУНКЦИИ: экранирование, склонение числительных, тема
 // ============================================================
 
+const fs = require('node:fs');
+const path = require('node:path');
 const test = require('node:test');
 const assert = require('node:assert');
 const { loadApp } = require('./helpers/app.js');
@@ -270,6 +272,13 @@ test('настройки шрифта хранятся отдельно и не 
     flashcardNode.textContent = 'λόγος';
     app.document.body.appendChild(flashcardNode);
     assert.ok(!flashcardNode.style.fontSize || flashcardNode.style.fontSize === '');
+
+    const screensCss = fs.readFileSync(path.join(__dirname, '..', 'styles', 'screens.css'), 'utf8');
+    assert.match(screensCss, /\.grammar-text\s*\{[^}]*var\(--app-general-font-scale\)/s,
+        'общий масштаб должен влиять на грамматику');
+    assert.match(screensCss, /\.word-details table, \.grammar-text table\s*\{[^}]*var\(--app-general-font-scale\)/s,
+        'общий масштаб должен влиять на таблицы и грамматику');
+
     app.close();
 });
 

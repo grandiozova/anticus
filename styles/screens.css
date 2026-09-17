@@ -249,7 +249,7 @@
 .vocab-section { margin-bottom: 8px; }
 .vocab-section h4 {
     padding: 16px 16px 8px;
-    font-size: 0.875rem;
+    font-size: calc(0.875rem * var(--app-general-font-scale));
     line-height: 1.25rem;
     font-weight: 500;
     letter-spacing: 0.00625rem;
@@ -271,7 +271,7 @@
 .word-details table, .grammar-text table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.875rem;
+    font-size: calc(0.875rem * var(--app-general-font-scale));
     line-height: 1.25rem;
     margin: 8px 0;
     background: var(--md-sys-color-surface-container-lowest);
@@ -307,7 +307,7 @@
 .word-details caption {
     padding: 0 12px 8px;
     text-align: start;
-    font-size: 0.8125rem;
+    font-size: calc(0.8125rem * var(--app-general-font-scale));
     line-height: 1.25rem;
     font-weight: 600;
     letter-spacing: 0.00625rem;
@@ -333,7 +333,7 @@
 .word-details th, .grammar-text th {
     background: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.75rem;
+    font-size: calc(0.75rem * var(--app-general-font-scale));
     font-weight: 500;
     letter-spacing: 0.03125rem;
     text-transform: uppercase;
@@ -341,7 +341,7 @@
 .word-details tr:last-child td, .grammar-text tr:last-child td { border-bottom: 0; }
 
 .grammar-text {
-    font-size: 1rem;
+    font-size: calc(1rem * var(--app-general-font-scale));
     line-height: 1.625rem;
     letter-spacing: 0.03125rem;
     color: var(--md-sys-color-on-surface);
@@ -352,7 +352,7 @@
 /* Ритм материала. Разметку на блоки собирает renderGrammarHtml() (js/lesson.js);
    отступы задаёт этот блок, а не число <br> подряд в data/lessons.js. */
 .grammar-h {
-    font-size: 1rem;
+    font-size: calc(1rem * var(--app-general-font-scale));
     line-height: 1.5rem;
     font-weight: 600;
     letter-spacing: 0.009375rem;
