@@ -2,8 +2,6 @@
 // ЧИСТЫЕ ФУНКЦИИ: экранирование, склонение числительных, тема
 // ============================================================
 
-const fs = require('node:fs');
-const path = require('node:path');
 const test = require('node:test');
 const assert = require('node:assert');
 const { loadApp } = require('./helpers/app.js');
@@ -241,48 +239,6 @@ test('переключатель темы в настройках отражае
     assert.strictEqual(checked.length, 1, 'должен быть отмечен ровно один режим');
     assert.strictEqual(checked[0].getAttribute('data-theme-mode'), 'dark');
     assert.ok(app.text('#themeHint').length > 0, 'подпись под переключателем пуста');
-    app.close();
-});
-
-test('настройки шрифта хранятся отдельно и не трогают карточки', () => {
-    const app = loadApp();
-    const root = app.document.documentElement;
-
-    app.window.setGeneralFontScale(1.2);
-    app.window.setGreekFontScale(1.35);
-    app.window.setHebrewFontScale(0.9);
-
-    assert.strictEqual(root.style.getPropertyValue('--app-general-font-scale').trim(), '1.2');
-    assert.strictEqual(root.style.getPropertyValue('--app-greek-font-scale').trim(), '1.35');
-    assert.strictEqual(root.style.getPropertyValue('--app-hebrew-font-scale').trim(), '0.9');
-    assert.strictEqual(app.window.localStorage.getItem('app_font_scale'), '1.2');
-    assert.strictEqual(app.window.localStorage.getItem('app_greek_font_scale'), '1.35');
-    assert.strictEqual(app.window.localStorage.getItem('app_hebrew_font_scale'), '0.9');
-
-    const sliders = [...app.document.querySelectorAll('[data-font-scale]')].map(el => el.getAttribute('data-font-scale'));
-    assert.ok(sliders.includes('general'));
-    assert.ok(sliders.includes('greek'));
-    assert.ok(sliders.includes('hebrew'));
-    assert.strictEqual(app.document.querySelector('[data-font-scale="general"]').value, '1.2');
-    assert.strictEqual(app.document.querySelector('[data-font-scale="greek"]').value, '1.35');
-    assert.strictEqual(app.document.querySelector('[data-font-scale="hebrew"]').value, '0.9');
-
-    const flashcardNode = app.document.createElement('div');
-    flashcardNode.className = 'flashcard-word';
-    flashcardNode.textContent = 'λόγος';
-    app.document.body.appendChild(flashcardNode);
-    assert.ok(!flashcardNode.style.fontSize || flashcardNode.style.fontSize === '');
-
-    const screensCss = fs.readFileSync(path.join(__dirname, '..', 'styles', 'screens.css'), 'utf8');
-    assert.match(screensCss, /\.grammar-text\s*\{[^}]*var\(--app-general-font-scale\)/s,
-        'общий масштаб должен влиять на грамматику');
-    assert.match(screensCss, /\.word-details table, \.grammar-text table\s*\{[^}]*var\(--app-general-font-scale\)/s,
-        'общий масштаб должен влиять на таблицы и грамматику');
-    assert.match(screensCss, /\.question\s*\{[^}]*var\(--app-general-font-scale\)/s,
-        'общий масштаб должен влиять на вопрос и учебный текст');
-    assert.match(screensCss, /\.feedback\s*\{[^}]*var\(--app-general-font-scale\)/s,
-        'общий масштаб должен влиять на обратную связь');
-
     app.close();
 });
 

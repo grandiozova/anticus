@@ -2,7 +2,7 @@
    ВОПРОС / ВАРИАНТЫ ОТВЕТА
    ============================================================ */
 .question {
-    font-size: calc(1.375rem * var(--app-general-font-scale));
+    font-size: 1.375rem;
     line-height: 1.75rem;
     font-weight: 400;
     color: var(--md-sys-color-on-surface);
@@ -14,17 +14,14 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: calc(1.75rem * var(--app-current-script-font-scale));
+    font-size: 1.75rem;
     line-height: 2.25rem;
     text-align: center;
     margin: 16px 0;
     color: var(--md-sys-color-on-surface);
 }
-.font-scale-compat--prompt {
-    font-size: max(1.0625rem, var(--md-ref-script-min-size));
-}
 .md-prompt-ru {
-    font-size: calc(1.25rem * var(--app-general-font-scale));
+    font-size: 1.25rem;
     line-height: 1.75rem;
     text-align: center;
     margin: 16px 0;
@@ -74,7 +71,7 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: calc(max(1.0625rem, var(--md-ref-script-min-size)) * var(--app-current-script-font-scale));
+    font-size: max(1.0625rem, var(--md-ref-script-min-size));
     letter-spacing: 0;
 }
 .option-btn:disabled { cursor: default; }
@@ -114,7 +111,7 @@
     padding: 16px;
     border-radius: var(--md-sys-shape-corner-medium);
     margin: 16px 0;
-    font-size: calc(0.875rem * var(--app-general-font-scale));
+    font-size: 0.875rem;
     line-height: 1.25rem;
     letter-spacing: 0.015625rem;
     animation: md-feedback-in var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
@@ -218,7 +215,7 @@
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
     font-weight: 600;
-    font-size: calc(max(1rem, var(--md-ref-script-min-size)) * var(--app-current-script-font-scale));
+    font-size: max(1rem, var(--md-ref-script-min-size));
     line-height: 1.5rem;
     color: var(--md-sys-color-on-surface);
 }
@@ -249,7 +246,7 @@
 .vocab-section { margin-bottom: 8px; }
 .vocab-section h4 {
     padding: 16px 16px 8px;
-    font-size: calc(0.875rem * var(--app-general-font-scale));
+    font-size: 0.875rem;
     line-height: 1.25rem;
     font-weight: 500;
     letter-spacing: 0.00625rem;
@@ -271,7 +268,7 @@
 .word-details table, .grammar-text table {
     width: 100%;
     border-collapse: collapse;
-    font-size: calc(0.875rem * var(--app-general-font-scale));
+    font-size: 0.875rem;
     line-height: 1.25rem;
     margin: 8px 0;
     background: var(--md-sys-color-surface-container-lowest);
@@ -307,7 +304,7 @@
 .word-details caption {
     padding: 0 12px 8px;
     text-align: start;
-    font-size: calc(0.8125rem * var(--app-general-font-scale));
+    font-size: 0.8125rem;
     line-height: 1.25rem;
     font-weight: 600;
     letter-spacing: 0.00625rem;
@@ -333,7 +330,7 @@
 .word-details th, .grammar-text th {
     background: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface-variant);
-    font-size: calc(0.75rem * var(--app-general-font-scale));
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.03125rem;
     text-transform: uppercase;
@@ -341,7 +338,7 @@
 .word-details tr:last-child td, .grammar-text tr:last-child td { border-bottom: 0; }
 
 .grammar-text {
-    font-size: calc(1rem * var(--app-general-font-scale));
+    font-size: 1rem;
     line-height: 1.625rem;
     letter-spacing: 0.03125rem;
     color: var(--md-sys-color-on-surface);
@@ -352,7 +349,7 @@
 /* Ритм материала. Разметку на блоки собирает renderGrammarHtml() (js/lesson.js);
    отступы задаёт этот блок, а не число <br> подряд в data/lessons.js. */
 .grammar-h {
-    font-size: calc(1rem * var(--app-general-font-scale));
+    font-size: 1rem;
     line-height: 1.5rem;
     font-weight: 600;
     letter-spacing: 0.009375rem;

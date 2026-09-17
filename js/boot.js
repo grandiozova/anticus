@@ -31,8 +31,6 @@ normalizeTranslationData();
 // выбранного курса.
 initCourse();
 initTheme();
-applyFontScaleSettings();
-syncFontControls();
 loadStats();
 // Начальное значение currentLesson задано в core.js под греческий курс —
 // в другом курсе такого урока может не быть.
