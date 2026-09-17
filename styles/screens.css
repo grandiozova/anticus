@@ -2,7 +2,7 @@
    ВОПРОС / ВАРИАНТЫ ОТВЕТА
    ============================================================ */
 .question {
-    font-size: 1.375rem;
+    font-size: calc(1.375rem * var(--app-general-font-scale));
     line-height: 1.75rem;
     font-weight: 400;
     color: var(--md-sys-color-on-surface);
@@ -24,7 +24,7 @@
     font-size: max(1.0625rem, var(--md-ref-script-min-size));
 }
 .md-prompt-ru {
-    font-size: 1.25rem;
+    font-size: calc(1.25rem * var(--app-general-font-scale));
     line-height: 1.75rem;
     text-align: center;
     margin: 16px 0;
@@ -114,7 +114,7 @@
     padding: 16px;
     border-radius: var(--md-sys-shape-corner-medium);
     margin: 16px 0;
-    font-size: 0.875rem;
+    font-size: calc(0.875rem * var(--app-general-font-scale));
     line-height: 1.25rem;
     letter-spacing: 0.015625rem;
     animation: md-feedback-in var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);

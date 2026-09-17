@@ -278,6 +278,10 @@ test('настройки шрифта хранятся отдельно и не 
         'общий масштаб должен влиять на грамматику');
     assert.match(screensCss, /\.word-details table, \.grammar-text table\s*\{[^}]*var\(--app-general-font-scale\)/s,
         'общий масштаб должен влиять на таблицы и грамматику');
+    assert.match(screensCss, /\.question\s*\{[^}]*var\(--app-general-font-scale\)/s,
+        'общий масштаб должен влиять на вопрос и учебный текст');
+    assert.match(screensCss, /\.feedback\s*\{[^}]*var\(--app-general-font-scale\)/s,
+        'общий масштаб должен влиять на обратную связь');
 
     app.close();
 });
