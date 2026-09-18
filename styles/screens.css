@@ -866,7 +866,7 @@ body.start-open .md-content { display: none; }
     font-family: var(--md-ref-typeface-hebrew);
     direction: rtl;
     unicode-bidi: isolate;
-    font-size: 1.8rem;
+    font-size: 2.1rem;
     transform: translateY(1px);
 }
 .course-card__text { flex: 1; min-width: 0; }
