@@ -14,7 +14,9 @@
 //   name              название в стартовом экране, app bar и настройках
 //   tagline           источник курса одной строкой
 //   blurb             что внутри — для карточки на стартовом экране
-//   icon              лигатура Material Symbols (не забыть про icon_names= в <head>)
+//   icon              legacy-иконка Material Symbols, оставлена для совместимости
+//   glyph             реальная буква алфавита на бейдже карточки курса
+//   glyphClass        класс языка для шрифта: .greek / .hebrew
 //   dir               направление письма изучаемого языка: 'ltr' | 'rtl'
 //   script            какое письмо: имя шрифтового токена из styles/tokens.css
 //                     ('greek' -> --md-ref-typeface-greek). Оба поля попадают
@@ -43,6 +45,8 @@ const COURSES = {
         tagline: 'Новый Завет по учебнику Мейчена',
         blurb: 'Уроки 1–10, словарь, карточки, тесты и пословный разбор «Отче наш».',
         icon: 'menu_book',
+        glyph: 'Ω',
+        glyphClass: 'greek',
         dir: 'ltr',
         script: 'greek',
         lang: 'греческий',
@@ -67,6 +71,8 @@ const COURSES = {
         tagline: 'Пособие Новосибирской библейской семинарии',
         blurb: 'Главы 1–11: письмо, огласовка, имя, предлоги и сопряжённое сочетание.',
         icon: 'menu_book',
+        glyph: 'א',
+        glyphClass: 'hebrew',
         dir: 'rtl',
         script: 'hebrew',
         lang: 'еврейский',

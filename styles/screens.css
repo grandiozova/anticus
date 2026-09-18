@@ -848,7 +848,27 @@ body.start-open .md-content { display: none; }
     justify-content: center;
     flex-shrink: 0;
 }
-.course-card__icon .msym { font-size: 24px; }
+.course-card__glyph {
+    display: block;
+    line-height: 1;
+    font-size: 1.75rem;
+    letter-spacing: 0;
+    transform: translateY(-1px);
+}
+.course-card__glyph.greek {
+    font-family: var(--md-ref-typeface-greek);
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-size: 1.875rem;
+    transform: translateY(-1px);
+}
+.course-card__glyph.hebrew {
+    font-family: var(--md-ref-typeface-hebrew);
+    direction: rtl;
+    unicode-bidi: isolate;
+    font-size: 1.8rem;
+    transform: translateY(1px);
+}
 .course-card__text { flex: 1; min-width: 0; }
 .course-card__title,
 .course-card__tagline,

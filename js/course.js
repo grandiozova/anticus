@@ -155,9 +155,11 @@ function renderStartScreen() {
         let note = count
             ? count + ' ' + pluralRu(count, 'урок', 'урока', 'уроков')
             : 'Материал готовится';
+        let glyph = c.glyph || c.icon || '';
+        let glyphClass = c.glyphClass ? ' ' + escHtml(c.glyphClass) : '';
         parts.push(
             '<button class="course-card" onclick="startCourse(\'' + escArg(id) + '\')">',
-                '<span class="course-card__icon"><span class="msym">', escHtml(c.icon), '</span></span>',
+                '<span class="course-card__icon"><span class="course-card__glyph' + glyphClass + '">', escHtml(glyph), '</span></span>',
                 '<span class="course-card__text">',
                     '<span class="course-card__title">', escHtml(c.name), '</span>',
                     '<span class="course-card__tagline">', escHtml(c.tagline), '</span>',

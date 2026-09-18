@@ -37,6 +37,15 @@ test('стартовый экран предлагает оба курса в п
     app.close();
 });
 
+test('карточки курса показывают реальные буквы алфавита, а не Material Symbols', () => {
+    const app = loadApp();
+    const glyphs = Array.from(app.document.querySelectorAll('#startCourseList .course-card__glyph'));
+    assert.deepStrictEqual(glyphs.map(g => g.textContent.trim()), ['Ω', 'א']);
+    assert.deepStrictEqual(glyphs.map(g => g.classList.contains('greek') || g.classList.contains('hebrew')),
+        [true, true], 'нужны классы конкретного языка, а не .script');
+    app.close();
+});
+
 test('карточка курса считает уроки, а пустому курсу пишет честную подпись', () => {
     const app = withEmptyCourse(loadApp());
     const notes = Array.from(app.document.querySelectorAll('#startCourseList .course-card__note'))
