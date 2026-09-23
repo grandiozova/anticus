@@ -357,6 +357,82 @@
    строк текста: у самой широкой таблицы строка была 117px вместо 37px.
    Ширины это почти не меняет — лишние пиксели уезжают в прокрутку. */
 .md-table-scroll td, .md-table-scroll th { white-space: nowrap; }
+
+/* Опциональная таблица-пул для букв и огласовок: метка и знак стоят в одной
+   ячейке, но выстраиваются друг под другом и не теряются при прокрутке. */
+.md-table--pool {
+    --md-table-align: center;
+    --md-table-pool-header-bg: var(--md-sys-color-surface-container-high);
+    --md-table-pool-row-label-bg: var(--md-sys-color-surface-container-lowest);
+    --md-table-pool-cell-padding-x: 0.75rem;
+    --md-table-pool-cell-padding-y: 0.75rem;
+}
+
+.md-table--pool .md-table-pool__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    min-width: 5.5rem;
+    text-align: center;
+}
+
+.md-table--pool .md-table-pool__label {
+    display: block;
+    font-size: 0.625rem;
+    line-height: 1rem;
+    letter-spacing: 0.0125rem;
+    color: var(--md-sys-color-on-surface-variant);
+    text-transform: none;
+    font-weight: 400;
+}
+
+.md-table--pool .md-table-pool__glyph {
+    display: block;
+    font-size: calc(max(1.375rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    line-height: 1.25;
+    color: var(--md-sys-color-on-surface);
+    font-weight: 500;
+}
+
+.md-table--pool th,
+.md-table--pool td {
+    padding: var(--md-table-pool-cell-padding-y) var(--md-table-pool-cell-padding-x);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.md-table--pool > thead th,
+.md-table--pool th:first-child,
+.md-table--pool > tbody > tr > th {
+    background: var(--md-table-pool-header-bg);
+    color: var(--md-sys-color-on-surface-variant);
+    font-weight: 600;
+}
+
+.md-table--pool > tbody > tr > th {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: var(--md-table-pool-row-label-bg);
+    border-right: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: 1px 0 0 var(--md-sys-color-outline-variant);
+}
+
+.md-table--pool[dir="rtl"] > tbody > tr > th {
+    left: auto;
+    right: 0;
+    border-right: 0;
+    border-left: 1px solid var(--md-sys-color-outline-variant);
+    box-shadow: -1px 0 0 var(--md-sys-color-outline-variant);
+}
+
+.md-table--pool > tbody > tr:last-child td,
+.md-table--pool > tbody > tr:last-child th {
+    border-bottom: 0;
+}
+
 .word-details th, .grammar-text th {
     background: var(--md-sys-color-surface-container-high);
     color: var(--md-sys-color-on-surface-variant);
@@ -856,17 +932,15 @@ body.start-open .md-content { display: none; }
     transform: translateY(-1px);
 }
 .course-card__glyph.greek {
-    font-family: var(--md-ref-typeface-greek);
     direction: ltr;
     unicode-bidi: isolate;
-    font-size: 1.875rem;
+    font-size: calc(1.875rem * var(--app-greek-scale));
     transform: translateY(-1px);
 }
 .course-card__glyph.hebrew {
-    font-family: var(--md-ref-typeface-hebrew);
     direction: rtl;
     unicode-bidi: isolate;
-    font-size: 2.1rem;
+    font-size: calc(2.1rem * var(--app-hebrew-scale));
     transform: translateY(1px);
 }
 .course-card__text { flex: 1; min-width: 0; }

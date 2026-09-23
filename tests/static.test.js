@@ -106,6 +106,22 @@ test('каждый обработчик в разметке ссылается �
         'разметка зовёт несуществующие функции: ' + [...missing].join(', '));
 });
 
+test('класс opt-in для таблицы гласных и её маркеры в разметке присутствуют', () => {
+    const hebrewGrammar = read('data/hebrew-lessons.js');
+    assert.match(hebrewGrammar, /md-table--pool/,
+        'в данных таблицы гласных должен быть опциональный класс модификатора');
+    assert.match(hebrewGrammar, /md-table-pool__glyph/,
+        'в ячейке таблицы гласных должен быть отдельный span для знака огласовки');
+    assert.match(hebrewGrammar, /md-table-pool__label/,
+        'в ячейке таблицы гласных должна быть отдельная подпись для названия огласовки');
+
+    const poolCss = read('styles/screens.css');
+    assert.match(poolCss, /md-table--pool/,
+        'должны быть стили opt-in для таблиц-пулов гласных и букв');
+    assert.match(poolCss, /position:\s*sticky;\s*left:\s*0/,
+        'первая колонка в таблице-пуле должна быть sticky');
+});
+
 test('CORE_ASSETS сервис-воркера покрывает всё, что грузит index.html', () => {
     // Забытый здесь файл не виден онлайн и ломает холодный старт офлайн —
     // отказ, которого ни один онлайн-тест не покажет.
