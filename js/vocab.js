@@ -307,23 +307,49 @@ function generateFallbackExample(entry) {
     return null;
 }
 
+function isHebrewCourse() {
+    return (activeCourse && activeCourse().id) === 'hebrew';
+}
+
+function isGreekCourse() {
+    return !isHebrewCourse();
+}
+
+function vocabEntryHasDetails(entry) {
+    if (!entry) return false;
+    if (isHebrewCourse()) return false;
+    if (entry.declension_forms) return true;
+    return !!findUsageExamples(entry, 1).length;
+}
+
 function renderVocabExamplesHtml(entry) {
-    let examples = findUsageExamples(entry, 3);
-    if (examples.length === 0) {
-        let fallback = generateFallbackExample(entry);
-        if (fallback) {
-            return '<div class="vocab-examples">' +
-                '<div class="vocab-example vocab-example--generated">' +
-                    '<div class="vocab-example__script">' + highlightWord(fallback.greek, entry) + '</div>' +
-                    '<div class="vocab-example__ru">' + fallback.russian + '</div>' +
-                    '<div class="vocab-example__note">пример составлен автоматически</div>' +
-                '</div>' +
-            '</div>';
-        }
-        return '<div class="vocab-examples-empty">Готовых примеров для этого слова пока не нашлось —' +
-            ' оно из ' + entry.lesson + '-го урока, загляните в его упражнения на перевод.</div>';
+    if (!entry || isHebrewCourse()) return '';
+
+    let parts = [];
+    if (entry.declension_forms) {
+        let table = generateDeclensionTable(entry.declension_forms, null);
+        if (table) parts.push('<div class="vocab-declension">' + table + '</div>');
     }
-    let parts = ['<div class="vocab-examples">'];
+
+    let examples = findUsageExamples(entry, 1);
+    if (examples.length === 0) {
+        if (!parts.length) {
+            let fallback = generateFallbackExample(entry);
+            if (fallback) {
+                return '<div class="vocab-examples">' +
+                    '<div class="vocab-example vocab-example--generated">' +
+                        '<div class="vocab-example__script">' + highlightWord(fallback.greek, entry) + '</div>' +
+                        '<div class="vocab-example__ru">' + fallback.russian + '</div>' +
+                        '<div class="vocab-example__note">пример составлен автоматически</div>' +
+                    '</div>' +
+                '</div>';
+            }
+            return '';
+        }
+        return parts.join('');
+    }
+
+    parts.push('<div class="vocab-examples">');
     examples.forEach(ex => {
         parts.push(
             '<div class="vocab-example">',
@@ -373,13 +399,18 @@ function renderVocabEntries(entries) {
         parts.push('<div class="vocab-section"><h4>', TYPE_LABELS[type] || type, '</h4>');
         byType[type].forEach(e => {
             let art = e.article ? e.article + ' ' : '';
+            let expandable = vocabEntryHasDetails(e);
+            let rowAttrs = expandable ?
+                ' onclick="toggleVocabExamples(' + e.id + ')" role="button" tabindex="0" aria-expanded="false"' :
+                '';
+            let chevron = expandable ? '<span class="msym vocab-chevron">expand_more</span>' : '';
             parts.push(
                 '<div class="word-item" data-vocab-id="', e.id, '">',
-                    '<div class="word-row" onclick="toggleVocabExamples(', e.id, ')" role="button" tabindex="0" aria-expanded="false">',
+                    '<div class="word-row"' + rowAttrs + '>',
                         '<strong>', art, e.greek, '</strong><span>', e.translation, '</span>',
-                        '<span class="msym vocab-chevron">expand_more</span>',
+                        chevron,
                     '</div>',
-                    '<div class="word-details"></div>',
+                    expandable ? '<div class="word-details"></div>' : '',
                 '</div>'
             );
         });
