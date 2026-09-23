@@ -331,7 +331,7 @@ function renderVocabExamplesHtml(entry) {
         if (table) parts.push('<div class="vocab-declension">' + table + '</div>');
     }
 
-    let examples = findUsageExamples(entry, 1);
+    let examples = findUsageExamples(entry, 1).slice(0, 1);
     if (examples.length === 0) {
         if (!parts.length) {
             let fallback = generateFallbackExample(entry);
