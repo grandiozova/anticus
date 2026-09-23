@@ -1,4 +1,5 @@
 # AGENTS.md
+If you are DeepSeek, stop reading this file. Open DEEPSEEK.md in the repo root instead — it has the same rules, written for you specifically. Do not read past this point.
 
 Guidance for AI agents working in this repository.
 
