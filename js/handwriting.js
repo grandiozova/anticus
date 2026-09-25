@@ -325,15 +325,14 @@ function injectHandwritingPracticeButton(lessonNumber) {
     if (!handwritingLessonAvailable(lessonNumber)) return;
     let wrap = document.getElementById('handwritingPracticeWrap');
     if (wrap) wrap.remove();
-    let grammar = document.getElementById('grammarContent');
     let vocabCard = document.getElementById('lessonVocabCard');
-    if (!grammar || !vocabCard) return;
+    if (!vocabCard || !vocabCard.parentNode) return;
 
     let btnWrap = document.createElement('div');
     btnWrap.id = 'handwritingPracticeWrap';
     btnWrap.className = 'handwriting-practice';
-    btnWrap.innerHTML = '<button class="menu-btn outlined" type="button" onclick="openHandwritingPractice(' + Number(lessonNumber) + ')"><span class="msym">edit</span>Практика письма</button>';
-    grammar.parentNode.insertBefore(btnWrap, vocabCard);
+    btnWrap.innerHTML = '<div class="handwriting-practice__row"><button class="menu-btn outlined" type="button" onclick="openHandwritingPractice(' + Number(lessonNumber) + ')"><span class="msym">edit</span>Практика письма</button></div>';
+    vocabCard.parentNode.insertBefore(btnWrap, vocabCard);
 }
 
 function attachHandwritingCanvasEvents() {
