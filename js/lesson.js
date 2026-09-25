@@ -343,12 +343,6 @@ function openLesson(lesson) {
     });
 
     document.getElementById('grammarContent').innerHTML = renderGrammarHtml(data.grammar);
-    if (isAlphabetIntroLesson(lesson)) {
-        injectHandwritingPracticeButton(lesson);
-    } else {
-        let wrap = document.getElementById('handwritingPracticeWrap');
-        if (wrap) wrap.remove();
-    }
 
     // Словарь урока — под грамматикой, на той же вкладке
     let container = document.getElementById('vocabList');
@@ -399,13 +393,6 @@ function moveTabIndicator() {
     let left = Math.max(0, active.offsetLeft - (bar.clientWidth - active.offsetWidth) / 2);
     if (typeof bar.scrollTo === 'function') bar.scrollTo({ left: left, behavior: scrollBehavior() });
     else bar.scrollLeft = left;
-}
-
-function isAlphabetIntroLesson(lesson) {
-    if (!Number.isFinite(Number(lesson))) return false;
-    if (!courseAlphabet() || !Array.isArray(courseAlphabet().letters)) return false;
-    let first = firstLessonNumber();
-    return Number(lesson) === Number(first);
 }
 
 function lessonPartPanel(part) {

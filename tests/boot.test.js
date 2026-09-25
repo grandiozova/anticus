@@ -53,20 +53,6 @@ test('прокрутка страницы не бросает и включае�
     app.close();
 });
 
-test('на уроке с буквами есть кнопка «Практика письма» и она открывает оверлей', () => {
-    const app = loadApp({ storage: { app_default_course: 'greek' } });
-    app.window.openLesson(1);
-
-    const btn = Array.from(app.document.querySelectorAll('button')).find(b => b.textContent.includes('Практика письма'));
-    assert.ok(btn, 'кнопка «Практика письма» не появилась на уроке с алфавитом');
-
-    btn.click();
-    const overlay = app.document.getElementById('handwritingOverlay');
-    assert.ok(overlay && !overlay.hasAttribute('hidden'), 'оверлей письма не открылся после нажатия');
-    assert.strictEqual(app.screen(), 'lessonSection', 'после открытия оверлея урок должен остаться активным экраном');
-    app.close();
-});
-
 test('главный экран показывает все уроки из данных', () => {
     const app = loadApp();
     const items = app.document.querySelectorAll('#lessonGrid .lesson-item');

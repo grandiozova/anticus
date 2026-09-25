@@ -56,7 +56,6 @@ function applyTheme(theme) {
         if (meta.content !== surface) meta.content = surface;
     }
     applyThemeIcon(theme);
-    if (typeof redrawHandwritingCanvas === 'function') redrawHandwritingCanvas();
 }
 
 // Иконка вкладки: тёмная у тёмной темы, светлая у светлой и сепии. Тот же
