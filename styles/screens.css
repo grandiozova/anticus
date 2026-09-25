@@ -837,15 +837,6 @@
     justify-content: flex-start;
     margin: 0 0 16px;
 }
-.handwriting-practice__row {
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    padding-top: 4px;
-}
-.handwriting-practice__row .menu-btn {
-    margin: 0;
-}
 .handwriting-overlay {
     position: fixed;
     inset: 0;
