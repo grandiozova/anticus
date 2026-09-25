@@ -343,6 +343,41 @@
 <!-- ============ SNACKBAR ============ -->
 <div class="md-snackbar" id="snackbar" role="status" aria-live="polite"></div>
 
+<!-- ============ HANDWRITING PRACTICE OVERLAY ============ -->
+<div class="handwriting-overlay" id="handwritingOverlay" hidden>
+    <div class="handwriting-sheet">
+        <div class="handwriting-header">
+            <button class="md-icon-button" id="handwritingBackBtn" type="button" aria-label="Назад к уроку">
+                <span class="msym">arrow_back</span>
+            </button>
+            <div class="handwriting-meta">
+                <div class="handwriting-meta__label">Практика письма</div>
+                <div class="handwriting-meta__status" id="handwritingStatus">Шаг 1 / 1</div>
+            </div>
+        </div>
+
+        <div class="handwriting-prompt" id="handwritingPrompt">А́леф</div>
+
+        <div id="handwritingCanvasWrap">
+            <canvas id="handwritingCanvas" class="handwriting-canvas" aria-label="Кисть для письма"></canvas>
+        </div>
+
+        <div class="handwriting-done hidden" id="handwritingDone">
+            <h3>Готово</h3>
+            <p>Вы прошли весь алфавит. Можно начать заново или вернуться к уроку.</p>
+            <div class="md-button-row">
+                <button class="menu-btn outlined" id="handwritingRestartBtn" type="button"><span class="msym">restart_alt</span>Ещё раз</button>
+                <button class="menu-btn primary" id="handwritingExitBtn" type="button"><span class="msym">arrow_back</span>К уроку</button>
+            </div>
+        </div>
+
+        <div class="handwriting-actions">
+            <button class="menu-btn outlined" id="handwritingClearBtn" type="button"><span class="msym">delete_sweep</span>Очистить</button>
+            <button class="menu-btn primary" id="handwritingNextBtn" type="button">Далее</button>
+        </div>
+    </div>
+</div>
+
 <!-- ============ DIALOG ============ -->
 <div class="md-scrim" id="dialogScrim" onclick="if(event.target===this) mdDialogClose(false)">
     <div class="md-dialog" role="alertdialog" aria-modal="true" aria-labelledby="dialogHeadline">
@@ -386,6 +421,7 @@
 <script src="js/prayer.js"></script>
 <script src="js/vocab.js"></script>
 <script src="js/settings.js"></script>
+<script src="js/handwriting.js"></script>
 <script src="js/boot.js"></script>
 </body>
 </html>

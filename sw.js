@@ -13,7 +13,7 @@
  * ВАЖНО: подняв CACHE_VERSION, вы гарантированно раздаёте новую версию —
  * старые кэши удаляются в activate.
  */
-const CACHE_VERSION = 'anticus-v14';
+const CACHE_VERSION = 'anticus-v15';
 const CORE_CACHE = CACHE_VERSION + '-core';
 const FONT_CACHE = CACHE_VERSION + '-fonts';
 
@@ -40,6 +40,7 @@ const CORE_ASSETS = [
     './data/courses.js',
     './js/core.js',
     './js/course.js',
+    './js/handwriting.js',
     './js/ui.js',
     './js/shell.js',
     './js/theme.js',
