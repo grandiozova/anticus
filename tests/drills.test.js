@@ -36,6 +36,21 @@ const DRILLS = [
     ['flashcards', 'flashcards']
 ];
 
+test('letter_write показывает имя буквы, а не её начертание', () => {
+    const app = loadApp();
+    const w = app.window;
+
+    w.openLesson(1);
+    w.startLessonDrill('exercise', 'letter_write');
+
+    const q = app.get('exerciseState').questions[0];
+    const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru');
+    assert.ok(prompt, 'строка вопроса не отрисовалась');
+    assert.strictEqual(prompt.textContent.trim(), q.name, 'под вопросом должно быть имя буквы, а не её начертание');
+    assert.notStrictEqual(prompt.textContent.trim(), q.letter, 'под вопросом не должно быть начертания буквы');
+    app.close();
+});
+
 test('каждое доступное упражнение каждого урока проходится до конца', () => {
     const app = loadApp();
     const w = app.window;

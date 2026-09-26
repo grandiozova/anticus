@@ -89,9 +89,9 @@ const EXERCISE_TYPES = {
         script: q => isScriptText(q.name)
     },
     letter_write: {
-        subject: q => q.letter,
-        correct: q => q.letter,
-        script: q => isScriptText(q.letter),
+        subject: q => q.name,
+        correct: q => q.name,
+        script: q => isScriptText(q.name),
         custom: true
     },
     letter_from_name: {
@@ -413,6 +413,20 @@ function questionSubject(q, key) {
     return q.word || q.phrase || q.form || q.sign || q.greek || q.letter || 'вопрос';
 }
 
+function letterWritePracticeState() {
+    const q = exerciseState && exerciseState.questions && exerciseState.questions[exerciseState.index] ? exerciseState.questions[exerciseState.index] : null;
+    if (!q) return null;
+    const isGreek = !!q.upper;
+    const letters = isGreek ? [q.letter, q.upper] : [q.letter];
+    return {
+        isGreek,
+        letters,
+        prompt: q.name,
+        cardClass: isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew',
+        canvasClass: isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew'
+    };
+}
+
 function clearLetterWriteCanvas() {
     const canvas = document.getElementById('letterWriteCanvas');
     if (!canvas) return;
@@ -429,11 +443,32 @@ function clearLetterWriteCanvas() {
 
 function completeLetterWritingPractice() {
     if (!exerciseState || !exerciseState.questions || !exerciseState.questions.length) return;
+    const q = exerciseState.questions[exerciseState.index];
+    const box = document.getElementById('exerciseQuestion');
+    if (!box || !q) return;
+
     stats.totalCorrect++;
     exerciseState.correct++;
     saveStats();
-    exerciseState.index++;
-    showExercise();
+
+    const isGreek = !!q.upper;
+    const reveal = isGreek ?
+        '<div class="letter-write-reveal">' +
+        '<div class="letter-write-reveal__title">Готово</div>' +
+        '<div class="letter-write-reveal__forms"><span class="script">' + q.letter + '</span><span class="script">' + q.upper + '</span></div>' +
+        '<div class="letter-write-reveal__name script">' + q.name + '</div>' +
+        '</div>' :
+        '<div class="letter-write-reveal">' +
+        '<div class="letter-write-reveal__title">Готово</div>' +
+        '<div class="letter-write-reveal__forms script">' + q.letter + '</div>' +
+        '<div class="letter-write-reveal__name">' + q.name + '</div>' +
+        '</div>';
+
+    box.innerHTML = progressHead('Упражнение ' + (exerciseState.index + 1) + ' из ' + exerciseState.total, exerciseState.index, exerciseState.total) +
+        '<div class="flashcard-flip"><div class="md-flashcard md-flashcard--back md-flashcard--has-flip md-flashcard--flip">' +
+        reveal +
+        '</div></div>' +
+        '<div class="md-button-row"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
 }
 
 function initLetterWriteCanvas() {
@@ -527,13 +562,15 @@ function showExercise() {
         window._trans_ru = q;
         window._chosen = [];
     } else if (s.type === 'letter_write') {
-        let sub = q && q.letter ? q.letter : '';
-        let promptClass = isScriptText(sub) ? 'md-prompt-strong' : 'md-prompt-ru';
+        const practice = letterWritePracticeState();
+        let promptText = practice && practice.prompt ? practice.prompt : '';
+        let promptClass = isScriptText(promptText) ? 'md-prompt-strong' : 'md-prompt-ru';
+        const isGreek = practice && practice.isGreek;
         html += '<div class="question">Напишите букву от руки</div>' +
-            '<div class="' + promptClass + '">' + sub + '</div>' +
+            '<div class="' + promptClass + '">' + promptText + '</div>' +
             '<div class="writing-practice">' +
-                '<div class="writing-canvas-card">' +
-                    '<canvas id="letterWriteCanvas" aria-label="Поле для письма буквы"></canvas>' +
+                '<div class="writing-canvas-card ' + (isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew') + '">' +
+                    '<canvas id="letterWriteCanvas" class="' + (isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew') + '" aria-label="Поле для письма буквы"></canvas>' +
                 '</div>' +
                 '<div class="writing-practice__hint">Проведите штрих, чтобы отработать форму. Автоматической проверки нет, только практика.</div>' +
                 '<div class="md-button-row">' +
