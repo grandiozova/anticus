@@ -51,6 +51,41 @@ test('letter_write показывает имя буквы, а не её наче
     app.close();
 });
 
+test('греческий показ буквы идёт прописной вперёд — и без RTL', () => {
+    const app = loadApp();
+    const w = app.window;
+
+    w.openLesson(1);
+    w.startLessonDrill('exercise', 'letter_write');
+
+    const state = app.get('exerciseState');
+    // Сигма — крайний случай: строчная и прописная у неё разной ширины, и
+    // порядок «строчная, прописная» на ней и выглядел перевёрнутым.
+    const sigma = state.questions.findIndex(x => x.letter === 'σ');
+    assert.ok(sigma >= 0, 'в вопросах урока 1 нет сигмы');
+
+    for (const index of [0, sigma]) {
+        state.index = index;
+        w.completeLetterWritingPractice();
+
+        const q = state.questions[index];
+        const forms = app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__forms .script');
+        assert.strictEqual(forms.length, 2, q.name + ': должны показаться обе формы');
+        assert.strictEqual(forms[0].textContent, q.upper, q.name + ': первой идёт прописная');
+        assert.strictEqual(forms[1].textContent, q.letter, q.name + ': второй идёт строчная');
+
+        // Разворот греческого показа был бы утечкой направления письма курса
+        // в чужой язык: ни dir, ни direction в разметке здесь быть не должно —
+        // письмо задаёт .script, а он берёт сторону у <html>.
+        assert.strictEqual(
+            app.document.querySelectorAll('#exerciseQuestion [dir], #exerciseQuestion [style*="rtl"]').length,
+            0,
+            q.name + ': в греческом показе не должно быть ни dir, ни rtl');
+    }
+
+    app.close();
+});
+
 test('каждое доступное упражнение каждого урока проходится до конца', () => {
     const app = loadApp();
     const w = app.window;

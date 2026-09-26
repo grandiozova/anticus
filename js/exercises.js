@@ -413,14 +413,25 @@ function questionSubject(q, key) {
     return q.word || q.phrase || q.form || q.sign || q.greek || q.letter || 'вопрос';
 }
 
+// Формы буквы для показа — в порядке чтения слева направо: сперва прописная,
+// затем строчная («Σ σ»). Порядок задаёт этот список, а не место в разметке:
+// он один на весь вид, поэтому разойтись с показом ему негде. Конечной сигмы
+// (ς) в нём нет и быть не может — её нет в пуле курса (см. GREEK_ALPHABET
+// в data/lessons.js), а спрашивают о начертании буквы, а не о чтении слова.
+//
+// К направлению письма порядок отношения не имеет: греческий всегда слева
+// направо, а RTL приходит только из токена курса (--md-ref-script-direction).
+function letterWriteForms(q) {
+    return q.upper ? [q.upper, q.letter] : [q.letter];
+}
+
 function letterWritePracticeState() {
     const q = exerciseState && exerciseState.questions && exerciseState.questions[exerciseState.index] ? exerciseState.questions[exerciseState.index] : null;
     if (!q) return null;
     const isGreek = !!q.upper;
-    const letters = isGreek ? [q.letter, q.upper] : [q.letter];
     return {
         isGreek,
-        letters,
+        letters: letterWriteForms(q),
         prompt: q.name,
         cardClass: isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew',
         canvasClass: isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew'
@@ -455,7 +466,9 @@ function completeLetterWritingPractice() {
     const reveal = isGreek ?
         '<div class="letter-write-reveal">' +
         '<div class="letter-write-reveal__title">Готово</div>' +
-        '<div class="letter-write-reveal__forms"><span class="script">' + q.letter + '</span><span class="script">' + q.upper + '</span></div>' +
+        '<div class="letter-write-reveal__forms">' +
+        letterWriteForms(q).map(f => '<span class="script">' + f + '</span>').join('') +
+        '</div>' +
         '<div class="letter-write-reveal__name script">' + q.name + '</div>' +
         '</div>' :
         '<div class="letter-write-reveal">' +
