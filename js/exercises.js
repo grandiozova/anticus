@@ -572,7 +572,6 @@ function showExercise() {
                 '<div class="writing-canvas-card ' + (isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew') + '">' +
                     '<canvas id="letterWriteCanvas" class="' + (isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew') + '" aria-label="Поле для письма буквы"></canvas>' +
                 '</div>' +
-                '<div class="writing-practice__hint">Проведите штрих, чтобы отработать форму. Автоматической проверки нет, только практика.</div>' +
                 '<div class="md-button-row">' +
                     '<button type="button" class="menu-btn outlined" onclick="clearLetterWriteCanvas()"><span class="msym">delete</span>Очистить</button>' +
                     '<button type="button" class="menu-btn primary" onclick="completeLetterWritingPractice()"><span class="msym">check</span>Готово</button>' +

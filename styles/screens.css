@@ -63,11 +63,6 @@
 .letter-write-canvas--greek {
     height: 246px;
 }
-.writing-practice__hint {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-}
 .letter-write-reveal {
     width: 100%;
     display: flex;
