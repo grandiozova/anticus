@@ -46,6 +46,14 @@
     .options { grid-template-columns: 1fr; }
     .card { padding: 16px; border-radius: var(--md-sys-shape-corner-large); }
     .flashcard-word { font-size: 2rem; line-height: 2.5rem; }
+    /* Узкий экран даёт карточке свой, меньший кегль; у иврита он умножен на
+       тот же 1.5. Правило нужно именно здесь: ветка иврита из screens.css
+       специфичнее базового .flashcard-word и без него перебила бы мобильный
+       кегль. Множитель ползунка сохранён, как и в базовом кегле. */
+    :root[data-script="hebrew"] .flashcard-word {
+        font-size: calc(2rem * 1.5 * var(--md-ref-script-scale));
+        line-height: 3.75rem;
+    }
     .flashcard-translation { font-size: 1.25rem; line-height: 1.75rem; }
     .question { font-size: 1.125rem; line-height: 1.5rem; }
     .md-prompt-strong { font-size: 1.5rem; line-height: 2rem; }

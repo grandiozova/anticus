@@ -584,6 +584,16 @@
     color: var(--md-sys-color-on-surface);
     word-break: break-word;
 }
+/* Карточка иврита: согласные с огласовкой на общем кегле карточки читаются
+   с трудом — точки под буквой сливаются с ней. Поэтому текст карточки у
+   иврита крупнее в полтора раза. Ветка идёт по письму (data-script), а не по
+   курсу, — тем же атрибутом, каким tokens.css выбирает шрифт и предел кегля;
+   греческая карточка остаётся прежней. Множитель ползунка размера сохранён,
+   иначе настройка перестала бы её слушать. */
+:root[data-script="hebrew"] .flashcard-word {
+    font-size: calc(2.8125rem * 1.5 * var(--md-ref-script-scale));
+    line-height: 4.875rem;
+}
 .flashcard-translation {
     font-size: 1.5rem;
     line-height: 2rem;
@@ -655,6 +665,12 @@
     font-size: calc(1.5rem * var(--md-ref-script-scale));
     line-height: 2rem;
     color: var(--md-sys-color-on-surface);
+}
+/* Оборот карточки показывает то же слово, поэтому у иврита он крупнее тем же
+   множителем, что и лицо карточки. */
+:root[data-script="hebrew"] .card-declension__word {
+    font-size: calc(1.5rem * 1.5 * var(--md-ref-script-scale));
+    line-height: 3rem;
 }
 .card-declension__progress {
     margin-top: 4px;

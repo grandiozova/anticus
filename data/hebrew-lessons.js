@@ -222,7 +222,7 @@ const HEBREW_LESSONS_DATA = {
         }
     },
     2: {
-        title: "Гласные древнееврейского языка",
+        title: "Система огласовок",
         grammar: `<b>1. Огласовка</b><br>Изначально еврейское письмо состояло из одних согласных. Во второй половине первого тысячелетия нашей эры масореты придумали знаки гласных — <b>огласовку</b>, — которые ставятся под согласным, внутри него или над ним, не меняя самих согласных букв. <i>Гласный произносится после согласного, к которому он относится:</i> <span class="script">בַּ</span> читается «ба», а не «аб».<br><br><b>2. Сводная таблица гласных</b><br>Знаки показаны с согласным <span class="script">בּ</span>, чтобы видеть их положение относительно буквы.<br><table class="md-table--pool">
 <tr><th></th><th>a</th><th>e</th><th>i</th><th>o</th><th>u</th></tr>
 <tr><th>Краткие</th><td lang="he"><span class="md-table-pool__cell"><span class="md-table-pool__glyph script hebrew">בַּ</span> <span class="md-table-pool__label">патах</span></span></td><td lang="he"><span class="md-table-pool__cell"><span class="md-table-pool__glyph script hebrew">בֶּ</span> <span class="md-table-pool__label">сегол</span></span></td><td lang="he"><span class="md-table-pool__cell"><span class="md-table-pool__glyph script hebrew">בִּ</span> <span class="md-table-pool__label">хирек</span></span></td><td lang="he"><span class="md-table-pool__cell"><span class="md-table-pool__glyph script hebrew">בָּ</span> <span class="md-table-pool__label">камец хатуф</span></span></td><td lang="he"><span class="md-table-pool__cell"><span class="md-table-pool__glyph script hebrew">בֻּ</span> <span class="md-table-pool__label">киббуц</span></span></td></tr>

@@ -195,6 +195,12 @@ Serif Hebrew for Hebrew) — never apply the serif to Russian UI text. Руко�
 при равной специфичности им молча проигрывает. Icons are
 Material Symbols Rounded via `<span class="msym">name</span>` — no emoji.
 
+**Карточки иврита печатаются в 1.5 раза крупнее** базовой шкалы
+(`.flashcard-word` и `.card-declension__word`, ветка `:root[data-script="hebrew"]`
+в `screens.css`, плюс мобильный кегль в `layout.css`) — иначе огласовка
+сливается с буквой. Множитель ползунка размера сохранён; греческие карточки
+не меняются. Это намеренное отступление от шкалы, не повод его «чинить».
+
 Layout: bottom nav bar under 905px width, nav rail at ≥905px (same markup, CSS-only).
 If you add a nav destination, check both. Nav bar is capped at 5 destinations (already
 at the M3 max) — a 6th needs a different pattern (see how the course picker is a

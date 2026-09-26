@@ -685,6 +685,14 @@ exception. `--app-hebrew-scale` is therefore `1.2` in `tokens.css` too, matching
 what `initFontScale()` will set, so Hebrew does not flash at the smaller size
 before the scripts run.
 
+**Hebrew cards print 1.5× larger than the type scale.** The flashcard word, on
+both faces (`.flashcard-word` and `.card-declension__word` in `screens.css`, with
+a narrow-screen twin in `layout.css`), is scaled for Hebrew only through
+`:root[data-script="hebrew"]`: at the interface size the niqqud merge into the
+letters they sit in. The rules keep `var(--md-ref-script-scale)`, so the Hebrew
+slider still governs them, and Greek cards are untouched. This is a deliberate
+exception to the type scale — do not "tidy" the 1.5 away.
+
 ## Offline shell
 
 `sw.js` precaches `index.html`, every stylesheet, every data file, the manifest and the icon, and caches the Google Fonts CSS and font files at runtime. Strategies differ on purpose:
