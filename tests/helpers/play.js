@@ -20,6 +20,12 @@ function qa(app, root, sel) {
 
 // Один ход. Возвращает true, если удалось что-то нажать.
 function step(app, root, { answer = 'ответ', correctly = false } = {}) {
+    // 0. Экран выбора начертания в письме: это ещё не вопрос, а развилка
+    // перед первым. Берём первый пункт — так же, как это сделал бы ученик;
+    // сам выбор проверяется отдельным тестом в drills.test.js.
+    const styleChoice = qa(app, root, '.letter-write-choice .lesson-item');
+    if (styleChoice.length) { styleChoice[0].click(); return true; }
+
     // 1. Кнопка «Далее» после обратной связи
     const next = qa(app, root, '.menu-btn').find(b => /Далее/.test(b.textContent));
     if (next) { next.click(); return true; }

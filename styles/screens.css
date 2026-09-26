@@ -27,18 +27,13 @@
     margin: 16px 0;
     color: var(--md-sys-color-on-surface);
 }
-/* Переключатель начертания в упражнении письма. Это тот же M3 segmented
-   button, что выбирает тему в настройках (.md-segmented в styles/settings.css),
-   поэтому своей внешности у него нет — только высота и отступ.
-   Селектор составной, а не .letter-write-toggle button: у того же правила в
-   settings.css специфичность такая же, а подключается settings.css позже —
-   и высота 40px оттуда молча побеждает. Здесь выбор начертания — основное
-   касание экрана, и по правилу M3 цель должна быть не меньше 48dp. */
-.letter-write-toggle {
-    margin-bottom: 16px;
-}
-.md-segmented.letter-write-toggle button {
-    min-height: 48px;
+/* Выбор начертания перед первой буквой: обычная карточка со списком, как меню
+   урока. Отдельной внешности у карточки нет; своего требует только образец
+   буквы в подписи пункта — иначе он набран кеглем вспомогательной строки
+   (0.875rem) и начертания по нему не различить. Нижняя граница — как у мелкого
+   текста на изучаемом языке (см. --md-ref-script-min-size). */
+.letter-write-choice .lesson-item__supporting .script {
+    font-size: calc(max(1.5rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
 }
 .writing-practice {
     display: flex;
@@ -86,6 +81,11 @@
     text-align: center;
     min-height: 180px;
 }
+/* Показ буквы крупно: это единственное, что видно на карточке, — имя убрано,
+   поэтому кегль здесь не «подпись под буквой», а сама буква. 3.5rem — это +56%
+   к прежним 2.25rem: заметно крупнее, и при этом показ влезает в карточку на
+   любом положении ползунков размера текста (проверено в браузере, вплоть до
+   множителя 2.0). Строка растёт вместе с кеглем — прежняя пропорция 1.214. */
 .letter-write-reveal__forms {
     display: flex;
     align-items: center;
@@ -95,14 +95,9 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: calc(2.25rem * var(--md-ref-script-scale));
-    line-height: 2.75rem;
+    font-size: calc(3.5rem * var(--md-ref-script-scale));
+    line-height: calc(4.25rem * var(--md-ref-script-scale));
     color: var(--md-sys-color-on-surface);
-}
-.letter-write-reveal__name {
-    font-size: 1.375rem;
-    line-height: 1.75rem;
-    color: var(--md-sys-color-primary);
 }
 .options {
     display: grid;

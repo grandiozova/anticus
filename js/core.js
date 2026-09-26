@@ -11,9 +11,11 @@ let testState = { questions: [], index: 0, correct: 0, total: 10, answered: fals
 let flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
 let exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0 };
 // Начертание показа в упражнении письма: 'print' или 'cursive'. Лежит рядом
-// с состоянием упражнения, но не внутри: переключатель меняет только то, как
-// рисуется показ, а вопрос, его номер и счёт остаются те же. Ставится заново
-// в startExercise, поэтому открытое упражнение всегда начинается с печатного.
+// с состоянием упражнения, но не внутри: начертание — это только то, как
+// рисуется показ, а сами вопросы, их порядок и счёт одни и те же.
+// Ставится заново в beginExercise, когда заход начинается: письмо спрашивает
+// начертание экраном выбора до первой буквы, и каждый заход начинает с ответа
+// ученика, а не с прошлого раза.
 let letterWriteStyle = 'print';
 let allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all' };
 let translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
