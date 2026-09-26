@@ -19,6 +19,7 @@ const LESSON_DRILL_GROUPS = [
         label: 'Алфавит и чтение',
         drills: [
             { kind: 'exercise', key: 'letter_name', label: 'Название буквы', icon: 'label' },
+            { kind: 'exercise', key: 'letter_write', label: 'Написание буквы', icon: 'draw' },
             { kind: 'exercise', key: 'letter_from_name', label: 'Буква по названию', icon: 'swap_horiz' },
             { kind: 'exercise', key: 'letter_sound', label: 'Произношение буквы', icon: 'record_voice_over' },
             { kind: 'exercise', key: 'letter_order', label: 'Порядок букв', icon: 'arrow_forward' },

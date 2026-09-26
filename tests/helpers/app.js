@@ -90,6 +90,10 @@ function loadApp(opts = {}) {
             // исключение само, но без заглушки тесты тонут в шуме.
             w.scrollTo = () => {};
             w.HTMLElement.prototype.scrollIntoView = function () {};
+            // Canvas нужен для практики письма, но jsdom его не умеет.
+            // Возвращаем безопасный null вместо не реализованного API, чтобы
+            // прошёл именно код приложения, а не шум jsdom о неподдержке.
+            w.HTMLCanvasElement.prototype.getContext = function () { return null; };
             for (const [k, v] of Object.entries(opts.storage || {})) {
                 w.localStorage.setItem(k, v);
             }

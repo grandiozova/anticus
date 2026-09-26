@@ -9,6 +9,7 @@ const { playThrough } = require('./helpers/play.js');
 
 const DRILLS = [
     ['exercise', 'letter_name'],
+    ['exercise', 'letter_write'],
     ['exercise', 'letter_from_name'],
     ['exercise', 'letter_sound'],
     ['exercise', 'letter_order'],

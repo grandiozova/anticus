@@ -24,14 +24,18 @@ function step(app, root, { answer = 'ответ', correctly = false } = {}) {
     const next = qa(app, root, '.menu-btn').find(b => /Далее/.test(b.textContent));
     if (next) { next.click(); return true; }
 
-    // 2. Варианты ответа
+    // 2. Кнопка завершения в практическом упражнении без автоматической проверки
+    const practiceDone = qa(app, root, '.menu-btn').find(b => /Готово/.test(b.textContent));
+    if (practiceDone) { practiceDone.click(); return true; }
+
+    // 3. Варианты ответа
     const options = qa(app, root, '.option-btn:not([disabled])');
     if (options.length) {
         options[0].click();
         return true;
     }
 
-    // 3. Поле ввода перевода
+    // 4. Поле ввода перевода
     const input = q(app, root, 'input[type=text]');
     if (input) {
         input.value = answer;
@@ -39,7 +43,7 @@ function step(app, root, { answer = 'ответ', correctly = false } = {}) {
         if (btn) { btn.click(); return true; }
     }
 
-    // 4. Банк слов: собрать фразу и проверить
+    // 5. Банк слов: собрать фразу и проверить
     const chips = qa(app, root, '.word-bank .chip:not(.picked)');
     if (chips.length) {
         const state = correctly ? currentCorrect(app, root) : null;
@@ -56,7 +60,7 @@ function step(app, root, { answer = 'ответ', correctly = false } = {}) {
         if (check) { check.click(); return true; }
     }
 
-    // 5. Карточка: показать перевод, затем оценить
+    // 6. Карточка: показать перевод, затем оценить
     const show = q(app, root, '.flashcard-buttons .show');
     if (show) { show.click(); return true; }
     const know = q(app, root, '.flashcard-buttons .know');

@@ -135,6 +135,7 @@ const HEBREW_LESSONS_DATA = {
         // транслитерация и конечные формы лежат там.
         exercises: {
             letter_name: HEBREW_ALPHABET.letters,
+            letter_write: HEBREW_ALPHABET.letters,
             letter_from_name: HEBREW_ALPHABET.letters,
             letter_sound: HEBREW_ALPHABET.letters,
             letter_order: HEBREW_ALPHABET.letters.slice(0, -1),

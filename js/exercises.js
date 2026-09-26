@@ -88,6 +88,12 @@ const EXERCISE_TYPES = {
         // (а́леф, «син / шин») — шрифт выбирается по самой строке.
         script: q => isScriptText(q.name)
     },
+    letter_write: {
+        subject: q => q.letter,
+        correct: q => q.letter,
+        script: q => isScriptText(q.letter),
+        custom: true
+    },
     letter_from_name: {
         prompt: () => 'Какая буква так называется?',
         subject: q => q.name,
@@ -407,6 +413,95 @@ function questionSubject(q, key) {
     return q.word || q.phrase || q.form || q.sign || q.greek || q.letter || 'вопрос';
 }
 
+function clearLetterWriteCanvas() {
+    const canvas = document.getElementById('letterWriteCanvas');
+    if (!canvas) return;
+    let ctx;
+    try {
+        ctx = canvas.getContext('2d');
+    } catch (error) {
+        return;
+    }
+    if (!ctx) return;
+    const rect = canvas.getBoundingClientRect();
+    ctx.clearRect(0, 0, rect.width, rect.height);
+}
+
+function completeLetterWritingPractice() {
+    if (!exerciseState || !exerciseState.questions || !exerciseState.questions.length) return;
+    stats.totalCorrect++;
+    exerciseState.correct++;
+    saveStats();
+    exerciseState.index++;
+    showExercise();
+}
+
+function initLetterWriteCanvas() {
+    const canvas = document.getElementById('letterWriteCanvas');
+    if (!canvas) return;
+    let ctx;
+    try {
+        ctx = canvas.getContext('2d');
+    } catch (error) {
+        return;
+    }
+    if (!ctx) return;
+
+    const state = { drawing: false, lastX: 0, lastY: 0 };
+    const resize = () => {
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        const ratio = Math.max(1, window.devicePixelRatio || 1);
+        canvas.width = Math.round(rect.width * ratio);
+        canvas.height = Math.round(rect.height * ratio);
+        ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+        ctx.lineWidth = 6;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-primary').trim() || '#6750a4';
+        ctx.clearRect(0, 0, rect.width, rect.height);
+    };
+
+    const pointerPos = (event) => {
+        const rect = canvas.getBoundingClientRect();
+        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    };
+
+    const drawLine = (from, to) => {
+        ctx.beginPath();
+        ctx.moveTo(from.x, from.y);
+        ctx.lineTo(to.x, to.y);
+        ctx.stroke();
+    };
+
+    const finishStroke = () => { state.drawing = false; };
+
+    canvas.addEventListener('pointerdown', function (event) {
+        const pos = pointerPos(event);
+        canvas.setPointerCapture(event.pointerId);
+        state.drawing = true;
+        state.lastX = pos.x;
+        state.lastY = pos.y;
+        ctx.beginPath();
+        ctx.moveTo(pos.x, pos.y);
+    });
+
+    canvas.addEventListener('pointermove', function (event) {
+        if (!state.drawing) return;
+        const pos = pointerPos(event);
+        drawLine({ x: state.lastX, y: state.lastY }, pos);
+        state.lastX = pos.x;
+        state.lastY = pos.y;
+    });
+
+    canvas.addEventListener('pointerup', finishStroke);
+    canvas.addEventListener('pointerleave', finishStroke);
+    canvas.addEventListener('pointercancel', finishStroke);
+
+    resize();
+    window.addEventListener('resize', resize);
+}
+
 function showExercise() {
     let s = exerciseState;
     if (s.index >= s.total) {
@@ -431,10 +526,27 @@ function showExercise() {
         html += '</div><div class="md-button-row"><button class="menu-btn primary" onclick="checkTranslationRu()"><span class="msym">check</span>Готово</button><button class="menu-btn text" onclick="clearChosen()"><span class="msym">undo</span>Очистить</button></div>';
         window._trans_ru = q;
         window._chosen = [];
+    } else if (s.type === 'letter_write') {
+        let sub = q && q.letter ? q.letter : '';
+        let promptClass = isScriptText(sub) ? 'md-prompt-strong' : 'md-prompt-ru';
+        html += '<div class="question">Напишите букву от руки</div>' +
+            '<div class="' + promptClass + '">' + sub + '</div>' +
+            '<div class="writing-practice">' +
+                '<div class="writing-canvas-card">' +
+                    '<canvas id="letterWriteCanvas" aria-label="Поле для письма буквы"></canvas>' +
+                '</div>' +
+                '<div class="writing-practice__hint">Проведите штрих, чтобы отработать форму. Автоматической проверки нет, только практика.</div>' +
+                '<div class="md-button-row">' +
+                    '<button type="button" class="menu-btn outlined" onclick="clearLetterWriteCanvas()"><span class="msym">delete</span>Очистить</button>' +
+                    '<button type="button" class="menu-btn primary" onclick="completeLetterWritingPractice()"><span class="msym">check</span>Готово</button>' +
+                '</div>' +
+            '</div>';
     } else {
         html += choiceQuestionHtml(s.type, q, 'answerOpt');
     }
     container.innerHTML = html;
+
+    if (s.type === 'letter_write') initLetterWriteCanvas();
 }
 
 function answerOpt(sel, corr) {

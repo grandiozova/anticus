@@ -27,6 +27,36 @@
     margin: 16px 0;
     color: var(--md-sys-color-on-surface);
 }
+.writing-practice {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 16px 0;
+}
+.writing-canvas-card {
+    width: 100%;
+    max-width: 420px;
+    min-height: 220px;
+    padding: 12px;
+    border-radius: var(--md-sys-shape-corner-medium);
+    border: 1px solid var(--md-sys-color-outline);
+    background: var(--md-sys-color-surface-container-lowest);
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.04);
+}
+#letterWriteCanvas {
+    width: 100%;
+    height: 196px;
+    display: block;
+    border-radius: calc(var(--md-sys-shape-corner-medium) - 4px);
+    background: transparent;
+    touch-action: none;
+    cursor: crosshair;
+}
+.writing-practice__hint {
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+}
 .options {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));

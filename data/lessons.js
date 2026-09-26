@@ -164,6 +164,7 @@ const LESSONS_DATA = {
         // последней, — ответом служит следующая по алфавиту, а у омеги её нет.
         exercises: {
             letter_name: GREEK_ALPHABET.letters,
+            letter_write: GREEK_ALPHABET.letters,
             letter_from_name: GREEK_ALPHABET.letters,
             letter_sound: GREEK_ALPHABET.letters,
             letter_order: GREEK_ALPHABET.letters.slice(0, -1),
