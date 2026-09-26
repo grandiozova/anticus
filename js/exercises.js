@@ -98,10 +98,10 @@ const EXERCISE_TYPES = {
     // поэтому разметку рисует сам showExercise.
     //
     // Поле writing — начертание, с которого вид начинается: 'print'. Второе,
-    // 'cursive' (прописи, рукописная гарнитура Гверет Левин), включает
+    // 'cursive' (курсив, рукописная гарнитура Гверет Левин), включает
     // переключатель внутри упражнения — и только там, где курс заявил, что
     // рукописный шрифт у него есть (courseCursiveWriting). Отдельным видом
-    // прописи не объявлены намеренно: начертание — это не другое упражнение,
+    // курсив не объявлен намеренно: начертание — это не другое упражнение,
     // а другой показ того же вопроса, и разводить их по видам значило бы
     // держать в списке урока две почти одинаковые карточки.
     letter_write: {
@@ -453,7 +453,9 @@ function exerciseWritingStyle(key) {
 }
 
 const LETTER_WRITE_STYLES = ['print', 'cursive'];
-const LETTER_WRITE_STYLE_LABELS = { print: 'Печатные', cursive: 'Прописи' };
+// Подписи сами объясняют выбор, без заголовка над переключателем: это выбор
+// начертания, а не отдельное упражнение.
+const LETTER_WRITE_STYLE_LABELS = { print: 'Печатный', cursive: 'Курсив' };
 
 // Переключатель начертания — тот же M3 segmented button, что выбирает тему
 // в настройках (styles/settings.css): role="radio" и aria-checked, состояние
@@ -537,7 +539,11 @@ function letterWritePracticeState() {
     return {
         isGreek,
         letters: letterWriteForms(q),
-        prompt: q.name,
+        // У конечной формы начертание своё, а имя — то же, что у основной
+        // буквы, поэтому к названию добавляется пометка: иначе «каф» просило бы
+        // и обычную כ, и конечную ך, а ученик не знал бы, какую рисовать.
+        // Пометку ставит данные (finalForm), а не разметка по коду символа.
+        prompt: q.name + (q.finalForm ? ' (конечная)' : ''),
         cardClass: isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew',
         canvasClass: isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew'
     };
@@ -665,8 +671,7 @@ function showExercise() {
         let promptText = practice && practice.prompt ? practice.prompt : '';
         let promptClass = isScriptText(promptText) ? 'md-prompt-strong' : 'md-prompt-ru';
         const isGreek = practice && practice.isGreek;
-        html += '<div class="question">Напишите букву от руки</div>' +
-            '<div class="' + promptClass + '">' + promptText + '</div>' +
+        html += '<div class="' + promptClass + '">' + promptText + '</div>' +
             letterWriteToggleHtml() +
             '<div class="writing-practice">' +
                 '<div class="writing-canvas-card ' + (isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew') + '">' +

@@ -428,11 +428,11 @@ test('конечные формы букв — пять буллетов гла�
     });
 });
 
-test('письмо от руки спрашивает все 27 букв, не трогая пул', () => {
+test('письмо от руки спрашивает 28 букв: конечные и разные шин и син', () => {
     // Письмо — единственный алфавитный вид, которому нужны конечные формы:
-    // писать их от руки учат наравне с остальными. Список собирается из пула
-    // (HEBREW_WRITE_LETTERS), поэтому здесь проверяется и то, что собрался он
-    // ровно из 22 основных и 5 конечных, и то, что сам пул при этом не поехал.
+    // писать их от руки учат наравне с остальными. И единственный, где шин и син
+    // спрашиваются порознь: рисовать надо ту букву, которую назвали, а по общему
+    // «син / шин» этого не понять.
     //
     // Ключ один: рукописное начертание выбирается переключателем внутри
     // упражнения, а не отдельным ключом данных — вопрос у них общий.
@@ -444,26 +444,47 @@ test('письмо от руки спрашивает все 27 букв, не �
         "JSON.stringify(Object.keys(HEBREW_LESSONS_DATA[1].exercises).filter(k => /write/.test(k)))"));
     app.close();
 
-    const expected = letters.map(l => l.letter).concat(finals.map(f => f.final));
-    assert.strictEqual(expected.length, 27, 'в списке письма не 27 букв');
+    const SHIN = '\u05E9\u05C1', SIN = '\u05E9\u05C2', BARE = '\u05E9';
+    // Основные — весь пул, но на месте ש стоят две буквы с точками, в том же
+    // порядке, что в таблице главы 1 («שׂ / שׁ»), и там же, где стояла ש:
+    // список письма повторяет порядок пула, а не приписывает их в конец.
+    const expected = letters
+        .flatMap(l => l.letter === BARE ? [SIN, SHIN] : [l.letter])
+        .concat(finals.map(f => f.final));
+    assert.strictEqual(expected.length, 28, 'в списке письма не 28 букв');
 
     assert.strictEqual(write.map(q => q.letter).join(','), expected.join(','),
         'письмо спрашивает не те буквы');
     assert.strictEqual(writeKeys.join(','), 'letter_write',
         'у письма больше одного ключа данных — начертание снова развели по видам');
+    assert.ok(!write.some(q => q.letter === BARE), 'в письме есть голая ש — её не отличить от шина и сина');
+
+    const points = s => [...s].map(c => 'U+' + c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')).join(' ');
+    const byLetter = {};
+    for (const q of write) byLetter[q.letter] = q;
+    assert.strictEqual(points(SIN), 'U+05E9 U+05C2', 'точка сина — не U+05C2 после U+05E9');
+    assert.strictEqual(points(SHIN), 'U+05E9 U+05C1', 'точка шина — не U+05C1 после U+05E9');
+    assert.strictEqual(byLetter[SIN].name, 'син', 'точка сина подписана не «син»');
+    assert.strictEqual(byLetter[SHIN].name, 'шин', 'точка шина подписана не «шин»');
 
     // У конечной формы своего имени нет: она называется как основная буква,
-    // и имя берётся у неё же, а не выдумывается заново.
+    // и помечена, чтобы вопрос сказал об этом до рисования.
     for (const f of finals) {
-        const name = letters.find(l => l.letter === f.letter).name;
-        const q = write.find(x => x.letter === f.final);
-        assert.strictEqual(q.name, name, f.final + ': имя разошлось с ' + f.letter);
+        const q = byLetter[f.final];
+        assert.strictEqual(q.name, letters.find(l => l.letter === f.letter).name,
+            f.final + ': имя разошлось с ' + f.letter);
+        assert.strictEqual(q.finalForm, true, f.final + ': конечная форма не помечена finalForm');
     }
+    assert.strictEqual(write.filter(q => q.finalForm).length, 5, 'помечены не пять конечных форм');
 
-    // Пул остался прежним: конечные — по-прежнему отдельный список, а не часть
-    // letters. На этом стоит heb_letter_final: попади конечная в letters, у его
-    // вопросов стало бы два верных ответа.
+    // Пул не тронут: конечные — по-прежнему отдельный список, а ש — одна буква
+    // с двумя чтениями. На этом стоит heb_letter_final (попади конечная
+    // в letters, у его вопросов стало бы два верных ответа) и letter_order
+    // (две подряд буквы ש сломали бы вопрос «какая буква идёт следом»).
     assert.strictEqual(letters.length, 22, 'основных букв в пуле не 22');
+    const pooled = letters.find(l => l.letter === BARE);
+    assert.strictEqual(pooled.name, 'син / шин', 'в пуле ש перестала быть одной буквой');
+    assert.strictEqual(pooled.translit, 'ś / š', 'в пуле у ש изменилась транслитерация');
     assert.ok(!letters.some(l => l.letter === finals[0].final),
         'конечная форма попала и в letters — у heb_letter_final стало бы два ответа');
 });

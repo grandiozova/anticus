@@ -114,19 +114,27 @@ test('переключатель начертания меняет показ, �
     w.openLesson(1);
     w.startLessonDrill('exercise', 'letter_write');
 
-    assert.strictEqual(app.get('exerciseState.questions.length'), 27, 'спросили не 27 букв');
+    assert.strictEqual(app.get('exerciseState.questions.length'), 28, 'спросили не 28 букв');
     const group = app.document.querySelector('#exerciseQuestion .letter-write-toggle');
     assert.ok(group, 'у еврейского письма нет переключателя начертания');
-    assert.strictEqual(group.querySelectorAll('[data-writing]').length, 2,
-        'в переключателе не два начертания');
+    const options = [...group.querySelectorAll('[data-writing]')];
+    assert.strictEqual(options.length, 2, 'в переключателе не два начертания');
+    // Подписи объясняют выбор сами: заголовка над переключателем нет.
+    assert.strictEqual(options.map(b => b.textContent.trim()).join(' | '), 'Печатный | Курсив',
+        'подписи переключателя не «Печатный / Курсив»');
     const checked = () => [...app.document.querySelectorAll('#exerciseQuestion .letter-write-toggle [data-writing]')]
         .filter(b => b.getAttribute('aria-checked') === 'true').map(b => b.getAttribute('data-writing'));
     assert.strictEqual(checked().join(','), 'print', 'письмо начинается не с печатного начертания');
 
-    // Под вопросом — только название: начертание ученик и должен вспомнить.
+    // В упражнении нет поясняющей строки: под прогрессом сразу название буквы.
+    assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .question').length, 0,
+        'в письме осталась строка «Напишите букву от руки»');
     const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru');
     const q0 = app.get('exerciseState.questions[0]');
-    assert.strictEqual(prompt.textContent.trim(), q0.name, 'под вопросом не имя буквы');
+    // У конечной формы к названию добавлена пометка — иначе «каф» просило бы
+    // и обычную כ, и конечную ך.
+    assert.strictEqual(prompt.textContent.trim(), q0.name + (q0.finalForm ? ' (конечная)' : ''),
+        'под вопросом не имя буквы');
 
     // Переключение во время рисования не пересоздаёт холст — иначе рисунок
     // бы стёрся (холст это bitmap, а showExercise() переписывает разметку).
@@ -145,7 +153,7 @@ test('переключатель начертания меняет показ, �
     const forms = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
     assert.strictEqual(forms.textContent.trim(), q.letter, 'показано не то начертание');
     assert.ok(forms.classList.contains('script'), 'показ не помечен .script');
-    assert.ok(forms.classList.contains('script--cursive'), 'прописи не получили .script--cursive');
+    assert.ok(forms.classList.contains('script--cursive'), 'курсив не получил .script--cursive');
 
     // Карточка показа — только начертание и название: надписи «Готово» над
     // буквой быть не должно (кнопку с этим словом уже нажали, и после показа
@@ -163,11 +171,11 @@ test('переключатель начертания меняет показ, �
     const correct = app.get('stats.totalCorrect');
     w.setLetterWriteStyle('print');
     const reprinted = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
-    assert.ok(!reprinted.classList.contains('script--cursive'), 'печатный показ остался прописью');
+    assert.ok(!reprinted.classList.contains('script--cursive'), 'печатный показ остался курсивом');
     assert.strictEqual(app.get('stats.totalCorrect'), correct, 'переключение засчитало ответ второй раз');
     assert.strictEqual(app.get('exerciseState.index'), 0, 'переключение сдвинуло прогресс');
 
-    // Выбор держится до конца упражнения: следующий вопрос — та же пропись.
+    // Выбор держится до конца упражнения: следующий вопрос — тот же курсив.
     w.setLetterWriteStyle('cursive');
     const next = [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]
         .find(b => /Далее/.test(b.textContent));
@@ -177,12 +185,63 @@ test('переключатель начертания меняет показ, �
     assert.strictEqual(checked().join(','), 'cursive', 'выбор начертания не пережил переход к вопросу');
     w.completeLetterWritingPractice();
     assert.ok(app.document.querySelector('.letter-write-reveal__forms.script--cursive'),
-        'следующий показ не прописью, хотя выбор был прописью');
+        'следующий показ не курсивом, хотя выбор был курсивом');
 
     // Заново открытое упражнение снова начинает с печатного начертания.
     w.startLessonDrill('exercise', 'letter_write');
     assert.strictEqual(checked().join(','), 'print', 'повторный вход не сбросил начертание');
     assert.strictEqual(app.get('exerciseState.index'), 0, 'повторный вход не начал упражнение заново');
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('письмо помечает конечные формы и различает шин и син', () => {
+    // Обе пометки нужны до рисования. У конечной формы начертание другое, а имя
+    // то же, что у основной буквы. У ש в письме два разных начертания, и по
+    // общему названию «син / шин» ученик не знал бы, что рисовать.
+    const app = loadApp({ storage: { app_course: 'hebrew', app_default_course: 'hebrew' } });
+    const w = app.window;
+    w.openLesson(1);
+    w.startLessonDrill('exercise', 'letter_write');
+
+    const state = app.get('exerciseState');
+    const promptOf = () => app.document
+        .querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru').textContent.trim();
+    // Ставим вопрос по букве: индекс тот же, меняется только буква на экране.
+    const show = letter => {
+        state.index = state.questions.findIndex(x => x.letter === letter);
+        assert.ok(state.index >= 0, 'в вопросах письма нет ' + letter);
+        w.showExercise();
+    };
+
+    assert.strictEqual(state.questions.filter(x => x.finalForm).length, 5, 'помечены не пять конечных форм');
+    assert.ok(!state.questions.some(x => x.letter === '\u05E9'), 'в письме есть голая ש');
+
+    show('\u05DA');                                   // ך
+    assert.strictEqual(promptOf(), 'каф (конечная)', 'конечная форма не помечена в вопросе');
+    show('\u05DB');                                   // כ
+    assert.strictEqual(promptOf(), 'каф', 'обычная буква получила пометку конечной формы');
+    assert.ok(!state.questions[state.index].finalForm, 'обычная буква помечена finalForm');
+
+    // Точки шина и сина — те же кодовые точки, что в таблице алфавита главы 1.
+    // Значение из данных, а не набранное в тесте: сверить надо данные.
+    const SHIN = state.questions.find(x => x.name === 'шин').letter;
+    const SIN = state.questions.find(x => x.name === 'син').letter;
+    const points = s => [...s].map(c => 'U+' + c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')).join(' ');
+    assert.strictEqual(points(SHIN), 'U+05E9 U+05C1', 'шин собран не из U+05E9 U+05C1');
+    assert.strictEqual(points(SIN), 'U+05E9 U+05C2', 'син собран не из U+05E9 U+05C2');
+    assert.notStrictEqual(SHIN, SIN, 'шин и син — одна и та же строка');
+
+    for (const [letter, name] of [[SHIN, 'шин'], [SIN, 'син']]) {
+        show(letter);
+        assert.strictEqual(promptOf(), name, 'точка ' + name + ' названа не своим именем');
+        w.completeLetterWritingPractice();
+        const forms = app.document.querySelector('.letter-write-reveal__forms');
+        assert.strictEqual(forms.textContent.trim(), letter, 'показ ' + name + ' — не та строка');
+        assert.strictEqual(points(forms.textContent.trim()), points(letter),
+            'показ ' + name + ' потерял точку');
+    }
 
     assert.deepStrictEqual(app.errors, []);
     app.close();

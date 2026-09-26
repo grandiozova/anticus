@@ -188,7 +188,8 @@ Reuse existing classes instead of inventing new visual patterns:
 Typography: Russian UI text uses Noto Sans. Studied-language text (headwords,
 flashcards, prayer text) uses `--md-ref-typeface-script` (Noto Serif for Greek, Noto
 Serif Hebrew for Hebrew) — never apply the serif to Russian UI text. Рукописный иврит
-для прописей — `--md-ref-typeface-cursive-hebrew` (Gveret Levin), а маркер
+(курсив в упражнении письма) — `--md-ref-typeface-cursive-hebrew` (Gveret Levin),
+а маркер
 `.script--cursive` объявлен составным — `.script.script--cursive`: правила
 компонентов задают гарнитуру сами и лежат в более позднем файле, и одиночный класс
 при равной специфичности им молча проигрывает. Icons are
@@ -242,17 +243,23 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   correct answer **first**: `options: q => [q.correct].concat(otherValues(..., 3))`.
   Forgetting the correct value in front produces an unanswerable question.
 - Never put the answer inside the question text itself.
-- **Письмо от руки — одно упражнение с переключателем начертания.** Печатное и
-  рукописное («Прописи») — один и тот же вопрос с разным показом, поэтому вид
-  `letter_write` один, а начертание выбирается segmented button'ом внутри
-  упражнения: `writing: 'print'` в описании вида — это начертание по умолчанию,
-  а состояние живёт в `letterWriteStyle` (сбрасывается в `startExercise`).
+- **Письмо от руки — одно упражнение с переключателем начертания.** Печатный
+  и рукописный («Курсив») варианты — один и тот же вопрос с разным показом,
+  поэтому вид `letter_write` один, а начертание выбирается segmented button'ом
+  внутри упражнения: `writing: 'print'` в описании вида — это начертание по
+  умолчанию, а состояние живёт в `letterWriteStyle` (сбрасывается
+  в `startExercise`).
   Переключатель показывается только там, где курс заявил `cursiveWriting`
   (`courseCursiveWriting()`), — у греческого его нет. Переключение на экране
   холста не перерисовывает разметку: холст это bitmap, и рисунок бы стёрся.
-  В еврейской главе 1 вопросы — `HEBREW_WRITE_LETTERS`: 22 буквы плюс 5 конечных,
-  собранные из `letters` и `finals` (в самом пуле конечных нет: это вопрос
-  о начертании, и `heb_letter_final` держит их отдельно).
+  В еврейской главе 1 вопросы — `HEBREW_WRITE_LETTERS`: пул без изменений плюс
+  5 конечных из `finals` (в самом пуле конечных нет: это вопрос о начертании,
+  и `heb_letter_final` держит их отдельно), причём конечные помечены
+  `finalForm: true` — по этой пометке вопрос пишет «каф (конечная)» до рисования.
+  Шин и син этот вид различает сам: `\u05E9\u05C1` («шин») и `\u05E9\u05C2`
+  («син») стоят в списке письма вместо одной буквы ש из пула — в остальных видах
+  ש остаётся одной буквой с двумя чтениями, и трогать пул нельзя (на порядке
+  букв стоит `letter_order`).
 
 ## Courses
 

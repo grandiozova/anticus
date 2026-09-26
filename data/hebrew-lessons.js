@@ -109,10 +109,35 @@ const HEBREW_ALPHABET = {
 // конечной берётся из finals, а название — у той же буквы из letters (у
 // конечной формы своего имени нет, оно то же самое). Порядок — основные, затем
 // конечные; в упражнении колода всё равно перемешивается.
-const HEBREW_WRITE_LETTERS = HEBREW_ALPHABET.letters.concat(
+//
+// Две отличия от пула курса, и оба — только здесь:
+//
+//   1. ש в письме не одна буква, а две: шин и син различает точка, и рисовать
+//      надо ту, которую назвали. Точки записаны кодами, а не набраны буквами:
+//      разница между ними — один комбинирующий знак, в редакторе глазами её не
+//      видно, а tests/hebrew-content.test.js сверяет результат с пособием и
+//      поймает и потерянную точку, и перепутанную сторону. В остальных видах
+//      (letter_name, heb_letter_translit) ש по-прежнему одна буква с двумя
+//      чтениями — «син / шин», «ś / š» — и трогать пул нельзя: на нём стоит
+//      и порядок букв у letter_order.
+//   2. Конечные помечены finalForm: у них своё начертание, и упражнение письма
+//      обязано сказать об этом до того, как ученик начнёт рисовать. Пометка
+//      ставится здесь, где пара «основная — конечная» и так под рукой, чтобы
+//      не выводить её заново ни в разметке, ни по коду символа.
+const HEBREW_SHIN = '\u05E9';          // ש — в пуле одна буква с двумя чтениями
+const HEBREW_SIN_DOT = '\u05E9\u05C2'; // ש + точка сина (U+05C2), слева
+const HEBREW_SHIN_DOT = '\u05E9\u05C1'; // ש + точка шина (U+05C1), справа
+
+const HEBREW_WRITE_LETTERS = HEBREW_ALPHABET.letters.flatMap(l =>
+    l.letter === HEBREW_SHIN
+        // Порядок как в таблице алфавита главы 1: «שׂ / שׁ — син / шин».
+        ? [{ letter: HEBREW_SIN_DOT, name: 'син' }, { letter: HEBREW_SHIN_DOT, name: 'шин' }]
+        : [l]
+).concat(
     HEBREW_ALPHABET.finals.map(f => ({
         letter: f.final,
-        name: HEBREW_ALPHABET.letters.find(l => l.letter === f.letter).name
+        name: HEBREW_ALPHABET.letters.find(l => l.letter === f.letter).name,
+        finalForm: true
     }))
 );
 
@@ -154,7 +179,7 @@ const HEBREW_LESSONS_DATA = {
             letter_name: HEBREW_ALPHABET.letters,
             // Письмо — единственный алфавитный вид, которому нужны конечные
             // формы: см. HEBREW_WRITE_LETTERS выше. Отдельного ключа для
-            // прописей нет: рукописное начертание выбирается переключателем
+            // курсива нет: рукописное начертание выбирается переключателем
             // внутри упражнения, а вопрос и данные у него те же.
             letter_write: HEBREW_WRITE_LETTERS,
             letter_from_name: HEBREW_ALPHABET.letters,
