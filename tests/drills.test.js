@@ -10,6 +10,7 @@ const { playThrough } = require('./helpers/play.js');
 const DRILLS = [
     ['exercise', 'letter_name'],
     ['exercise', 'letter_write'],
+    ['exercise', 'heb_letter_write_cursive'],
     ['exercise', 'letter_from_name'],
     ['exercise', 'letter_sound'],
     ['exercise', 'letter_order'],
@@ -83,6 +84,45 @@ test('греческий показ буквы идёт прописной вп�
             q.name + ': в греческом показе не должно быть ни dir, ни rtl');
     }
 
+    app.close();
+});
+
+test('письмо от руки: печатный показ и прописи различаются только классом', () => {
+    // Два упражнения письма — одна механика (имя буквы, холст, «Готово») и одно
+    // и то же начертание в ответе; разница только в гарнитуре показа. Проверяем
+    // это на живой разметке: у прописей класс есть, у печатного показа нет.
+    const app = loadApp({ storage: { app_course: 'hebrew', app_default_course: 'hebrew' } });
+    const w = app.window;
+    w.openLesson(1);
+
+    for (const [key, cursive] of [['letter_write', false], ['heb_letter_write_cursive', true]]) {
+        w.startLessonDrill('exercise', key);
+
+        assert.strictEqual(app.get('exerciseState.questions.length'), 27,
+            key + ': спросили не 27 букв');
+        assert.ok(app.document.querySelector('#exerciseQuestion canvas'), key + ': нет холста');
+        // Под вопросом — только название: начертание ученик и должен вспомнить.
+        const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru');
+        const q0 = app.get('exerciseState.questions[0]');
+        assert.strictEqual(prompt.textContent.trim(), q0.name, key + ': под вопросом не имя буквы');
+
+        w.completeLetterWritingPractice();
+        const forms = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
+        const q = app.get('exerciseState.questions[0]');
+        assert.strictEqual(forms.textContent.trim(), q.letter, key + ': показано не то начертание');
+        assert.ok(forms.classList.contains('script'), key + ': показ не помечен .script');
+        assert.strictEqual(forms.classList.contains('script--cursive'), cursive,
+            key + ': рукописный класс ' + (cursive ? 'не поставлен' : 'поставлен зря'));
+
+        // Дальше — следующий вопрос с чистым холстом, как в печатном письме.
+        const next = [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]
+            .find(b => /Далее/.test(b.textContent));
+        assert.ok(next, key + ': нет кнопки «Далее»');
+        next.click();
+        assert.ok(app.document.querySelector('#exerciseQuestion canvas'), key + ': следующий вопрос без холста');
+    }
+
+    assert.deepStrictEqual(app.errors, []);
     app.close();
 });
 

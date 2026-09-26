@@ -18,6 +18,11 @@ const LICENSES = [
         url: 'https://openfontlicense.org/'
     },
     {
+        name: 'Gveret Levin',
+        terms: 'SIL Open Font License 1.1 © AlefAlefAlef',
+        url: 'https://github.com/AlefAlefAlef/gveret-levin'
+    },
+    {
         name: 'Material Symbols Rounded',
         terms: 'Apache License 2.0 © Google',
         url: 'https://www.apache.org/licenses/LICENSE-2.0'

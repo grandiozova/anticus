@@ -88,10 +88,32 @@ const EXERCISE_TYPES = {
         // (а́леф, «син / шин») — шрифт выбирается по самой строке.
         script: q => isScriptText(q.name)
     },
+    // Письмо от руки: по имени буквы её рисуют на холсте, а по кнопке «Готово»
+    // показывается верное начертание. Вариантов ответа у вида нет (custom),
+    // поэтому разметку рисует сам showExercise.
+    //
+    // Поле writing отличает два упражнения с одной механикой: 'print' — обычное
+    // начертание, 'cursive' — прописи (heb_letter_write_cursive, рукописная
+    // гарнитура). Разметка у них общая, разнится только класс показа, поэтому
+    // это поле таблицы, а не ветка по имени вида: имя вида — это ещё и ключ
+    // данных, и разводить по нему код значило бы держать две почти одинаковые
+    // ветки там, где хватает одного поля.
     letter_write: {
         subject: q => q.name,
         correct: q => q.name,
         script: q => isScriptText(q.name),
+        writing: 'print',
+        custom: true
+    },
+    // Прописи: та же буква по названию, но показ набран рукописным шрифтом
+    // (Гверет Левин, --md-ref-typeface-cursive-hebrew). Вид есть только
+    // в еврейском курсе — рукописная гарнитура сделана для иврита, и в данных
+    // греческого этого ключа нет, поэтому у грека пункта в меню не будет.
+    heb_letter_write_cursive: {
+        subject: q => q.name,
+        correct: q => q.name,
+        script: q => isScriptText(q.name),
+        writing: 'cursive',
         custom: true
     },
     letter_from_name: {
@@ -421,6 +443,15 @@ function questionSubject(q, key) {
 //
 // К направлению письма порядок отношения не имеет: греческий всегда слева
 // направо, а RTL приходит только из токена курса (--md-ref-script-direction).
+// Каким начертанием вид показывает букву: 'print' или 'cursive'; null — вид не
+// про письмо от руки. Спрашиваем таблицу видов, а не сравниваем имя вида: два
+// упражнения письма отличаются только классом показа, и ветка по имени развела
+// бы их код на три места.
+function exerciseWritingStyle(key) {
+    const type = EXERCISE_TYPES[key];
+    return type && type.custom && type.writing ? type.writing : null;
+}
+
 function letterWriteForms(q) {
     return q.upper ? [q.upper, q.letter] : [q.letter];
 }
@@ -463,6 +494,9 @@ function completeLetterWritingPractice() {
     saveStats();
 
     const isGreek = !!q.upper;
+    // Прописи отличаются от печатного показа одним классом: гарнитуру берёт
+    // .script--cursive (styles/base.css). Кегль, направление и цвет — те же.
+    const cursive = exerciseWritingStyle(exerciseState.type) === 'cursive';
     const reveal = isGreek ?
         '<div class="letter-write-reveal">' +
         '<div class="letter-write-reveal__title">Готово</div>' +
@@ -473,7 +507,7 @@ function completeLetterWritingPractice() {
         '</div>' :
         '<div class="letter-write-reveal">' +
         '<div class="letter-write-reveal__title">Готово</div>' +
-        '<div class="letter-write-reveal__forms script">' + q.letter + '</div>' +
+        '<div class="letter-write-reveal__forms script' + (cursive ? ' script--cursive' : '') + '">' + q.letter + '</div>' +
         '<div class="letter-write-reveal__name">' + q.name + '</div>' +
         '</div>';
 
@@ -574,7 +608,7 @@ function showExercise() {
         html += '</div><div class="md-button-row"><button class="menu-btn primary" onclick="checkTranslationRu()"><span class="msym">check</span>Готово</button><button class="menu-btn text" onclick="clearChosen()"><span class="msym">undo</span>Очистить</button></div>';
         window._trans_ru = q;
         window._chosen = [];
-    } else if (s.type === 'letter_write') {
+    } else if (exerciseWritingStyle(s.type)) {
         const practice = letterWritePracticeState();
         let promptText = practice && practice.prompt ? practice.prompt : '';
         let promptClass = isScriptText(promptText) ? 'md-prompt-strong' : 'md-prompt-ru';
@@ -595,7 +629,7 @@ function showExercise() {
     }
     container.innerHTML = html;
 
-    if (s.type === 'letter_write') initLetterWriteCanvas();
+    if (exerciseWritingStyle(s.type)) initLetterWriteCanvas();
 }
 
 function answerOpt(sel, corr) {

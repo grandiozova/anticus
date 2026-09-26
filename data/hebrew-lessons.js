@@ -99,6 +99,23 @@ const HEBREW_ALPHABET = {
     ]
 };
 
+// Буквы для письма от руки: 22 основные и 5 конечных. Отдельный список, а не
+// HEBREW_ALPHABET.letters: у письма по названию конечные начертания — такая же
+// буква, как остальные, и учить их надо наравне. В остальных алфавитных видах
+// их нет: буква хранится без конечной формы намеренно (это вопрос о начертании,
+// а не о чтении), и heb_letter_final спрашивает свои пять отдельно.
+//
+// Собирается из letters и finals, чтобы ничего не набирать руками: начертание
+// конечной берётся из finals, а название — у той же буквы из letters (у
+// конечной формы своего имени нет, оно то же самое). Порядок — основные, затем
+// конечные; в упражнении колода всё равно перемешивается.
+const HEBREW_WRITE_LETTERS = HEBREW_ALPHABET.letters.concat(
+    HEBREW_ALPHABET.finals.map(f => ({
+        letter: f.final,
+        name: HEBREW_ALPHABET.letters.find(l => l.letter === f.letter).name
+    }))
+);
+
 const HEBREW_LESSONS_DATA = {
     1: {
         title: "Алфавит",
@@ -135,7 +152,12 @@ const HEBREW_LESSONS_DATA = {
         // транслитерация и конечные формы лежат там.
         exercises: {
             letter_name: HEBREW_ALPHABET.letters,
-            letter_write: HEBREW_ALPHABET.letters,
+            // Письмо — единственный алфавитный вид, которому нужны конечные
+            // формы: см. HEBREW_WRITE_LETTERS выше. Оба упражнения письма
+            // спрашивают один и тот же список; отличается только начертание
+            // показа (печатное и рукописное), и задаёт его вид.
+            letter_write: HEBREW_WRITE_LETTERS,
+            heb_letter_write_cursive: HEBREW_WRITE_LETTERS,
             letter_from_name: HEBREW_ALPHABET.letters,
             letter_sound: HEBREW_ALPHABET.letters,
             letter_order: HEBREW_ALPHABET.letters.slice(0, -1),
