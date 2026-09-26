@@ -242,13 +242,17 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   correct answer **first**: `options: q => [q.correct].concat(otherValues(..., 3))`.
   Forgetting the correct value in front produces an unanswerable question.
 - Never put the answer inside the question text itself.
-- **Письмо от руки — два упражнения с одной механикой.** `letter_write` (печатное
-  начертание) и `heb_letter_write_cursive` («Прописи», рукописное) отличаются только
-  гарнитурой показа, поэтому вид объявляет поле `writing: 'print' | 'cursive'`, а
-  `exerciseWritingStyle()` (`js/exercises.js`) спрашивает таблицу — ветки по имени
-  вида нет. В еврейской главе 1 оба спрашивают `HEBREW_WRITE_LETTERS` — 22 буквы
-  плюс 5 конечных, собранные из `letters` и `finals` (в самом пуле конечных нет:
-  это вопрос о начертании, и `heb_letter_final` держит их отдельно).
+- **Письмо от руки — одно упражнение с переключателем начертания.** Печатное и
+  рукописное («Прописи») — один и тот же вопрос с разным показом, поэтому вид
+  `letter_write` один, а начертание выбирается segmented button'ом внутри
+  упражнения: `writing: 'print'` в описании вида — это начертание по умолчанию,
+  а состояние живёт в `letterWriteStyle` (сбрасывается в `startExercise`).
+  Переключатель показывается только там, где курс заявил `cursiveWriting`
+  (`courseCursiveWriting()`), — у греческого его нет. Переключение на экране
+  холста не перерисовывает разметку: холст это bitmap, и рисунок бы стёрся.
+  В еврейской главе 1 вопросы — `HEBREW_WRITE_LETTERS`: 22 буквы плюс 5 конечных,
+  собранные из `letters` и `finals` (в самом пуле конечных нет: это вопрос
+  о начертании, и `heb_letter_final` держит их отдельно).
 
 ## Courses
 

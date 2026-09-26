@@ -27,6 +27,19 @@
     margin: 16px 0;
     color: var(--md-sys-color-on-surface);
 }
+/* Переключатель начертания в упражнении письма. Это тот же M3 segmented
+   button, что выбирает тему в настройках (.md-segmented в styles/settings.css),
+   поэтому своей внешности у него нет — только высота и отступ.
+   Селектор составной, а не .letter-write-toggle button: у того же правила в
+   settings.css специфичность такая же, а подключается settings.css позже —
+   и высота 40px оттуда молча побеждает. Здесь выбор начертания — основное
+   касание экрана, и по правилу M3 цель должна быть не меньше 48dp. */
+.letter-write-toggle {
+    margin-bottom: 16px;
+}
+.md-segmented.letter-write-toggle button {
+    min-height: 48px;
+}
 .writing-practice {
     display: flex;
     flex-direction: column;

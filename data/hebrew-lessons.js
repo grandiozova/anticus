@@ -153,11 +153,10 @@ const HEBREW_LESSONS_DATA = {
         exercises: {
             letter_name: HEBREW_ALPHABET.letters,
             // Письмо — единственный алфавитный вид, которому нужны конечные
-            // формы: см. HEBREW_WRITE_LETTERS выше. Оба упражнения письма
-            // спрашивают один и тот же список; отличается только начертание
-            // показа (печатное и рукописное), и задаёт его вид.
+            // формы: см. HEBREW_WRITE_LETTERS выше. Отдельного ключа для
+            // прописей нет: рукописное начертание выбирается переключателем
+            // внутри упражнения, а вопрос и данные у него те же.
             letter_write: HEBREW_WRITE_LETTERS,
-            heb_letter_write_cursive: HEBREW_WRITE_LETTERS,
             letter_from_name: HEBREW_ALPHABET.letters,
             letter_sound: HEBREW_ALPHABET.letters,
             letter_order: HEBREW_ALPHABET.letters.slice(0, -1),

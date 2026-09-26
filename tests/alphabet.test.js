@@ -433,29 +433,31 @@ test('письмо от руки спрашивает все 27 букв, не �
     // писать их от руки учат наравне с остальными. Список собирается из пула
     // (HEBREW_WRITE_LETTERS), поэтому здесь проверяется и то, что собрался он
     // ровно из 22 основных и 5 конечных, и то, что сам пул при этом не поехал.
+    //
+    // Ключ один: рукописное начертание выбирается переключателем внутри
+    // упражнения, а не отдельным ключом данных — вопрос у них общий.
     const app = loadApp(GREEK);
     const letters = JSON.parse(app.get('JSON.stringify(HEBREW_ALPHABET.letters)'));
     const finals = JSON.parse(app.get('JSON.stringify(HEBREW_ALPHABET.finals)'));
-    const print = JSON.parse(app.get('JSON.stringify(HEBREW_LESSONS_DATA[1].exercises.letter_write)'));
-    const cursive = JSON.parse(app.get('JSON.stringify(HEBREW_LESSONS_DATA[1].exercises.heb_letter_write_cursive)'));
+    const write = JSON.parse(app.get('JSON.stringify(HEBREW_LESSONS_DATA[1].exercises.letter_write)'));
+    const writeKeys = JSON.parse(app.get(
+        "JSON.stringify(Object.keys(HEBREW_LESSONS_DATA[1].exercises).filter(k => /write/.test(k)))"));
     app.close();
 
     const expected = letters.map(l => l.letter).concat(finals.map(f => f.final));
     assert.strictEqual(expected.length, 27, 'в списке письма не 27 букв');
 
-    assert.strictEqual(print.map(q => q.letter).join(','), expected.join(','),
-        'печатное письмо спрашивает не те буквы');
-    assert.strictEqual(cursive.map(q => q.letter).join(','), expected.join(','),
-        'прописи спрашивают не те буквы');
+    assert.strictEqual(write.map(q => q.letter).join(','), expected.join(','),
+        'письмо спрашивает не те буквы');
+    assert.strictEqual(writeKeys.join(','), 'letter_write',
+        'у письма больше одного ключа данных — начертание снова развели по видам');
 
     // У конечной формы своего имени нет: она называется как основная буква,
     // и имя берётся у неё же, а не выдумывается заново.
     for (const f of finals) {
         const name = letters.find(l => l.letter === f.letter).name;
-        for (const list of [print, cursive]) {
-            const q = list.find(x => x.letter === f.final);
-            assert.strictEqual(q.name, name, f.final + ': имя разошлось с ' + f.letter);
-        }
+        const q = write.find(x => x.letter === f.final);
+        assert.strictEqual(q.name, name, f.final + ': имя разошлось с ' + f.letter);
     }
 
     // Пул остался прежним: конечные — по-прежнему отдельный список, а не часть

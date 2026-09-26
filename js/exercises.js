@@ -8,6 +8,11 @@ function startExercise(type) {
         return;
     }
     exerciseState = { type: type, questions: shuffle(questions), index: 0, correct: 0, total: questions.length };
+    // Начертание сбрасывается здесь, а не в showExercise: сюда приходит и
+    // открытие упражнения, и «Ещё раз» с экрана результата, а переход к
+    // следующему вопросу идёт мимо — иначе выбор слетал бы на каждом показе.
+    let writing = exerciseWritingStyle(type);
+    if (writing) letterWriteStyle = writing;
     showExercise();
 }
 
@@ -92,28 +97,18 @@ const EXERCISE_TYPES = {
     // показывается верное начертание. Вариантов ответа у вида нет (custom),
     // поэтому разметку рисует сам showExercise.
     //
-    // Поле writing отличает два упражнения с одной механикой: 'print' — обычное
-    // начертание, 'cursive' — прописи (heb_letter_write_cursive, рукописная
-    // гарнитура). Разметка у них общая, разнится только класс показа, поэтому
-    // это поле таблицы, а не ветка по имени вида: имя вида — это ещё и ключ
-    // данных, и разводить по нему код значило бы держать две почти одинаковые
-    // ветки там, где хватает одного поля.
+    // Поле writing — начертание, с которого вид начинается: 'print'. Второе,
+    // 'cursive' (прописи, рукописная гарнитура Гверет Левин), включает
+    // переключатель внутри упражнения — и только там, где курс заявил, что
+    // рукописный шрифт у него есть (courseCursiveWriting). Отдельным видом
+    // прописи не объявлены намеренно: начертание — это не другое упражнение,
+    // а другой показ того же вопроса, и разводить их по видам значило бы
+    // держать в списке урока две почти одинаковые карточки.
     letter_write: {
         subject: q => q.name,
         correct: q => q.name,
         script: q => isScriptText(q.name),
         writing: 'print',
-        custom: true
-    },
-    // Прописи: та же буква по названию, но показ набран рукописным шрифтом
-    // (Гверет Левин, --md-ref-typeface-cursive-hebrew). Вид есть только
-    // в еврейском курсе — рукописная гарнитура сделана для иврита, и в данных
-    // греческого этого ключа нет, поэтому у грека пункта в меню не будет.
-    heb_letter_write_cursive: {
-        subject: q => q.name,
-        correct: q => q.name,
-        script: q => isScriptText(q.name),
-        writing: 'cursive',
         custom: true
     },
     letter_from_name: {
@@ -447,9 +442,88 @@ function questionSubject(q, key) {
 // про письмо от руки. Спрашиваем таблицу видов, а не сравниваем имя вида: два
 // упражнения письма отличаются только классом показа, и ветка по имени развела
 // бы их код на три места.
+// Вид «письмо от руки»: отдаёт начертание, с которого вид начинается, или null,
+// если вид не про письмо. По этому ответу решается и какая разметка рисуется,
+// и нужно ли инициализировать холст, — поэтому спрашиваем таблицу видов, а не
+// сравниваем имя вида. Второе начертание, 'cursive', включает переключатель
+// внутри упражнения, и в описании вида его нет.
 function exerciseWritingStyle(key) {
     const type = EXERCISE_TYPES[key];
     return type && type.custom && type.writing ? type.writing : null;
+}
+
+const LETTER_WRITE_STYLES = ['print', 'cursive'];
+const LETTER_WRITE_STYLE_LABELS = { print: 'Печатные', cursive: 'Прописи' };
+
+// Переключатель начертания — тот же M3 segmented button, что выбирает тему
+// в настройках (styles/settings.css): role="radio" и aria-checked, состояние
+// берётся из data-writing. Показывается только курсу с рукописным шрифтом:
+// у греческого начертание одно, и выбирать там нечего.
+function letterWriteToggleHtml() {
+    if (!courseCursiveWriting()) return '';
+    let buttons = LETTER_WRITE_STYLES.map(style =>
+        '<button type="button" role="radio" data-writing="' + style + '" aria-checked="' +
+        (letterWriteStyle === style ? 'true' : 'false') + '" onclick="setLetterWriteStyle(\'' + style + '\')">' +
+        LETTER_WRITE_STYLE_LABELS[style] + '</button>');
+    return '<div class="md-segmented letter-write-toggle" role="radiogroup" aria-label="Начертание букв">' +
+        buttons.join('') + '</div>';
+}
+
+// Подсветка выбранного начертания. Отдельно от перерисовки экрана: пока идёт
+// рисование, разметку трогать нельзя — на холсте рисунок.
+function syncLetterWriteToggle() {
+    document.querySelectorAll('.letter-write-toggle [data-writing]').forEach(b => {
+        b.setAttribute('aria-checked', b.getAttribute('data-writing') === letterWriteStyle ? 'true' : 'false');
+    });
+}
+
+function setLetterWriteStyle(style) {
+    if (LETTER_WRITE_STYLES.indexOf(style) === -1) style = 'print';
+    letterWriteStyle = style;
+    // На экране холста перерисовываем только подсветку. Холст — это bitmap,
+    // и повторный showExercise() стёр бы написанное; начертание на самом холсте
+    // ни на что не влияет и вернётся на показе этого же вопроса.
+    const box = document.getElementById('exerciseQuestion');
+    if (box && box.querySelector('.letter-write-reveal')) { showLetterWriteReveal(); return; }
+    syncLetterWriteToggle();
+}
+
+// Карточка показа. Отдельной функцией, потому что её перерисовывает
+// переключатель начертания, а засчитывать ответ второй раз при этом нельзя —
+// поэтому счёт живёт в completeLetterWritingPractice.
+function showLetterWriteReveal() {
+    if (!exerciseState || !exerciseState.questions || !exerciseState.questions.length) return;
+    const q = exerciseState.questions[exerciseState.index];
+    const box = document.getElementById('exerciseQuestion');
+    if (!box || !q) return;
+
+    const isGreek = !!q.upper;
+    // Карточка показа — только начертание и название. Надписи «Готово» над
+    // буквой нет намеренно: кнопка с этим словом уже нажата, а карточка
+    // показывает ответ, а не подтверждает нажатие.
+    //
+    // Начертание берётся у переключателя, а не у вида: печатное и рукописное —
+    // это один и тот же вопрос, и отличается у них только гарнитура
+    // (.script--cursive, styles/base.css). Кегль, направление и цвет — те же.
+    const cursive = letterWriteStyle === 'cursive';
+    const reveal = isGreek ?
+        '<div class="letter-write-reveal">' +
+        '<div class="letter-write-reveal__forms">' +
+        letterWriteForms(q).map(f => '<span class="script">' + f + '</span>').join('') +
+        '</div>' +
+        '<div class="letter-write-reveal__name script">' + q.name + '</div>' +
+        '</div>' :
+        '<div class="letter-write-reveal">' +
+        '<div class="letter-write-reveal__forms script' + (cursive ? ' script--cursive' : '') + '">' + q.letter + '</div>' +
+        '<div class="letter-write-reveal__name">' + q.name + '</div>' +
+        '</div>';
+
+    box.innerHTML = progressHead('Упражнение ' + (exerciseState.index + 1) + ' из ' + exerciseState.total, exerciseState.index, exerciseState.total) +
+        letterWriteToggleHtml() +
+        '<div class="flashcard-flip"><div class="md-flashcard md-flashcard--back md-flashcard--has-flip md-flashcard--flip">' +
+        reveal +
+        '</div></div>' +
+        '<div class="md-button-row"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
 }
 
 function letterWriteForms(q) {
@@ -493,31 +567,7 @@ function completeLetterWritingPractice() {
     exerciseState.correct++;
     saveStats();
 
-    const isGreek = !!q.upper;
-    // Карточка показа — только начертание и название. Надписи «Готово» над
-    // буквой нет намеренно: кнопка с этим словом уже нажата, а карточка
-    // показывает ответ, а не подтверждает нажатие.
-    //
-    // Прописи отличаются от печатного показа одним классом: гарнитуру берёт
-    // .script--cursive (styles/base.css). Кегль, направление и цвет — те же.
-    const cursive = exerciseWritingStyle(exerciseState.type) === 'cursive';
-    const reveal = isGreek ?
-        '<div class="letter-write-reveal">' +
-        '<div class="letter-write-reveal__forms">' +
-        letterWriteForms(q).map(f => '<span class="script">' + f + '</span>').join('') +
-        '</div>' +
-        '<div class="letter-write-reveal__name script">' + q.name + '</div>' +
-        '</div>' :
-        '<div class="letter-write-reveal">' +
-        '<div class="letter-write-reveal__forms script' + (cursive ? ' script--cursive' : '') + '">' + q.letter + '</div>' +
-        '<div class="letter-write-reveal__name">' + q.name + '</div>' +
-        '</div>';
-
-    box.innerHTML = progressHead('Упражнение ' + (exerciseState.index + 1) + ' из ' + exerciseState.total, exerciseState.index, exerciseState.total) +
-        '<div class="flashcard-flip"><div class="md-flashcard md-flashcard--back md-flashcard--has-flip md-flashcard--flip">' +
-        reveal +
-        '</div></div>' +
-        '<div class="md-button-row"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
+    showLetterWriteReveal();
 }
 
 function initLetterWriteCanvas() {
@@ -617,6 +667,7 @@ function showExercise() {
         const isGreek = practice && practice.isGreek;
         html += '<div class="question">Напишите букву от руки</div>' +
             '<div class="' + promptClass + '">' + promptText + '</div>' +
+            letterWriteToggleHtml() +
             '<div class="writing-practice">' +
                 '<div class="writing-canvas-card ' + (isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew') + '">' +
                     '<canvas id="letterWriteCanvas" class="' + (isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew') + '" aria-label="Поле для письма буквы"></canvas>' +

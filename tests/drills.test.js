@@ -10,7 +10,6 @@ const { playThrough } = require('./helpers/play.js');
 const DRILLS = [
     ['exercise', 'letter_name'],
     ['exercise', 'letter_write'],
-    ['exercise', 'heb_letter_write_cursive'],
     ['exercise', 'letter_from_name'],
     ['exercise', 'letter_sound'],
     ['exercise', 'letter_order'],
@@ -65,6 +64,11 @@ test('греческий показ буквы идёт прописной вп�
     const sigma = state.questions.findIndex(x => x.letter === 'σ');
     assert.ok(sigma >= 0, 'в вопросах урока 1 нет сигмы');
 
+    // Переключателя начертания у греческого нет уже на холсте: рукописного
+    // шрифта у курса нет (COURSES.greek без cursiveWriting), выбирать нечего.
+    assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .letter-write-toggle').length, 0,
+        'у греческого письма появился переключатель начертания');
+
     for (const index of [0, sigma]) {
         state.index = index;
         w.completeLetterWritingPractice();
@@ -88,57 +92,97 @@ test('греческий показ буквы идёт прописной вп�
         assert.strictEqual(
             app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__title').length, 0,
             q.name + ': над буквами остался заголовок карточки показа');
+
+        // Рукописного начертания у греческого нет (COURSES.greek без
+        // cursiveWriting), поэтому и переключателя быть не должно — ни на
+        // холсте, ни на показе.
+        assert.strictEqual(
+            app.document.querySelectorAll('#exerciseQuestion .letter-write-toggle, #exerciseQuestion .md-segmented').length,
+            0,
+            q.name + ': у греческого письма появился переключатель начертания');
     }
 
     app.close();
 });
 
-test('письмо от руки: печатный показ и прописи различаются только классом', () => {
-    // Два упражнения письма — одна механика (имя буквы, холст, «Готово») и одно
-    // и то же начертание в ответе; разница только в гарнитуре показа. Проверяем
-    // это на живой разметке: у прописей класс есть, у печатного показа нет.
+test('переключатель начертания меняет показ, не трогая прогресс и холст', () => {
+    // Печатное и рукописное — один и тот же вопрос с разным показом, поэтому
+    // выбор живёт в переключателе внутри упражнения, а не в отдельном виде.
+    // Переключение меняет только гарнитуру показа: буква, счёт и холст те же.
     const app = loadApp({ storage: { app_course: 'hebrew', app_default_course: 'hebrew' } });
     const w = app.window;
     w.openLesson(1);
+    w.startLessonDrill('exercise', 'letter_write');
 
-    for (const [key, cursive] of [['letter_write', false], ['heb_letter_write_cursive', true]]) {
-        w.startLessonDrill('exercise', key);
+    assert.strictEqual(app.get('exerciseState.questions.length'), 27, 'спросили не 27 букв');
+    const group = app.document.querySelector('#exerciseQuestion .letter-write-toggle');
+    assert.ok(group, 'у еврейского письма нет переключателя начертания');
+    assert.strictEqual(group.querySelectorAll('[data-writing]').length, 2,
+        'в переключателе не два начертания');
+    const checked = () => [...app.document.querySelectorAll('#exerciseQuestion .letter-write-toggle [data-writing]')]
+        .filter(b => b.getAttribute('aria-checked') === 'true').map(b => b.getAttribute('data-writing'));
+    assert.strictEqual(checked().join(','), 'print', 'письмо начинается не с печатного начертания');
 
-        assert.strictEqual(app.get('exerciseState.questions.length'), 27,
-            key + ': спросили не 27 букв');
-        assert.ok(app.document.querySelector('#exerciseQuestion canvas'), key + ': нет холста');
-        // Под вопросом — только название: начертание ученик и должен вспомнить.
-        const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru');
-        const q0 = app.get('exerciseState.questions[0]');
-        assert.strictEqual(prompt.textContent.trim(), q0.name, key + ': под вопросом не имя буквы');
+    // Под вопросом — только название: начертание ученик и должен вспомнить.
+    const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru');
+    const q0 = app.get('exerciseState.questions[0]');
+    assert.strictEqual(prompt.textContent.trim(), q0.name, 'под вопросом не имя буквы');
 
-        w.completeLetterWritingPractice();
-        const forms = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
-        const q = app.get('exerciseState.questions[0]');
-        assert.strictEqual(forms.textContent.trim(), q.letter, key + ': показано не то начертание');
-        assert.ok(forms.classList.contains('script'), key + ': показ не помечен .script');
-        assert.strictEqual(forms.classList.contains('script--cursive'), cursive,
-            key + ': рукописный класс ' + (cursive ? 'не поставлен' : 'поставлен зря'));
+    // Переключение во время рисования не пересоздаёт холст — иначе рисунок
+    // бы стёрся (холст это bitmap, а showExercise() переписывает разметку).
+    const canvas = app.document.getElementById('letterWriteCanvas');
+    const drawn = app.get('exerciseState.index');
+    w.setLetterWriteStyle('cursive');
+    assert.strictEqual(app.document.getElementById('letterWriteCanvas'), canvas,
+        'переключение пересоздало холст — рисунок бы стёрся');
+    assert.ok(app.document.querySelector('#exerciseQuestion canvas'), 'холст пропал после переключения');
+    assert.strictEqual(checked().join(','), 'cursive', 'подсветка переключателя не переехала');
+    assert.strictEqual(app.get('exerciseState.index'), drawn, 'переключение сдвинуло прогресс');
 
-        // Карточка показа — только начертание и название: надписи «Готово» над
-        // буквой быть не должно (кнопку с этим словом уже нажали, и после показа
-        // она заменена кнопкой «Далее»).
-        assert.strictEqual(
-            app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__title').length, 0,
-            key + ': над буквой остался заголовок карточки показа');
-        assert.ok(!/Готово/.test(app.document.getElementById('exerciseQuestion').textContent),
-            key + ': на карточке показа осталось слово «Готово»');
-        assert.strictEqual(
-            app.document.querySelector('#exerciseQuestion .letter-write-reveal').children.length, 2,
-            key + ': в карточке показа не два элемента — начертание и название');
+    // Показ собирается выбранным начертанием, ответ засчитывается один раз.
+    w.completeLetterWritingPractice();
+    const q = app.get('exerciseState.questions[0]');
+    const forms = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
+    assert.strictEqual(forms.textContent.trim(), q.letter, 'показано не то начертание');
+    assert.ok(forms.classList.contains('script'), 'показ не помечен .script');
+    assert.ok(forms.classList.contains('script--cursive'), 'прописи не получили .script--cursive');
 
-        // Дальше — следующий вопрос с чистым холстом, как в печатном письме.
-        const next = [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]
-            .find(b => /Далее/.test(b.textContent));
-        assert.ok(next, key + ': нет кнопки «Далее»');
-        next.click();
-        assert.ok(app.document.querySelector('#exerciseQuestion canvas'), key + ': следующий вопрос без холста');
-    }
+    // Карточка показа — только начертание и название: надписи «Готово» над
+    // буквой быть не должно (кнопку с этим словом уже нажали, и после показа
+    // она заменена кнопкой «Далее»).
+    assert.strictEqual(
+        app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__title').length, 0,
+        'над буквой остался заголовок карточки показа');
+    assert.ok(!/Готово/.test(app.document.getElementById('exerciseQuestion').textContent),
+        'на карточке показа осталось слово «Готово»');
+    assert.strictEqual(
+        app.document.querySelector('#exerciseQuestion .letter-write-reveal').children.length, 2,
+        'в карточке показа не два элемента — начертание и название');
+
+    // Переключение на самом показе перерисовывает его же и не считает ответ.
+    const correct = app.get('stats.totalCorrect');
+    w.setLetterWriteStyle('print');
+    const reprinted = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
+    assert.ok(!reprinted.classList.contains('script--cursive'), 'печатный показ остался прописью');
+    assert.strictEqual(app.get('stats.totalCorrect'), correct, 'переключение засчитало ответ второй раз');
+    assert.strictEqual(app.get('exerciseState.index'), 0, 'переключение сдвинуло прогресс');
+
+    // Выбор держится до конца упражнения: следующий вопрос — та же пропись.
+    w.setLetterWriteStyle('cursive');
+    const next = [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]
+        .find(b => /Далее/.test(b.textContent));
+    assert.ok(next, 'нет кнопки «Далее»');
+    next.click();
+    assert.ok(app.document.querySelector('#exerciseQuestion canvas'), 'следующий вопрос без холста');
+    assert.strictEqual(checked().join(','), 'cursive', 'выбор начертания не пережил переход к вопросу');
+    w.completeLetterWritingPractice();
+    assert.ok(app.document.querySelector('.letter-write-reveal__forms.script--cursive'),
+        'следующий показ не прописью, хотя выбор был прописью');
+
+    // Заново открытое упражнение снова начинает с печатного начертания.
+    w.startLessonDrill('exercise', 'letter_write');
+    assert.strictEqual(checked().join(','), 'print', 'повторный вход не сбросил начертание');
+    assert.strictEqual(app.get('exerciseState.index'), 0, 'повторный вход не начал упражнение заново');
 
     assert.deepStrictEqual(app.errors, []);
     app.close();

@@ -10,6 +10,11 @@ let stats = { totalCorrect: 0, totalWrong: 0, errors: {} };
 let testState = { questions: [], index: 0, correct: 0, total: 10, answered: false };
 let flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
 let exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0 };
+// Начертание показа в упражнении письма: 'print' или 'cursive'. Лежит рядом
+// с состоянием упражнения, но не внутри: переключатель меняет только то, как
+// рисуется показ, а вопрос, его номер и счёт остаются те же. Ставится заново
+// в startExercise, поэтому открытое упражнение всегда начинается с печатного.
+let letterWriteStyle = 'print';
 let allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all' };
 let translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
 let prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
