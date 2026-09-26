@@ -73,13 +73,6 @@
     text-align: center;
     min-height: 180px;
 }
-.letter-write-reveal__title {
-    font-size: 0.75rem;
-    line-height: 1rem;
-    letter-spacing: 0.03125rem;
-    text-transform: uppercase;
-    color: var(--md-sys-color-on-surface-variant);
-}
 .letter-write-reveal__forms {
     display: flex;
     align-items: center;

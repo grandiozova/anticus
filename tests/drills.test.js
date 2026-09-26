@@ -82,6 +82,12 @@ test('греческий показ буквы идёт прописной вп�
             app.document.querySelectorAll('#exerciseQuestion [dir], #exerciseQuestion [style*="rtl"]').length,
             0,
             q.name + ': в греческом показе не должно быть ни dir, ни rtl');
+
+        // Греческий показ собирается своей строкой, а не ветвью еврейского:
+        // заголовка «Готово» над буквами здесь тоже быть не должно.
+        assert.strictEqual(
+            app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__title').length, 0,
+            q.name + ': над буквами остался заголовок карточки показа');
     }
 
     app.close();
@@ -113,6 +119,18 @@ test('письмо от руки: печатный показ и прописи 
         assert.ok(forms.classList.contains('script'), key + ': показ не помечен .script');
         assert.strictEqual(forms.classList.contains('script--cursive'), cursive,
             key + ': рукописный класс ' + (cursive ? 'не поставлен' : 'поставлен зря'));
+
+        // Карточка показа — только начертание и название: надписи «Готово» над
+        // буквой быть не должно (кнопку с этим словом уже нажали, и после показа
+        // она заменена кнопкой «Далее»).
+        assert.strictEqual(
+            app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__title').length, 0,
+            key + ': над буквой остался заголовок карточки показа');
+        assert.ok(!/Готово/.test(app.document.getElementById('exerciseQuestion').textContent),
+            key + ': на карточке показа осталось слово «Готово»');
+        assert.strictEqual(
+            app.document.querySelector('#exerciseQuestion .letter-write-reveal').children.length, 2,
+            key + ': в карточке показа не два элемента — начертание и название');
 
         // Дальше — следующий вопрос с чистым холстом, как в печатном письме.
         const next = [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]

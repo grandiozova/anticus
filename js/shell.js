@@ -1,8 +1,8 @@
 // ============================================================
 // M3 SHELL: top app bar, navigation bar, FAB
 // ============================================================
-// currentLessonPart и pluralRu живут в core.js вместе с остальным
-// состоянием — здесь только оболочка вокруг экранов.
+// currentLessonPart живёт в core.js вместе с остальным состоянием —
+// здесь только оболочка вокруг экранов.
 let currentSectionId = 'mainMenu';
 let titleFadeTimer = null;
 
@@ -210,12 +210,15 @@ function renderMainMenu() {
         if (!data) continue;
         if (grid.children.length) grid.appendChild(Object.assign(document.createElement('hr'), { className: 'md-divider' }));
         let btn = document.createElement('button');
-        btn.className = 'lesson-item';
+        // Одна строка — номер и название. Подписи со счётчиками («24 слова ·
+        // 181 упражнение») у строки урока нет намеренно: список читается как
+        // оглавление, а не как отчёт о содержимом урока. Однострочный list item
+        // берёт у M3 свою высоту — как пункты меню разделов с той же разметкой.
+        btn.className = 'lesson-item lesson-item--single';
         btn.innerHTML =
             '<span class="lesson-item__avatar">' + l + '</span>' +
             '<span class="lesson-item__text">' +
                 '<span class="lesson-item__headline">' + data.title + '</span>' +
-                '<span class="lesson-item__supporting">' + describeLesson(l, data) + '</span>' +
             '</span>' +
             '<span class="lesson-item__trailing msym">' + (l === last ? 'resume' : 'chevron_right') + '</span>';
         btn.onclick = (function(lesson) { return function() { openLesson(lesson); }; })(l);
@@ -225,14 +228,4 @@ function renderMainMenu() {
     if (heading) {
         heading.textContent = 'Уроки ' + numbers[0] + '–' + numbers[numbers.length - 1];
     }
-}
-
-// Подпись урока: сколько слов и какие материалы доступны
-function describeLesson(l, data) {
-    let bits = [];
-    if (data.vocabulary && data.vocabulary.length) bits.push(data.vocabulary.length + ' ' + pluralRu(data.vocabulary.length, 'слово', 'слова', 'слов'));
-    let exCount = 0;
-    if (data.exercises) for (let k in data.exercises) if (data.exercises[k] && data.exercises[k].length) exCount += data.exercises[k].length;
-    if (exCount) bits.push(exCount + ' ' + pluralRu(exCount, 'упражнение', 'упражнения', 'упражнений'));
-    return bits.length ? bits.join(' · ') : 'Теория';
 }

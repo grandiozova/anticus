@@ -494,19 +494,21 @@ function completeLetterWritingPractice() {
     saveStats();
 
     const isGreek = !!q.upper;
+    // Карточка показа — только начертание и название. Надписи «Готово» над
+    // буквой нет намеренно: кнопка с этим словом уже нажата, а карточка
+    // показывает ответ, а не подтверждает нажатие.
+    //
     // Прописи отличаются от печатного показа одним классом: гарнитуру берёт
     // .script--cursive (styles/base.css). Кегль, направление и цвет — те же.
     const cursive = exerciseWritingStyle(exerciseState.type) === 'cursive';
     const reveal = isGreek ?
         '<div class="letter-write-reveal">' +
-        '<div class="letter-write-reveal__title">Готово</div>' +
         '<div class="letter-write-reveal__forms">' +
         letterWriteForms(q).map(f => '<span class="script">' + f + '</span>').join('') +
         '</div>' +
         '<div class="letter-write-reveal__name script">' + q.name + '</div>' +
         '</div>' :
         '<div class="letter-write-reveal">' +
-        '<div class="letter-write-reveal__title">Готово</div>' +
         '<div class="letter-write-reveal__forms script' + (cursive ? ' script--cursive' : '') + '">' + q.letter + '</div>' +
         '<div class="letter-write-reveal__name">' + q.name + '</div>' +
         '</div>';

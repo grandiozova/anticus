@@ -64,6 +64,31 @@ test('главный экран показывает все уроки из да
     app.close();
 });
 
+test('в строке урока только номер и название — без счётчиков', () => {
+    // Подпись «24 слова · 181 упражнение» убрана намеренно: список уроков
+    // читается как оглавление, а не как отчёт о содержимом. Проверяем оба
+    // курса: список рисует одна функция (renderMainMenu), но данные у курсов
+    // разные, и вернуть подпись можно было бы ветвью по курсу.
+    const app = loadApp();
+    const w = app.window;
+    for (const course of ['greek', 'hebrew']) {
+        w.applyCourse(course);
+        const box = app.document.getElementById('lessonGrid');
+        assert.strictEqual(box.querySelectorAll('.lesson-item__supporting').length, 0,
+            course + ': в списке уроков осталась подпись со счётчиками');
+        const items = [...box.querySelectorAll('.lesson-item')];
+        assert.ok(items.length > 0, course + ': список уроков пуст');
+        for (const item of items) {
+            assert.strictEqual(item.querySelectorAll('.lesson-item__headline').length, 1,
+                course + ': в строке урока не одно название');
+            assert.strictEqual(item.querySelector('.lesson-item__text').textContent,
+                item.querySelector('.lesson-item__headline').textContent,
+                course + ': под названием урока есть что-то ещё');
+        }
+    }
+    app.close();
+});
+
 test('заголовок списка называет реальный диапазон уроков', () => {
     const app = loadApp();
     const numbers = app.get('lessonNumbers()');
