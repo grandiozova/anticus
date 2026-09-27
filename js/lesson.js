@@ -30,11 +30,7 @@ const LESSON_DRILL_GROUPS = [
             { kind: 'exercise', key: 'diphthong_sound', label: 'Дифтонги', icon: 'hearing' },
             { kind: 'exercise', key: 'breathing_type', label: 'Придыхание', icon: 'compare' },
             { kind: 'exercise', key: 'accent_type', label: 'Знаки ударения', icon: 'target' },
-            { kind: 'exercise', key: 'heb_letter_translit', label: 'Транслитерация', icon: 'translate' },
-            { kind: 'exercise', key: 'heb_letter_final', label: 'Конечные формы', icon: 'segment' },
-            // rule, как у heb_gutturals: warning в пункте списка читается как
-            // сообщение об ошибке, а не как тема упражнения.
-            { kind: 'exercise', key: 'heb_letter_guttural', label: 'Гортанные', icon: 'rule' }
+            { kind: 'exercise', key: 'heb_letter_final', label: 'Конечные формы', icon: 'segment' }
         ]
     },
     {

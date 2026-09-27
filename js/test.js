@@ -8,7 +8,7 @@ const TEST_TYPES = [
     'letter_name', 'letter_from_name', 'letter_sound', 'letter_order',
     'letter_case_lower', 'letter_case_upper', 'diphthong_sound',
     'breathing_type', 'accent_type',
-    'heb_letter_translit', 'heb_letter_final', 'heb_letter_guttural',
+    'heb_letter_final',
     'declension_fill', 'translate_greek_to_russian', 'translate_russian_to_greek',
     'case_number', 'agreement', 'attribute_vs_predicate', 'substantivation', 'article_fill',
     'heb_vowel_name', 'heb_vowel_sound', 'heb_vowel_fill', 'heb_shva', 'heb_dagesh', 'heb_qamets',

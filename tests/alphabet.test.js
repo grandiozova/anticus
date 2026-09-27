@@ -32,8 +32,8 @@ const HEBREW = { storage: { app_course: 'hebrew', app_default_course: 'hebrew' }
 
 const GREEK_KEYS = ['letter_name', 'letter_from_name', 'letter_sound', 'letter_order',
     'letter_case_lower', 'letter_case_upper', 'diphthong_sound', 'breathing_type'];
-const HEBREW_KEYS = ['letter_name', 'letter_from_name', 'letter_sound', 'letter_order',
-    'heb_letter_translit', 'heb_letter_final', 'heb_letter_guttural', 'heb_begadkefat',
+const HEBREW_KEYS = ['letter_name', 'letter_from_name', 'letter_sound',
+    'heb_letter_final', 'heb_begadkefat',
     'heb_vowel_name', 'heb_vowel_sound'];
 const ALPHABET_KEYS = GREEK_KEYS.concat('accent_type', HEBREW_KEYS);
 
@@ -536,9 +536,8 @@ test('письмо от руки спрашивает 28 букв: конечн�
     assert.strictEqual(write.filter(q => q.finalForm).length, 5, 'помечены не пять конечных форм');
 
     // Пул не тронут: конечные — по-прежнему отдельный список, а ש — одна буква
-    // с двумя чтениями. На этом стоит heb_letter_final (попади конечная
-    // в letters, у его вопросов стало бы два верных ответа) и letter_order
-    // (две подряд буквы ש сломали бы вопрос «какая буква идёт следом»).
+    // с двумя чтениями. На этом стоит heb_letter_final: попади конечная
+    // в letters, у его вопросов стало бы два верных ответа.
     assert.strictEqual(letters.length, 22, 'основных букв в пуле не 22');
     const pooled = letters.find(l => l.letter === BARE);
     assert.strictEqual(pooled.name, 'син / шин', 'в пуле ש перестала быть одной буквой');
@@ -669,37 +668,11 @@ test('бегадкефат: буква и её вид названы так же
     }
 });
 
-test('гортанные — те четыре буквы, что названы в пособии', () => {
-    const app = loadApp(GREEK);
-    const grammar = app.get('HEBREW_LESSONS_DATA[1].grammar');
-    const questions = JSON.parse(app.get('JSON.stringify(HEBREW_LESSONS_DATA[1].exercises.heb_letter_guttural)'));
-    app.close();
-
-    // «Гортанных согласных четыре: א, ע, ה и ח. Согласный ר тоже часто ведёт
-    // себя как гортанный» — названа гортанной четвёрка, ר только ведёт себя так.
-    const plain = withoutTags(grammar);
-    const m = /Гортанных согласных четыре:([\s\S]*?)\./.exec(plain);
-    assert.ok(m, 'в главе 1 нет фразы о гортанных');
-    const four = m[1].match(/[\u05D0-\u05EA]/g) || [];
-    assert.strictEqual(four.join(''), 'אעהח', 'в пособии названы не א, ע, ה и ח: ' + four.join(''));
-    assert.ok(/Согласный\s*ר\s*тоже/.test(plain), 'в пособии не сказано отдельно про ר');
-
-    const yes = questions.filter(q => q.correct === 'Гортанная').map(q => q.letter);
-    assert.strictEqual(yes.join(''), four.join(''), 'в вопросах гортанные не те, что названы в пособии');
-    assert.ok(!yes.includes('ר'), 'реш назван гортанной, а пособие говорит «ведёт себя как»');
-
-    // «Не гортанная» — тоже ответ, поэтому в вопросах должны быть и другие буквы.
-    const no = questions.filter(q => q.correct === 'Не гортанная');
-    assert.ok(no.length > 0, 'нет вопросов с ответом «не гортанная»');
-    no.forEach(q => assert.ok(!four.includes(q.letter), q.letter + ' названа не гортанной'));
-    questions.forEach(q => assert.ok(
-        q.correct === 'Гортанная' || q.correct === 'Не гортанная', 'неожиданный ответ: ' + q.correct));
-});
-
 test('«какая буква следом» спрашивает про каждую букву, кроме последней', () => {
+    // Вопрос есть только у греческого курса: в еврейском главе 1 этот вид
+    // больше не задаётся (см. data/hebrew-lessons.js).
     const courses = [
-        ['greek', GREEK, 23, 'ω', 'αβγδεζηθικλμνξοπρστυφχψω'],
-        ['hebrew', HEBREW, 21, 'ת', 'אבגדהוזחטיכלמנסעפצקרשת']
+        ['greek', GREEK, 23, 'ω', 'αβγδεζηθικλμνξοπρστυφχψω']
     ];
 
     for (const [id, opts, count, last, order] of courses) {
@@ -787,8 +760,8 @@ test('алфавитные упражнения не считаются ввод
     const plan = [
         ['greek', GREEK_KEYS, 1],
         ['greek', ['accent_type'], 2],
-        ['hebrew', HEBREW_KEYS.slice(0, 8), 1],
-        ['hebrew', HEBREW_KEYS.slice(8), 2]
+        ['hebrew', HEBREW_KEYS.slice(0, 5), 1],
+        ['hebrew', HEBREW_KEYS.slice(5), 2]
     ];
 
     for (const [course, keys, lesson] of plan) {

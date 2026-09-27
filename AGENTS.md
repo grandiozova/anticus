@@ -405,13 +405,14 @@ own answer handler. A new kind is an entry in that table, not a branch.
   it, by calling `exerciseOptions()`.
 - **Keys name the concept, not the language, when the concept is shared.** `agreement`,
   `translate_*` and `article_fill` are used by both courses — Hebrew's article question
-  is the same question, just with `הָ`/`הַ`/`הֶ` as the forms. So are the four
+  is the same question, just with `הָ`/`הַ`/`הֶ` as the forms. So are the
   `letter_*` kinds both courses answer (`letter_name`, `letter_from_name`,
-  `letter_sound`, `letter_order`). Kinds that exist only in
+  `letter_sound`); `letter_order` is the alphabet drill only the Greek course
+  asks. Kinds that exist only in
   the Hebrew course are prefixed `heb_`: `heb_vowel_name`, `heb_vowel_fill`, `heb_shva`,
   `heb_dagesh`, `heb_qamets`, `heb_gender_number`, `heb_begadkefat`, `heb_syllables`,
   `heb_gutturals`, `heb_construct`, `heb_suffix_type`, plus the alphabet's
-  `heb_letter_translit`, `heb_letter_final` and `heb_letter_guttural`. Hebrew has no
+  `heb_letter_final`. Hebrew has no
   cases, so `heb_gender_number` is its own kind rather than a reuse of Greek's
   `case_number`, which is labelled «Падеж и число». The prefix is a convention for
   readers; no code parses it.
@@ -426,7 +427,7 @@ own answer handler. A new kind is an entry in that table, not a branch.
 The first lesson of each course has no words in it: Greek lesson 1 and Hebrew chapter 1
 are the letters, and the lesson after them is the reading rules (Greek: diphthongs,
 breathings, accents; Hebrew: the vowel points). Those two units per course are now
-drilled like any other material — fifteen kinds exist for them.
+drilled like any other material — thirteen kinds exist for them.
 
 **The letters live in a pool per course, not in the questions.** `GREEK_ALPHABET`
 (`data/lessons.js`) and `HEBREW_ALPHABET` (`data/hebrew-lessons.js`) hold the letters

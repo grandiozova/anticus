@@ -117,9 +117,9 @@ const HEBREW_ALPHABET = {
 //      разница между ними — один комбинирующий знак, в редакторе глазами её не
 //      видно, а tests/hebrew-content.test.js сверяет результат с пособием и
 //      поймает и потерянную точку, и перепутанную сторону. В остальных видах
-//      (letter_name, heb_letter_translit) ש по-прежнему одна буква с двумя
-//      чтениями — «син / шин», «ś / š» — и трогать пул нельзя: на нём стоит
-//      и порядок букв у letter_order.
+//      (letter_name, letter_from_name, letter_sound) ש по-прежнему одна буква
+//      с двумя чтениями — «син / шин», «ś / š» — и трогать пул нельзя: на нём
+//      стоит и таблица алфавита.
 //   2. Конечные помечены finalForm: у них своё начертание, и упражнение письма
 //      обязано сказать об этом до того, как ученик начнёт рисовать. Пометка
 //      ставится здесь, где пара «основная — конечная» и так под рукой, чтобы
@@ -173,8 +173,8 @@ const HEBREW_LESSONS_DATA = {
 <tr><th>Щелевые</th><td lang="he">ב</td><td lang="he">ג</td><td lang="he">ד</td><td lang="he">כ</td><td lang="he">פ</td><td lang="he">ת</td></tr>
 </table><br><br><b>4. Гортанные</b><br>Гортанных согласных четыре: <span class="script">א</span>, <span class="script">ע</span>, <span class="script">ה</span> и <span class="script">ח</span>. Согласный <span class="script">ר</span> тоже часто ведёт себя как гортанный. Гортанные не удваиваются — это понадобится в главе 5.`,
         // Глава 1 — алфавит. Как и в греческом уроке 1, вопросы собраны из
-        // HEBREW_ALPHABET, а не переписаны: 22 буквы, их названия,
-        // транслитерация и конечные формы лежат там.
+        // HEBREW_ALPHABET, а не переписаны: 22 буквы, их названия и конечные
+        // формы лежат там.
         exercises: {
             letter_name: HEBREW_ALPHABET.letters,
             // Письмо — единственный алфавитный вид, которому нужны конечные
@@ -184,23 +184,7 @@ const HEBREW_LESSONS_DATA = {
             letter_write: HEBREW_WRITE_LETTERS,
             letter_from_name: HEBREW_ALPHABET.letters,
             letter_sound: HEBREW_ALPHABET.letters,
-            letter_order: HEBREW_ALPHABET.letters.slice(0, -1),
-            heb_letter_translit: HEBREW_ALPHABET.letters,
             heb_letter_final: HEBREW_ALPHABET.finals,
-            // Гортанных в пособии четыре: א, ע, ה и ח. Буква ר «тоже часто ведёт
-            // себя как гортанный» — в вопрос она не идёт, иначе верных ответов
-            // было бы два. Негортанные — первые четыре буквы алфавита из тех,
-            // что гортанными не названы.
-            heb_letter_guttural: [
-                {letter:"א", correct:"Гортанная"},
-                {letter:"ע", correct:"Гортанная"},
-                {letter:"ה", correct:"Гортанная"},
-                {letter:"ח", correct:"Гортанная"},
-                {letter:"ב", correct:"Не гортанная"},
-                {letter:"ג", correct:"Не гортанная"},
-                {letter:"ד", correct:"Не гортанная"},
-                {letter:"ו", correct:"Не гортанная"}
-            ],
             // Шесть букв бегадкефат: с дагешем смычное, без дагеша щелевое.
             // Подписи те же, что у heb_begadkefat в главе 3, где тот же вопрос
             // задаётся о букве в слове, — иначе один ответ назывался бы двумя
