@@ -244,6 +244,66 @@ const GRAMMAR_HEAD_RE = /^<b>((?:(?!<\/b>)[\s\S])*)<\/b>$/i;
 // U+0001 в учебном тексте не встречается — им и метим место вынутого элемента
 const LIFT_MARK = '\u0001';
 
+// Вставка изучаемого языка внутри строки материала: слово или фраза из подряд
+// идущих букв этого письма. Промежутки внутри вставки — её же, иначе фраза
+// распалась бы на отдельные слова с чужим направлением между ними. Класс
+// символов берётся у core.js, чтобы «что считать изучаемым письмом» было
+// записано в приложении один раз.
+const GRAMMAR_SCRIPT_RUN_RE = new RegExp('[' + SCRIPT_CHAR_CLASS + ']+(?:\\s+[' + SCRIPT_CHAR_CLASS + ']+)*', 'g');
+// Элемент, который уже помечен как изучаемый язык: классом (автор разметил
+// вставку сам) или языком (ячейка таблицы, <td lang="he">).
+const GRAMMAR_MARKED_RE = /\bclass\s*=\s*["'][^"']*\b(?:script|greek|hebrew)\b|(?:^|\s)lang\s*=/i;
+// Элементы без закрывающего тега: их не надо класть в стек открытых.
+const GRAMMAR_VOID_RE = /^<(?:br|hr|img|input|wbr)\b/i;
+
+// Помечает вставки изучаемого языка в строке материала.
+//
+// Греческий материал набран без разметки: греческие слова стоят в тексте как
+// есть — чаще всего внутри <b> или <i>, — и отличить их от русского можно
+// только по алфавиту. Расставлять обёртки руками значило бы править тридцать
+// три урока и повторять эту работу при каждой правке материала, поэтому вставки
+// помечает отрисовка. Текст при этом не меняется: <span class="script">
+// добавляется вокруг того, что и так набрано изучаемым письмом, а кегль вставке
+// задаёт .grammar-p .script (styles/screens.css).
+//
+// Уже помеченное не трогаем, и это не мелочь: еврейские главы размечены
+// автором по слову, и вторая обёртка внутри первой ничего, кроме лишней
+// вложенности, не дала бы. Таблицы и списки, набранные тегами, сюда не доходят
+// вовсе — их вынимает GRAMMAR_LIFT_RE ещё до разбора на блоки, поэтому кегль в
+// них остаётся табличным (см. .md-table--pool__glyph в styles/screens.css).
+function wrapScriptRuns(html) {
+    if (!html || !isScriptText(html)) return html;
+    let out = '';
+    let open = [];               // стек открытых элементов: {marked}
+    let i = 0;
+    while (i < html.length) {
+        if (html[i] === '<') {
+            let end = html.indexOf('>', i);
+            if (end === -1) { out += html.slice(i); break; }
+            let tag = html.slice(i, end + 1);
+            out += tag;
+            i = end + 1;
+            if (/^<\//.test(tag)) open.pop();
+            else if (!/\/>$/.test(tag) && !GRAMMAR_VOID_RE.test(tag)) {
+                open.push({ marked: markedElement(open) || GRAMMAR_MARKED_RE.test(tag) });
+            }
+            continue;
+        }
+        let end = html.indexOf('<', i);
+        if (end === -1) end = html.length;
+        let text = html.slice(i, end);
+        out += markedElement(open)
+            ? text
+            : text.replace(GRAMMAR_SCRIPT_RUN_RE, m => '<span class="script">' + m + '</span>');
+        i = end;
+    }
+    return out;
+}
+
+function markedElement(open) {
+    return open.length > 0 && open[open.length - 1].marked;
+}
+
 // Вынутый элемент возвращается на место самостоятельным блоком: таблица — в
 // полосе горизонтальной прокрутки, список — с тем же классом, что и список,
 // собранный из строк с «•». Без класса он достался бы глобальному сбросу
@@ -302,13 +362,13 @@ function grammarBlockHtml(chunk) {
         if (head) {
             // Заголовку нужен воздух сверху, которого у строки абзаца быть не может
             flushList(); flushPara();
-            out += '<h4 class="grammar-h">' + head[1] + '</h4>';
+            out += '<h4 class="grammar-h">' + wrapScriptRuns(head[1]) + '</h4>';
         } else if (/^•/.test(line)) {
             flushPara();
-            list.push(line.replace(/^•\s*/, ''));
+            list.push(wrapScriptRuns(line.replace(/^•\s*/, '')));
         } else {
             flushList();
-            para.push(line);
+            para.push(wrapScriptRuns(line));
         }
     });
     flushList();

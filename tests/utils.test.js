@@ -259,3 +259,31 @@ test('грамматика урока разбирается в блоки, а �
     }
     app.close();
 });
+
+test('вставки изучаемого языка в прозе помечены, а таблицы остаются как есть', () => {
+    // Греческий материал набран без разметки, и вставки ему ставит
+    // wrapScriptRuns() при отрисовке. Проверяем обе стороны: проза получает
+    // метку, по которой её находит правило кегля, а таблица — нет, потому что
+    // внутри таблицы свой кегль, и обёртка сломала бы его (в главе 2 иврита
+    // таблица огласовок держится на .md-table-pool__glyph).
+    const app = loadApp();
+    const w = app.window;
+
+    // Урок 1 — алфавит: таблица целиком греческая, прозы почти нет.
+    w.openLesson(1);
+    const box = app.document.getElementById('grammarContent');
+    assert.strictEqual(box.querySelectorAll('.md-table-scroll .script').length, 0,
+        'обёртка дотянулась до таблицы материала');
+
+    // Урок 3 — проза со спряжением: там греческие слова есть и в тексте.
+    w.openLesson(3);
+    const marked = box.querySelectorAll('.grammar-p .script, .grammar-h .script, .grammar-list .script');
+    assert.ok(marked.length > 0, 'проза материала осталась без меток изучаемого языка');
+    assert.ok([...marked].some(el => w.isScriptText(el.textContent)),
+        'метка стоит не на тексте изучаемого языка: ' + marked[0].textContent);
+    // Второй обёртки быть не должно: у иврита она уже есть в данных,
+    // и вложенность сломала бы и кегль, и проверку разметки в tests/rtl.test.js.
+    assert.strictEqual(box.querySelectorAll('.script .script').length, 0,
+        'вложенная обёртка изучаемого языка');
+    app.close();
+});

@@ -650,7 +650,15 @@
 }
 .word-bank--script .chip, .build-area--script .token {
     font-family: var(--md-ref-typeface-script);
-    font-size: calc(max(0.9375rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    /* Фишка банка слов — это ответ: из них собирают фразу, и кегль у них
+       такой же, как у вариантов ответа (styles/screens.css), с теми же двумя
+       множителями. Нижний предел кегля остаётся на месте: именно на нём
+       стоит мелкий текст изучаемого языка, а у иврита он поднимает основание
+       до 1.25rem — отсюда 38px у иврита против 27px у греческого. */
+    font-size: calc(max(1.125rem, var(--md-ref-script-min-size)) * var(--md-ref-script-size) * var(--md-ref-script-scale));
+    /* Высота строки числом: кегль вырос, а 1.25rem из базового правила
+       оставили бы строки фишки налезающими друг на друга. */
+    line-height: 1.3;
 }
 
 /* ============================================================
@@ -720,6 +728,18 @@
     line-height: 1.5rem;
     color: var(--md-sys-color-on-surface);
     margin-bottom: 4px;
+}
+/* Тот же пример употребления, но в раскрытой словарной статье: здесь это
+   материал для чтения, и он берёт шаг кегля изучаемого языка — как проза
+   материала. Селектор нарочно сужен до .word-details: этим же компонентом
+   показывает словосочетание карточка (js/flashcards.js), а карточки
+   набираются своим кеглем (см. .flashcard-word в styles/screens.css).
+   Основание прежнее — 1.0625rem, чуть больше заголовка статьи; предел
+   огласовки снова стоит после шага, иначе у иврита он поднял бы основание
+   до 1.25rem и результат прыгнул бы до 38px в карточке примера. */
+.word-details .vocab-example__script {
+    font-size: calc(max(1.0625rem * var(--md-ref-script-size), var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    line-height: 1.4;
 }
 .vocab-example__script strong {
     color: var(--md-sys-color-primary);

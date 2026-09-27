@@ -85,7 +85,7 @@ online test. When you add:
 | a screen | markup + `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` |
 | an exercise kind | `EXERCISE_TYPES` + `LESSON_DRILL_GROUPS` and/or `TEST_TYPES` |
 | a colour role | `:root`, `[data-theme="dark"]` **and** `[data-theme="sepia"]` |
-| a `font-size` on studied-language text | `* var(--md-ref-script-scale)` on it — see "Text size" |
+| a `font-size` on studied-language text | `* var(--md-ref-script-scale)` on it, plus `* var(--md-ref-script-size)` where it is the subject — see "Text size" |
 | a part-of-speech `type` | `VOCAB_TYPE_ORDER` + `TYPE_LABELS` |
 | a cache that spans screens | a reset in `applyCourse()` |
 | a dependency, font or asset | an entry in `data/licenses.js` |
@@ -183,6 +183,19 @@ Structural facts worth knowing before editing:
 - **The lesson is three levels deep, not one.** Opening a lesson lands on `#partMenu` — its sections offered as a list of M3 list items (`renderLessonMenu()`), not on the material. Choosing one calls `switchLessonPart()`, which reveals the tab bar; `#lessonTabs` carries `.hidden` while the part is `'menu'`, so the tabs exist only inside a section, where there is something to switch between. The part names map to panel ids by capitalisation (`material` → `partMaterial`, `menu` → `partMenu`), which is what `switchLessonPart()` and `restoreLessonPart()` rely on, and `'menu'` is a part like any other — that is why `currentLessonPart` starts as `'menu'`. Back is a step **up**, not out: `goBack()` (`js/shell.js`) turns a section back into the menu, and only from the menu does it leave for the lesson list.
 - **`#partMaterial` holds the grammar card with the lesson's vocabulary card under it; `#partExercise` holds only the list of drills.** A drill is one entry in `LESSON_DRILL_GROUPS` (`js/lesson.js`) with a `kind` that says what runs it and where it draws: `exercise` → `startExercise()` into `#exerciseQuestion`, `translation` → `startTranslation()` into `#translationQuestion`, `flashcards` → `startFlashcards()` into `#flashcardContainer`. Those three containers live on **`#drillSection`, a screen of its own** — a chosen drill is a page, not a card appended under the list. `startLessonDrill()` shows the one container the chosen drill needs, clears the other two and calls `showSection('drillSection')`, so the three renderers keep their own ids and none of them had to change; `closeLessonDrill()` is the way back, and every drill's result block offers it. The app bar titles that screen from `currentDrill.label`, which is why `currentDrill` holds the drill **object**. Adding a drill means one entry in that catalogue — plus an availability rule in `lessonDrillAvailable()` if it is not an `exercises`/`translation` key.
 - **The grammar in `data/lessons.js` is a `<br>`-separated stream, and the app does not render it raw.** In the data, paragraphs are separated by pairs of `<br>`, a section heading is a line that is nothing but `<b>…</b>`, and a list is *either* lines starting with `•` *or* a real `<ul>` (lesson 5 is the one that uses tags). That shape makes vertical rhythm a function of how many `<br>` someone typed, and it puts a wrapped bullet's second line under the marker. `renderGrammarHtml()` (`js/lesson.js`) rebuilds it into real blocks at render time — `.grammar-h`, `.grammar-p`, `.grammar-list` — so spacing comes from CSS instead. It changes markup only, never text; `<b>Примечание:</b> …` with the sentence continuing on the same line stays a paragraph, which is why the heading test requires the bold element to span the **whole** line. Fix grammar spacing here or in `screens.css`, **not** by editing `<br>` runs in the content.
+- **Studied-language runs in the prose are marked at render time.** The Greek
+  material carries no markup for its Greek words — they sit inside `<b>` / `<i>` —
+  so `wrapScriptRuns()` (`js/lesson.js`) wraps every run of Greek-or-Hebrew
+  characters in `<span class="script">` while the blocks are built, and CSS gives
+  it its size. Three things it deliberately does not do: it never touches text
+  inside an element that is already marked (the Hebrew chapters are marked word by
+  word by hand, and a second wrapper changes nothing but nesting), it never
+  touches a lifted table or a tag-built list (they keep their table sizes —
+  `.md-table-pool__glyph`, `td.script`), and it changes no text, only markup. The
+  prose blocks are named in the selector (`.grammar-p .script`, …) rather than
+  using `.grammar-text .script`, because a grammar table also lives under
+  `.grammar-text` and the descendant selector (0,2,0) would beat
+  `.md-table-pool__glyph` (0,1,0) and break the chapter-2 vowel table.
 - **`<table>`, `<ul>` and `<ol>` are lifted out of the stream before it is split** (`GRAMMAR_LIFT_RE` → placeholders → `grammarLiftedHtml()`). Two reasons, and both bite: `<br>` and `•` mean nothing inside them, and — the subtler one — a native `<ul>` in the source has no `<br>` around it, so without lifting, the paragraph before it, the list, and the paragraph after it all collapse into one `.grammar-p` with no spacing between them, and the `<ul>` never gets `.grammar-list`, which drops it through to the global `* { margin: 0; padding: 0 }` reset with no indent at all. A lifted table comes back wrapped in `.md-table-scroll`; a lifted list comes back carrying `.grammar-list`, the same class the `•` form produces. The lift regex is non-nesting — a list inside a list would break it, and there are none.
 - **Cells take their alignment from the strip, not from their own text** — `--md-table-align`, never `text-align: start`. See "Writing direction" for why the logical value is wrong here.
 - **A table wider than the screen scrolls inside its own strip; the page never scrolls sideways.** Every table sits in `.md-table-scroll` (`overflow-x: auto` plus `overscroll-behavior-x: contain`, so the gesture does not chain to the page), and `body` has `overflow-x: clip` as the backstop — `clip` rather than `hidden` because `hidden` would make `body` a scroll container and break the `window.scrollY` the app bar reads. Inside the strip the table is `width: auto; min-width: 100%` and its cells are `white-space: nowrap`: squeezing columns to fit would inflate a row to three lines because of a «Перевод» column that is off-screen anyway. All cells are left-aligned. If you add a table anywhere, wrap it.
@@ -192,6 +205,7 @@ Structural facts worth knowing before editing:
 - Top-level `let` and `const` bindings — state (`stats`, `testState`, `allFlashcardState`, …) *and* the data (`LESSONS_DATA`, `PRAYER_DATA`, `LICENSES`) — are **not** on `window`; splitting the data into their own files did not change this, because `const` at the top level of a classic script never creates a window property. `function` declarations *are* on `window`. So a harness can call `window.openLesson(3)` but must reach data through `window.eval('LESSONS_DATA')`. Test through the DOM, not through `window.someState`.
 - **Формы слова тренируются на обороте карточки, а не отдельным упражнением.** `declension_fill` больше не значится в `LESSON_DRILL_GROUPS`: круглая кнопка в углу карточки (появляется только после «Показать перевод») переворачивает её и запускает тот же вопрос о форме с теми же `.option-btn`. Вопросы собирает `cardDeclensionQuestions()` (`js/flashcards.js`) из двух источников — авторских `exercises.declension_fill` урока про это же слово (их дистракторы продуманы вручную, и их же берёт «Тест», поэтому данные не осиротели) и остальной парадигмы из `declension_forms`. Ключи генерируемых форм намеренно совпадают с авторскими (`gen_sg`, `2pl`, `nom_pl_m`, `dat_sg_f`), иначе один и тот же падеж попадёт в колоду дважды. Результат кешируется в `word._declQuestions` — тем же приёмом, что `entry._examples`. Ответ перерисовывает только `#cardDeclension`, а не всю карточку: иначе анимация переворота проигрывалась бы на каждый вариант.
 - **The dictionary and the flashcards share one cache.** `buildAllVocabCache()` (`js/vocab.js`) collects the vocabulary of every lesson ≥ `VOCAB_FIRST_LESSON` (lesson 1 is the letter names, not words), de-duplicates it and serves both screens; `startAllFlashcards(type)` builds its deck from there, not from `LESSONS_DATA` directly. A card and a dictionary entry are therefore literally the same object — which is why `findUsageExamples()` caches the full set in `entry._examples` and slices it, instead of caching whatever count the first caller asked for.
+- **The lesson's word list and the dictionary are the same row.** `#vocabList` (`js/lesson.js`) and `#allVocabContent` (`js/vocab.js`) both emit `.word-item > .word-row > strong + span`, and one CSS rule sizes the headword for both — so the two screens cannot drift apart, and a change to `.word-item .word-row strong` shows up in the lesson's material tab as well as in Словарь. The dictionary's rows are expandable in place (`.word-details` holds the examples), the lesson's hold a paradigm table instead.
 - **Part of speech is a filter, not just a heading.** `item.type` in `data/lessons.js` drives the dictionary's section headings, the `.filter-chip` row above both screens, and which words go into a flashcard deck. The permitted values are listed in `VOCAB_TYPE_ORDER` and `TYPE_LABELS` (`js/vocab.js`): `noun`, `verb`, `adjective`, `pronoun`, `adverb`, `preposition`, `conjunction`, `particle`, `article`, `other`. A new type must go into both lists, or its words fall into «Прочее» and get no chip.
 - Progress is `localStorage` only, and the keys are **per course**: `courseKey('stats')` and `courseKey('last_lesson')` resolve to `greek_stats` / `hebrew_last_lesson` and so on. Genuinely global settings take an `app_` prefix instead — `app_theme`, `app_course`, `app_default_course`. Never hard-code a course's key. See "Courses". All reads/writes must stay wrapped in `try/catch` — they throw in private-mode Safari.
 
@@ -575,13 +589,15 @@ A few consequences worth knowing before you touch the rendering:
 - **Niqqud have a floor on how small they may be set.** `--md-ref-script-min-size` is
   `0px` for Greek — the unit matters, see "Text size" — and `1.25rem` for Hebrew, and
   small studied-language text is written
-  `font-size: calc(max(<its own size>, var(--md-ref-script-min-size)) * var(--md-ref-script-scale))`. Hebrew vowel points
-  are dots below and inside the letter: at the 15px the word-bank chips use, the dagesh
-  merges into the letter it sits in and qamets is not distinguishable from segol. Large
-  text — the flashcard word, the drill prompt — is already above the floor and left
-  alone. Add the `max()` when you set a small size on script text, and leave it off
-  where the text may be Russian. The error list has it on `.error-item .script`, which
-  only ever holds text that `isScriptText()` has already recognised.
+  `font-size: calc(max(<its own size>, var(--md-ref-script-min-size)) * var(--md-ref-script-scale))`,
+  with `* var(--md-ref-script-size)` added where the step applies. Hebrew vowel points
+  are dots below and inside the letter: at 15px the dagesh merges into the letter it
+  sits in and qamets is not distinguishable from segol. Large text — the flashcard
+  word, the drill prompt — is already above the floor and carries no `max()`. Add it
+  when you set a small size on script text, and leave it off where the text may be
+  Russian or where the step has already carried it well past 20px (the answer
+  options). The error list has it on `.error-item .script`, which only ever holds
+  text that `isScriptText()` has already recognised.
 - **Paradigm tables turn over with the course** (`.word-details > .md-table-scroll`):
   in RTL the first column is the right one. Grammar tables in the lesson data do not —
   they are often Russian — so they opt in with `<table dir="rtl">`, and
@@ -615,9 +631,19 @@ quietly change what the rendering is asserted against.
 
 ## Text size
 
-Three sliders on the settings screen — interface, Greek, Hebrew — but **two
-multipliers in the CSS**, and the difference is the whole design. `js/fontscale.js`
-holds it; the tokens are in `styles/tokens.css`.
+Three sliders on the settings screen — interface, Greek, Hebrew — and **three
+multipliers in the CSS**: the general scale on the root, the language scale on top
+of it, and the per-language size step that makes the studied language larger than
+the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
+`styles/tokens.css`.
+
+- **A stray comment terminator silently deletes the rule that follows it.** One was
+  left inside the `.script` comment block in `base.css`, and CSS error recovery
+  swallowed the `.script` rule whole — no typeface, no direction, no multiplier —
+  for nine days of commits and hundreds of tests. Nothing caught it because every
+  assertion read the file as *text* and found the rule that the browser had thrown
+  away. `static.test.js` now walks every stylesheet and fails on a terminator
+  outside a comment, so keep the comment blocks balanced when editing them.
 
 - **The general scale is applied to the root, not to `body`.** `html { font-size:
   calc(100% * var(--app-font-scale)) }`. The entire M3 type scale is written in
@@ -647,14 +673,56 @@ holds it; the tokens are in `styles/tokens.css`.
   a step of the slider and cannot leave the range: at a general of 1.4 the Hebrew
   1.68 is cut to 1.6, and the state label computes the real difference rather than
   claiming "+20%" where the ceiling has eaten it.
-- **Every `font-size` on studied-language text must carry the multiplier**:
-  `font-size: calc(<size> * var(--md-ref-script-scale))`. `--md-ref-script-scale`
-  resolves to the current course's language, exactly like the typeface and the
-  direction, so no rule branches on the course. Where the *content* decides the
-  language rather than the course — `.greek` / `.hebrew` / `[lang="he"]`, and the
-  two samples on the settings screen — use `--app-greek-scale` /
-  `--app-hebrew-scale` by name instead. `fontscale.test.js` re-derives the list of
-  such rules from the stylesheets and fails on one without a multiplier.
+- **Every `font-size` on studied-language text must carry at least the slider
+  multiplier**: `font-size: calc(<size> * var(--md-ref-script-scale))`. Where the
+  text *is* the subject — grammar prose, the drill prompt, the answer options, the
+  word bank — it carries **both** multipliers, the size step as well:
+  `font-size: calc(<size> * var(--md-ref-script-size) * var(--md-ref-script-scale))`.
+  `fontscale.test.js` re-derives the list of such rules from the stylesheets and
+  fails on one without a multiplier; `layout.css` is on that list, because a
+  narrow-screen override that forgot the multiplier once hid the whole language
+  step on phones. Where the *content* decides the language rather than the course
+  — `.greek` / `.hebrew` / `[lang="he"]`, and the two samples on the settings
+  screen — use `--app-greek-scale` / `--app-hebrew-scale` by name instead.
+- **The size step is a separate axis from the slider, and it is per language.**
+  `--md-ref-script-size` answers "how much larger than the Russian around it is
+  the studied language drawn by design", the way it is in a reader that enlarges
+  the original text. It is a constant, not a preference: `-greek: 1.5` and
+  `-hebrew: 1.6` in `:root`, with `--md-ref-script-size: var(…-hebrew)` under
+  `:root[data-script="hebrew"]` — the same course-switched pattern as the typeface
+  and the direction, so no rule branches on the course. Hebrew's step is *on top
+  of* its 1.2 slider baseline, so the intended ratio is 1.92. Only four things ask
+  for the step, each at its own base: `.grammar-p/.grammar-h/.grammar-list .script`
+  and `.question .script` (1em — the size of the prose/line they sit in),
+  `.md-prompt-strong` (1.375rem — the `.question` line, the Russian text on that
+  screen), `.options--script .option-btn` (1.125rem, ≈0.82 of the prompt — answers
+  read as secondary but stay legible) and the word-bank chips, which *are* answers.
+  The two word lists take it too — the dictionary headword
+  (`.word-item .word-row strong`, one rule for the dictionary *and* the lesson's
+  word list) at 1rem and the example in an expanded entry
+  (`.word-details .vocab-example__script`) at its old 1.0625rem. Everything that is
+  genuinely small — paradigm cells, the error list, the row's Russian translation,
+  the flashcard context line (`.flashcard-context .vocab-example__script`) — keeps
+  only the slider multiplier and is reached by size, not by the step.
+- **Where the floor sits relative to the step is a real decision, not a detail.**
+  The usual order is `max(<base>, var(--md-ref-script-min-size)) * …` — the floor
+  raises the *base*. That is wrong once a step is multiplied in: Hebrew's base
+  would be lifted from 1rem to 1.25rem and the result inflated by the whole 1.92 —
+  38px in a dictionary row or an example card, which makes the list sparser rather
+  than more readable. So the two list rules put the floor on the *designed size*
+  instead: `max(<base> * var(--md-ref-script-size), var(--md-ref-script-min-size)) *
+  var(--md-ref-script-scale)`. The floor still does its job (Hebrew never drops
+  below 20px even at the smallest slider position) and no longer distorts the step.
+  In the dictionary at the default position that is 24px Greek / 30.7px Hebrew, and
+  the row still measures exactly its M3 minimum of 56px — the headword's own line
+  box (1.3) is smaller than the padding allows, so **the list does not get sparser**:
+  same row height, same pitch, same number of rows on screen.
+- **The answer-options rule deliberately has no `--md-ref-script-min-size`.** At
+  the step its smallest possible value is still ≈28px, so the 20px niqqud floor
+  would never engage — and on Hebrew, where the floor *is* the base, `max()` would
+  push the answer to 91% of the prompt instead of the intended 82%. The floor stays
+  on the rules where the text really is small: the word bank (which is why Hebrew
+  chips come out at 38px against 27px in Greek), paradigm cells, the error list.
 - **A rule that sets its own `font-size` on script text has to carry the
   multiplier itself**, even if the element is already marked `.greek`. The marker
   classes live in `base.css`; a later stylesheet with equal specificity silently
@@ -676,20 +744,25 @@ holds it; the tokens are in `styles/tokens.css`.
   `layout.css`, which overrides it — and the narrow screen is where they run out
   of room first.
 
-Ranges: 0.8–1.6, step 0.05. The general and Greek defaults are 1, and at 1 every
-`calc()` above collapses to the original value, so their default rendering is
-unchanged down to the byte. Hebrew's default is 1.2 — the one deliberate
+Ranges: 0.8–1.6, step 0.05. The general and Greek defaults are 1, and at 1 the
+slider multiplier collapses to 1, so the slider changes nothing by itself — but the
+studied language is no longer drawn at the Russian size: the **size step** is part
+of the design, and it applies at every slider position (Greek prose 16 → 24px,
+Hebrew 16 → 30.7px). Hebrew's slider default is 1.2 — the one deliberate
 exception. `--app-hebrew-scale` is therefore `1.2` in `tokens.css` too, matching
 what `initFontScale()` will set, so Hebrew does not flash at the smaller size
 before the scripts run.
 
-**Hebrew cards print 1.5× larger than the type scale.** The flashcard word, on
-both faces (`.flashcard-word` and `.card-declension__word` in `screens.css`, with
-a narrow-screen twin in `layout.css`), is scaled for Hebrew only through
-`:root[data-script="hebrew"]`: at the interface size the niqqud merge into the
-letters they sit in. The rules keep `var(--md-ref-script-scale)`, so the Hebrew
-slider still governs them, and Greek cards are untouched. This is a deliberate
-exception to the type scale — do not "tidy" the 1.5 away.
+**The flashcard headword has its own size per script, written out.**
+`.flashcard-word` is `4rem` for Greek and `4.21875rem` for Hebrew, switched by
+`:root[data-script="hebrew"]`, with a narrow-screen twin for each in `layout.css`
+(Greek `2.75rem`, Hebrew `3rem`). The two are **not** derived from one another by
+a multiplier, and that is deliberate: Greek words run longer and need less
+enlargement, while Hebrew needs the extra size specifically so niqqud stay visible
+against the letters they sit in. Both keep `var(--md-ref-script-scale)`, so the
+language slider still governs them. The card's back face
+(`.card-declension__word`) is a separate, smaller size — it is the declension
+drill's caption, not a second headword — and is left as it is.
 
 ## Offline shell
 

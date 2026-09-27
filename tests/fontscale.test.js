@@ -381,29 +381,84 @@ test('образцы видны в обоих курсах', () => {
 test('каждый кегль текста изучаемого языка несёт множитель ползунка', () => {
     // Забытое правило — это кусок экрана, который не слушается настройки:
     // онлайн незаметно, пользователю — нет. Поэтому список правил берётся из
-    // самих файлов, а не переписывается сюда руками.
+    // самих файлов, а не переписывается сюда руками. layout.css в списке не
+    // случайно: его узкий экран перебивает кегли своими, и именно там
+    // множитель однажды и потерялся — на телефоне условие иврита было того
+    // же размера, что греческое.
     const missing = [];
-    const FILES = ['styles/base.css', 'styles/components.css', 'styles/screens.css', 'styles/settings.css'];
+    const FILES = ['styles/base.css', 'styles/components.css', 'styles/screens.css',
+        'styles/settings.css', 'styles/layout.css'];
     for (const file of FILES) {
         const css = read(file);
         for (const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
             const [, selector, body] = m;
             const sel = selector.trim().split('\n').pop().trim();
             // Правило рисует текст изучаемого языка, если объявляет его
-            // гарнитуру — или если метка стоит прямо в селекторе. Второй
-            // признак ловит правила вроде .font-scale__sample.greek, которые
-            // задают кегль сами, а гарнитуру наследуют.
+            // гарнитуру, если метка стоит прямо в селекторе — или если оно
+            // ветвится по письму курса. Третий признак ловит правила вроде
+            // :root[data-script="hebrew"] .flashcard-word: своего класса
+            // .script у них нет, а кегль они задают свой.
             const draws = /--md-ref-typeface-(script|greek|hebrew)\b/.test(body);
-            const marked = /\.(script|greek|hebrew)\b/.test(sel);
+            const marked = /\.(script|greek|hebrew)\b|\[data-script/.test(sel);
             if (!draws && !marked) continue;
             const size = body.match(/font-size: ([^;]+);/);
             if (!size) continue;
-            if (/var\(--(md-ref-script-scale|app-greek-scale|app-hebrew-scale)\)/.test(size[1])) continue;
+            if (/var\(--(md-ref-script-scale|md-ref-script-size|app-greek-scale|app-hebrew-scale)\)/.test(size[1])) continue;
             missing.push(file + ' — ' + sel);
         }
     }
     assert.deepStrictEqual(missing, [],
         'кегль без множителя размера:\n  ' + missing.join('\n  '));
+});
+
+test('шаг кегля изучаемого языка свой у каждого письма и не подменяет ползунок', () => {
+    // Шаг (--md-ref-script-size) и ползунок (--md-ref-script-scale) — разные
+    // величины: первый отвечает за то, что изучаемое крупнее русского, второй
+    // — за настройку размера текста. Подменить шаг ползунком значит потерять
+    // либо первое, либо второе, поэтому проверяем и токены, и то, что правила
+    // целей умножают оба.
+    const tokens = read('styles/tokens.css');
+    assert.match(tokens, /--md-ref-script-size-greek: 1\.5;/,
+        'греческому не задан шаг кегля');
+    assert.match(tokens, /--md-ref-script-size-hebrew: 1\.6;/,
+        'ивриту не задан шаг кегля');
+    assert.match(tokens, /:root \{[\s\S]*?--md-ref-script-size: var\(--md-ref-script-size-greek\)/,
+        'по умолчанию шаг должен быть греческим');
+    assert.match(tokens, /:root\[data-script="hebrew"\] \{[\s\S]*?--md-ref-script-size: var\(--md-ref-script-size-hebrew\)/,
+        'в еврейском курсе шаг не переключается на еврейский');
+
+    // Селектор ищется как текст, а не регуляркой: эти селекторы содержат
+    // точки и запятые, и собирать из них шаблон — значит держать в голове
+    // двойное экранирование вместо самой проверки. Поиск с начала строки —
+    // потому что .question .script встречается ещё и вторым селектором
+    // в правиле веса (.question b, .question .script), и без якоря нашлось бы
+    // оно, а не то правило, которое задаёт кегль.
+    const ruleBody = (css, sel) => {
+        const at = css.indexOf('\n' + sel + ' {');
+        return at === -1 ? null : css.slice(at, css.indexOf('}', at));
+    };
+    const screens = read('styles/screens.css');
+    const TARGETS = ['.grammar-p .script, .grammar-h .script, .grammar-list .script',
+        '.question .script', '.md-prompt-strong', '.options--script .option-btn',
+        '.word-item .word-row strong'];
+    for (const sel of TARGETS) {
+        const body = ruleBody(screens, sel);
+        assert.ok(body, sel + ' — правила нет');
+        assert.ok(body.includes('var(--md-ref-script-size)') &&
+            body.includes('var(--md-ref-script-scale)'),
+            sel + ' — нет шага кегля или множителя ползунка');
+    }
+    // Пример в раскрытой словарной статье живёт в components.css и набран тем
+    // же шагом: это тоже текст для чтения, а не подпись строки списка.
+    const exampleBody = ruleBody(read('styles/components.css'), '.word-details .vocab-example__script');
+    assert.ok(exampleBody && exampleBody.includes('var(--md-ref-script-size)') &&
+        exampleBody.includes('var(--md-ref-script-scale)'),
+        'пример в словаре отстал от прозы материала');
+    const bankBody = ruleBody(read('styles/components.css'),
+        '.word-bank--script .chip, .build-area--script .token');
+    assert.ok(bankBody && bankBody.includes('var(--md-ref-script-size)') &&
+        bankBody.includes('var(--md-ref-script-scale)'),
+        'фишки банка слов отстали от вариантов ответа');
 });
 
 test('подписи нижнего ряда не растут без предела', () => {

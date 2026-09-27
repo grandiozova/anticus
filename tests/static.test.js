@@ -43,6 +43,29 @@ test('tokens.css подключён первым среди своих стил�
         'остальные стили читают переменные из tokens.css: ' + STYLES.join(', '));
 });
 
+test('в стилях нет закрывающего */ вне комментария', () => {
+    // Лишний */ закрывает комментарий раньше времени. Всё, что за ним идёт,
+    // браузер разбирает как продолжение селектора, а следующее правило — как
+    // его тело, и правило пропадает целиком вместе с селектором. Так в
+    // styles/base.css однажды исчезло правило .script: вставка изучаемого
+    // языка осталась без шрифта, без направления и без множителя размера,
+    // и ни один тест этого не заметил — все прочие проверки читают файл как
+    // текст и находят правило даже тогда, когда браузер его выбросил.
+    for (const rel of STYLES) {
+        const src = read(rel);
+        let inComment = false;
+        for (let i = 0; i < src.length; i++) {
+            if (!inComment && src[i] === '/' && src[i + 1] === '*') { inComment = true; i++; continue; }
+            if (inComment && src[i] === '*' && src[i + 1] === '/') { inComment = false; i++; continue; }
+            if (!inComment && src[i] === '*' && src[i + 1] === '/') {
+                const line = src.slice(0, i).split('\n').length;
+                assert.fail(rel + ':' + line + ' — закрывающий */ вне комментария');
+            }
+        }
+        assert.strictEqual(inComment, false, rel + ' — комментарий не закрыт');
+    }
+});
+
 test('каждый подключённый файл существует', () => {
     for (const rel of [...SCRIPTS, ...STYLES]) {
         assert.ok(fs.existsSync(repoPath(rel)), 'index.html ссылается на несуществующий ' + rel);

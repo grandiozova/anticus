@@ -9,13 +9,27 @@
     margin-bottom: 16px;
 }
 .question b, .question .script { font-weight: 600; }
+/* Вставка изучаемого языка в строке вопроса — тот же случай, что
+   .md-prompt-strong, только фраза здесь одна, а языков в ней два. Обёртку
+   ставит sc() (js/core.js) там, где вопрос склеен с русской подводкой
+   («Определите падеж и число для формы: λύεις»). 1em — кегль самой строки
+   вопроса (1.375rem), поэтому у иврита вставка получает те же 42px, что
+   и строка условия ниже. */
+.question .script {
+    font-size: calc(1em * var(--md-ref-script-size) * var(--md-ref-script-scale));
+    line-height: 1.3;
+}
 /* Шрифт и направление вставке даёт .script (styles/base.css) — здесь только вес. */
 .md-prompt-strong {
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: calc(1.75rem * var(--md-ref-script-scale));
-    line-height: 2.25rem;
+    /* Кегль условия задан в долях от русского текста на экране: 1.375rem —
+       это строка вопроса (.question) прямо над ним, а не тело интерфейса.
+       Оба множителя на месте: шаг письма (свой у каждого языка) и ползунок
+       размера текста. */
+    font-size: calc(1.375rem * var(--md-ref-script-size) * var(--md-ref-script-scale));
+    line-height: 1.3;
     text-align: center;
     margin: 16px 0;
     color: var(--md-sys-color-on-surface);
@@ -176,7 +190,20 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: calc(max(1.0625rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    /* Ответ — на шаг ниже условия, но не мелким: 1.125rem — это около 0.82
+       от 1.375rem, кегля условия, а множители те же, так что соотношение
+       держится на любом положении ползунков.
+       Предела кегля (--md-ref-script-min-size) здесь нет намеренно: даже на
+       самом мелком положении ползунка вариант остаётся около 28px, то есть
+       предел в 20px не наступает ни разу, а у иврита он поднял бы ответ
+       вплотную к условию вместо шага вниз. Предел остаётся там, где текст
+       изучаемого языка действительно мелкий: банк слов, ячейки парадигм,
+       разбор ошибок (см. проверку в tests/rtl.test.js). */
+    font-size: calc(1.125rem * var(--md-ref-script-size) * var(--md-ref-script-scale));
+    line-height: 1.4;
+    /* Длинное слово переносится, а не выезжает за кнопку: колонка сетки
+       не шире 160px, а «ἀποκρίνομαι» или «יְרוּשָׁלִַם» в неё не влезают. */
+    overflow-wrap: break-word;
     letter-spacing: 0;
 }
 .option-btn:disabled { cursor: default; }
@@ -320,8 +347,21 @@
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
     font-weight: 600;
-    font-size: calc(max(1rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
-    line-height: 1.5rem;
+    /* Заголовок словарной статьи — тот же шаг кегля, что у прозы материала
+       (styles/tokens.css): то, что изучают, набрано крупнее русского вокруг,
+       и в списке тоже. Этим правилом живут оба списка слов — общий словарь
+       (js/vocab.js) и словарь урока (js/lesson.js): строка у них одна и та же,
+       и разный кегль в одинаковых строках на двух экранах выглядел бы странно.
+       Предел огласовки стоит ПОСЛЕ шага, а не до него, и здесь это важно:
+       до шага он поднял бы у иврита основание с 1rem до 1.25rem, и результат
+       вырос бы в 1.92 раза, то есть до 38px — в строке списка это уже не
+       читаемость, а редкость. Со шагом 16 × 1.6 = 25.6px предел не
+       наступает и остаётся страховкой на мелких положениях ползунка. */
+    font-size: calc(max(1rem * var(--md-ref-script-size), var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    /* Числом, а не в rem: кегль вырос, и прежняя жёсткая высота строки
+       (1.5rem) подрезала бы выносные элементы. Строка при этом не растёт —
+       её держит min-height: 56px выше. */
+    line-height: 1.3;
     color: var(--md-sys-color-on-surface);
 }
 .word-item .word-row > span {
@@ -556,6 +596,22 @@
     overflow-wrap: break-word;
 }
 .grammar-text b { color: var(--md-sys-color-on-surface); }
+/* Вставка изучаемого языка в прозе материала. Обёртку ставит wrapScriptRuns()
+   (js/lesson.js): греческий материал размечен не был, и пометить вставки при
+   отрисовке дешевле, чем править тридцать три урока.
+   Кегль здесь — не украшение, а цель задачи: то, что изучают, набрано крупнее
+   русского вокруг него. 1em — кегль самого абзаца (1rem), а дальше два
+   множителя: шаг письма и ползунок размера текста.
+   Селектор перечисляет прозаические блоки, а не всё подряд под .grammar-text:
+   таблица материала — тоже .grammar-text, и её ячейки со своими правилами
+   (.md-table-pool__glyph) перебить нельзя — .grammar-text .script (0,2,0)
+   оказался бы сильнее их (0,1,0) и сломал бы таблицу огласовок главы 2. */
+.grammar-p .script, .grammar-h .script, .grammar-list .script {
+    font-size: calc(1em * var(--md-ref-script-size) * var(--md-ref-script-scale));
+    /* Числом, а не в rem: вставка растёт вместе с кеглем, и зажатая высота
+       строки на крупном кегле налезла бы на соседнюю. */
+    line-height: 1.3;
+}
 
 /* Ритм материала. Разметку на блоки собирает renderGrammarHtml() (js/lesson.js);
    отступы задаёт этот блок, а не число <br> подряд в data/lessons.js. */
@@ -611,20 +667,26 @@
     font-family: var(--md-ref-typeface-script);
     direction: var(--md-ref-script-direction);
     unicode-bidi: isolate;
-    font-size: calc(2.8125rem * var(--md-ref-script-scale));
-    line-height: 3.25rem;
+    /* Кегль карточки задан прямо, а не через шаг письма: карточка — это
+       отдельный экран с одним словом, и здесь важен абсолютный размер, а не
+       отношение к русскому тексту вокруг (см. --md-ref-script-size в
+       styles/tokens.css). Множитель ползунка остаётся: настройка обязана
+       работать и здесь. */
+    font-size: calc(4rem * var(--md-ref-script-scale));
+    line-height: 4.625rem;
     font-weight: 400;
     color: var(--md-sys-color-on-surface);
     word-break: break-word;
 }
-/* Карточка иврита: согласные с огласовкой на общем кегле карточки читаются
-   с трудом — точки под буквой сливаются с ней. Поэтому текст карточки у
-   иврита крупнее в полтора раза. Ветка идёт по письму (data-script), а не по
-   курсу, — тем же атрибутом, каким tokens.css выбирает шрифт и предел кегля;
-   греческая карточка остаётся прежней. Множитель ползунка размера сохранён,
-   иначе настройка перестала бы её слушать. */
+/* Карточка иврита: согласные с огласовкой на греческом кегле читаются
+   с трудом — точки под буквой сливаются с ней, и ради этого у иврита свой
+   размер. Он не выведен из греческого множителем нарочно: это две разные
+   задачи — греческое слово длиннее, и ему хватает меньшего, а иврит мельче
+   не читается вовсе. Ветка идёт по письму (data-script), а не по курсу, —
+   тем же атрибутом, каким tokens.css выбирает шрифт и предел кегля.
+   Множитель ползунка сохранён, иначе настройка перестала бы её слушать. */
 :root[data-script="hebrew"] .flashcard-word {
-    font-size: calc(2.8125rem * 1.5 * var(--md-ref-script-scale));
+    font-size: calc(4.21875rem * var(--md-ref-script-scale));
     line-height: 4.875rem;
 }
 .flashcard-translation {

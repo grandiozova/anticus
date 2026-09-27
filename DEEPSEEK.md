@@ -131,7 +131,7 @@ invisible until someone hits the specific path (offline load, one specific theme
 | a screen | markup in `index.html` **+** `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` in `js/shell.js` |
 | an exercise kind | `EXERCISE_TYPES` (`js/exercises.js`) **+** `LESSON_DRILL_GROUPS` (`js/lesson.js`) and/or `TEST_TYPES` (`js/test.js`) |
 | a color role | `:root`, `[data-theme="dark"]`, **and** `[data-theme="sepia"]` in `tokens.css` |
-| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` |
+| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))`; add `var(--md-ref-script-size)` too where the text is the subject (grammar prose, prompt, answers, word bank) |
 | a part-of-speech `type` value | `VOCAB_TYPE_ORDER` **+** `TYPE_LABELS` in `js/vocab.js` |
 | a cache that spans screens | a reset for it inside `applyCourse()` in `js/course.js` |
 | a new dependency/font/asset | an entry in `data/licenses.js` |
@@ -213,6 +213,34 @@ full-screen overlay, not a nav item).
 - Hebrew niqqud have a minimum readable size (`--md-ref-script-min-size: 1.25rem`).
   Any small `font-size` on studied-language text must use
   `calc(max(<size>, var(--md-ref-script-min-size)) * var(--md-ref-script-scale))`.
+
+## Sizing studied-language text
+
+Two multipliers, and they are not the same thing:
+
+- `--md-ref-script-scale` is the **accessibility slider** (js/fontscale.js), always
+  present. `--md-ref-script-size` is the **size step** — how much larger than the
+  Russian around it the studied language is drawn by design, `1.5` Greek / `1.6`
+  Hebrew, switched by `data-script` exactly like the typeface. Hebrew's step sits on
+  top of its 1.2 slider baseline, so its ratio is 1.92.
+- Where the text *is* the subject, both go on: grammar prose, `.md-prompt-strong`,
+  `.options--script .option-btn`, the word-bank chips, and the two word lists —
+  the dictionary headword (`.word-item .word-row strong`) and the example in an
+  expanded entry (`.word-details .vocab-example__script`). Everything genuinely
+  small (paradigm cells, the error list, the row's Russian translation, the
+  flashcard context line) keeps only the slider.
+- **In the word lists the floor goes after the step**, not before:
+  `max(<base> * var(--md-ref-script-size), var(--md-ref-script-min-size)) *
+  var(--md-ref-script-scale)`. Before the step it would lift Hebrew's base to
+  1.25rem and inflate the result to 38px, making the list sparser instead of more
+  readable. The row keeps its 56px M3 minimum either way, so the list does not
+  change density — only the words get bigger.
+- **Greek grammar prose carries no markup** — its Greek words sit inside `<b>`/`<i>`.
+  `wrapScriptRuns()` (js/lesson.js) marks the runs at render time; it skips text that
+  is already marked and never touches lifted tables. Don't hand-mark `data/lessons.js`.
+- **Never write a stray comment terminator in a stylesheet.** One inside the `.script`
+  comment in `base.css` deleted the whole rule for months — no font, no direction, no
+  multiplier. `tests/static.test.js` guards against it; keep comment blocks balanced.
 
 ## Paradigm / declension tables
 
