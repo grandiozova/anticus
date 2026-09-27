@@ -207,11 +207,6 @@
 .font-scale__sample { font-size: 1.25rem; line-height: 1.6; }
 .font-scale__sample.greek  { font-size: calc(1.25rem * var(--app-greek-scale)); }
 .font-scale__sample.hebrew { font-size: calc(1.25rem * var(--app-hebrew-scale)); }
-.font-scale__gloss {
-    color: var(--md-sys-color-on-surface-variant);
-    font-size: 0.875rem;
-    line-height: 1.25rem;
-}
 
 /* --- «Расширенные настройки» --- */
 /* Языковые ползунки убраны под раскрывающийся заголовок: в свёрнутом виде
