@@ -563,6 +563,15 @@
     background: var(--md-table-pool-row-label-bg);
     border-right: 1px solid var(--md-sys-color-outline-variant);
     box-shadow: 1px 0 0 var(--md-sys-color-outline-variant);
+    /* Первая колонка — русские подписи строк («Долгие с matres lectionis»). Без
+       ограничения она растягивалась по самой длинной подписи (212px) и
+       выдавливала знаки огласовки в узкую полоску. Ограничиваем ширину и
+       разрешаем перенос: ячейки полосы прокрутки обычно не переносятся
+       (.md-table-scroll td, th выше). 8rem — предел, при котором самое длинное
+       слово подписи («Сверхкраткие», 96px) ещё помещается в строку целиком,
+       а «Долгие с matres lectionis» спокойно ложится в две. */
+    max-width: 8rem;
+    white-space: normal;
 }
 
 .md-table--pool[dir="rtl"] > tbody > tr > th {
@@ -576,6 +585,57 @@
 .md-table--pool > tbody > tr:last-child td,
 .md-table--pool > tbody > tr:last-child th {
     border-bottom: 0;
+}
+
+/* Таблица алфавита (глава 1 иврита). Три колонки видны всегда — буква,
+   название и произношение; конечную форму, курсив и транслитерацию раскрывает
+   одна кнопка .alphabet-toggle. Состояние живёт в localStorage, а класс
+   is-expanded на таблицу ставит renderAlphabetExtras() (js/lesson.js):
+   в таблице понятия «колонка» нет, и прятать приходится каждую её ячейку.
+   Кегль крупнее табличного — буквы здесь предмет главы, а не подпись к ней. */
+.md-table--alphabet {
+    --md-table-align: center;
+}
+/* Русские ячейки (название, произношение, транслитерация) тоже крупнее
+   табличного кегля, а не только буквы: глава читается с телефона, и в прежнем
+   кегле подписи были вровень с мелкой огласовкой. Ячейка названа прямо в
+   селекторе: на узком экране layout.css задаёт кегль самим td и th, и
+   унаследованный от таблицы размер до ячеек не дошёл бы. Заголовки (th) при
+   этом остаются табличными. */
+.grammar-text .md-table--alphabet,
+.grammar-text .md-table--alphabet td {
+    font-size: 1rem;
+}
+.md-table--alphabet td, .md-table--alphabet th {
+    padding: 0.625rem 0.875rem;
+    vertical-align: middle;
+}
+.md-table--alphabet .alphabet-col--final,
+.md-table--alphabet .alphabet-col--cursive,
+.md-table--alphabet .alphabet-col--translit {
+    display: none;
+}
+.md-table--alphabet.is-expanded .alphabet-col--final,
+.md-table--alphabet.is-expanded .alphabet-col--cursive,
+.md-table--alphabet.is-expanded .alphabet-col--translit {
+    display: table-cell;
+}
+/* Буква, конечная форма и курсив — текст изучаемого языка. Гарнитуру,
+   направление и языковой множитель ячейка берёт у lang="he" (styles/base.css),
+   поэтому span задаёт только шаг кегля и множитель ползунка. */
+.md-table--alphabet .alphabet-glyph {
+    font-size: calc(max(1.5rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    line-height: 1.2;
+}
+/* Рукописное начертание — та же гарнитура Gveret Levin, что и в упражнении
+   письма; шрифт уже подключён в index.html и описан в data/licenses.js. */
+.md-table--alphabet .alphabet-glyph--cursive {
+    font-family: var(--md-ref-typeface-cursive-hebrew);
+}
+/* Кнопка над таблицей — обычная M3-кнопка .menu-btn.text из components.css;
+   здесь только её место в материале урока. */
+.alphabet-toggle {
+    margin-bottom: 4px;
 }
 
 .word-details th, .grammar-text th {

@@ -260,24 +260,82 @@ test('таблица букв главы 1 совпадает с пулом ев
     const list = dataRows(tables(grammar)[0]);
     assert.strictEqual(list.length, pool.length, 'в таблице не 22 строки');
 
-    // В ячейке буквы стоит то, что печатает пособие: «כּ / כ (ך)» — смычная и
-    // щелевая формы, а в скобках конечная. Пул хранит по одной букве на строку,
-    // поэтому вариант после косой черты и есть та буква, о которой спрашивают,
-    // а огласовку и дагеш надо снять: в пуле буква голая.
-    const parenthetical = [];
+    // Колонки таблицы: Буква | Конечная | Курсив | Название | Произношение |
+    // Транслитерация. Конечная форма и курсив — дополнительные (их раскрывает
+    // кнопка), но в данных они стоят на своих местах, и пул сверяется по
+    // индексам, а не по видимости.
+    const finalByLetter = {};
+    finals.forEach(f => { finalByLetter[f.letter] = f.final; });
+
     list.forEach((row, i) => {
         const letter = pool[i];
-        (row[0].match(/\(([^)]*)\)/g) || []).forEach(p => parenthetical.push(p.slice(1, -1)));
+        // В ячейке буквы стоит то, что печатает пособие: «בּ / ב» — смычная и
+        // щелевая формы. Пул хранит по одной букве на строку, поэтому вариант
+        // после косой черты и есть та буква, о которой спрашивают.
         assert.strictEqual(bareLetter(row[0]), letter.letter, 'строка ' + i + ': буква');
-        assert.strictEqual(row[1], letter.name, 'строка ' + i + ': название');
-        assert.strictEqual(row[2], letter.translit, 'строка ' + i + ': транслитерация');
+        assert.strictEqual(row[3], letter.name, 'строка ' + i + ': название');
         // У א и ע в графе произношения стоит прочерк: они не произносятся.
-        const sound = row[3] === '—' ? 'не произносится' : row[3];
-        assert.strictEqual(sound, letter.sound, 'строка ' + i + ': произношение');
+        assert.strictEqual(row[4] === '—' ? 'не произносится' : row[4], letter.sound,
+            'строка ' + i + ': произношение');
+        assert.strictEqual(row[5], letter.translit, 'строка ' + i + ': транслитерация');
+        // Конечная форма — только у пяти букв, у остальных прочерк.
+        assert.strictEqual(row[1] || '—', finalByLetter[letter.letter] || '—',
+            'строка ' + i + ': конечная форма');
+        // Курсив — то же начертание, что и буква, только без дагеша.
+        assert.strictEqual(bareLetter(row[2]), letter.letter, 'строка ' + i + ': курсив');
     });
 
-    assert.strictEqual(parenthetical.join(''), finals.map(f => f.final).join(''),
-        'конечные формы из таблицы разошлись с пулом');
+    assert.strictEqual(list.filter(row => row[1] && row[1] !== '—').length, finals.length,
+        'конечных форм в таблице не пять');
+    assert.strictEqual(list.filter(row => row[1] === '—').length, pool.length - finals.length,
+        'прочерк стоит не у всех букв без конечной формы');
+});
+
+test('алфавит: кнопка раскрывает три колонки сразу и помнит состояние', () => {
+    const app = loadApp(HEBREW);
+    const w = app.window;
+    w.openLesson(1);
+    w.switchLessonPart('material');
+
+    const table = app.document.querySelector('.md-table--alphabet');
+    assert.ok(table, 'нет таблицы алфавита с классом-модификатором');
+    const btn = app.document.querySelector('.alphabet-toggle');
+    assert.ok(btn, 'нет кнопки раскрытия дополнительных колонок');
+    const extras = [...table.querySelectorAll('.alphabet-col--final, .alphabet-col--cursive, .alphabet-col--translit')];
+    assert.ok(extras.length > 0, 'в разметке нет ячеек дополнительных колонок');
+
+    // Свежая установка: свёрнуто, и в хранилище ничего не записано.
+    assert.ok(!table.classList.contains('is-expanded'), 'таблица раскрыта без запроса');
+    assert.strictEqual(btn.querySelector('.alphabet-toggle__label').textContent, 'Показать всё');
+    assert.strictEqual(btn.getAttribute('aria-expanded'), 'false');
+    assert.strictEqual(app.window.localStorage.getItem('app_alphabet_extras'), null);
+
+    btn.click();
+    assert.ok(table.classList.contains('is-expanded'), 'кнопка не раскрыла колонки');
+    assert.strictEqual(btn.querySelector('.alphabet-toggle__label').textContent, 'Скрыть всё');
+    assert.strictEqual(btn.getAttribute('aria-expanded'), 'true');
+    assert.strictEqual(btn.querySelector('.msym').textContent, 'visibility_off');
+    assert.strictEqual(app.window.localStorage.getItem('app_alphabet_extras'), '1');
+
+    btn.click();
+    assert.ok(!table.classList.contains('is-expanded'), 'повторный клик не свернул колонки');
+    assert.strictEqual(app.window.localStorage.getItem('app_alphabet_extras'), '0');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('алфавит: раскрытое состояние вспоминается между сеансами', () => {
+    const app = loadApp({
+        storage: { app_course: 'hebrew', app_default_course: 'hebrew', app_alphabet_extras: '1' }
+    });
+    const w = app.window;
+    w.openLesson(1);
+    w.switchLessonPart('material');
+    const table = app.document.querySelector('.md-table--alphabet');
+    assert.ok(table.classList.contains('is-expanded'), 'сохранённое состояние не применилось');
+    assert.strictEqual(app.document.querySelector('.alphabet-toggle__label').textContent, 'Скрыть всё');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
 });
 
 // «כּ / כ (ך)» -> «כ»: последняя альтернатива, без скобок и без знаков.
@@ -560,9 +618,10 @@ test('бегадкефат: буква и её вид названы так же
     app.close();
 
     // Таблица транслитерации из начала главы: «בּ / ב» и «b / ḇ».
+    // Колонки: Буква | Конечная | Курсив | Название | Произношение | Транслит.
     const alphabet = {};
     for (const row of dataRows(tables(grammar)[0])) {
-        alphabet[bareLetter(row[0])] = { translit: row[2].split('/').map(s => s.trim()) };
+        alphabet[bareLetter(row[0])] = { translit: row[5].split('/').map(s => s.trim()) };
     }
     assert.strictEqual(Object.keys(alphabet).length, 22);
 

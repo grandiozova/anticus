@@ -169,9 +169,11 @@ test('еврейские вставки в грамматике помечены
     app.close();
 
     // Снимаем всё размеченное, дальше еврейских букв остаться не должно.
+    // У ячейки таблицы язык помечен атрибутом lang="he", и он может стоять
+    // не первым: у колонок таблицы алфавита перед ним класс.
     const stripped = grammar
         .replace(/<span class="script">[\s\S]*?<\/span>/g, '')
-        .replace(/<td lang="he">[\s\S]*?<\/td>/g, '');
+        .replace(/<td[^>]*\blang="he"[^>]*>[\s\S]*?<\/td>/g, '');
     const loose = (stripped.match(HEB_RUN) || []).slice(0, 5);
     assert.deepStrictEqual(loose, [], 'еврейский текст без метки языка: ' + loose.join(', '));
 });

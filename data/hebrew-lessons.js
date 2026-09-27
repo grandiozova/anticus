@@ -144,30 +144,30 @@ const HEBREW_WRITE_LETTERS = HEBREW_ALPHABET.letters.flatMap(l =>
 const HEBREW_LESSONS_DATA = {
     1: {
         title: "Алфавит",
-        grammar: `<b>1. Алфавит</b><br>Древнееврейский алфавит состоит из 22 букв. Направление письма — <b>справа налево</b>. Нужно знать начертание, название, произношение и транслитерацию каждой буквы.<br><table>
-<tr><th>Буква</th><th>Название</th><th>Транслит.</th><th>Произн.</th></tr>
-<tr><td lang="he">א</td><td>а́леф</td><td>ʾ</td><td>—</td></tr>
-<tr><td lang="he">בּ / ב</td><td>бет</td><td>b / ḇ</td><td>б / в</td></tr>
-<tr><td lang="he">גּ / ג</td><td>ги́мел</td><td>g / ḡ</td><td>г</td></tr>
-<tr><td lang="he">דּ / ד</td><td>да́лет</td><td>d / ḏ</td><td>д</td></tr>
-<tr><td lang="he">ה</td><td>хе</td><td>h</td><td>х</td></tr>
-<tr><td lang="he">ו</td><td>вав</td><td>w</td><td>в</td></tr>
-<tr><td lang="he">ז</td><td>за́йин</td><td>z</td><td>з</td></tr>
-<tr><td lang="he">ח</td><td>хет</td><td>ḥ</td><td>х</td></tr>
-<tr><td lang="he">ט</td><td>тет</td><td>ṭ</td><td>т</td></tr>
-<tr><td lang="he">י</td><td>йод</td><td>y</td><td>й</td></tr>
-<tr><td lang="he">כּ / כ (ך)</td><td>каф</td><td>k / ḵ</td><td>к / х</td></tr>
-<tr><td lang="he">ל</td><td>ла́мед</td><td>l</td><td>л</td></tr>
-<tr><td lang="he">מ (ם)</td><td>мем</td><td>m</td><td>м</td></tr>
-<tr><td lang="he">נ (ן)</td><td>нун</td><td>n</td><td>н</td></tr>
-<tr><td lang="he">ס</td><td>са́мех</td><td>s</td><td>с</td></tr>
-<tr><td lang="he">ע</td><td>а́йин</td><td>ʿ</td><td>—</td></tr>
-<tr><td lang="he">פּ / פ (ף)</td><td>пе</td><td>p / p̄</td><td>п / ф</td></tr>
-<tr><td lang="he">צ (ץ)</td><td>ца́де</td><td>ṣ</td><td>ц</td></tr>
-<tr><td lang="he">ק</td><td>коф</td><td>q</td><td>к</td></tr>
-<tr><td lang="he">ר</td><td>реш</td><td>r</td><td>р</td></tr>
-<tr><td lang="he">שׂ / שׁ</td><td>син / шин</td><td>ś / š</td><td>с / ш</td></tr>
-<tr><td lang="he">תּ / ת</td><td>тав</td><td>t / ṯ</td><td>т</td></tr>
+        grammar: `<b>1. Алфавит</b><br>Древнееврейский алфавит состоит из 22 букв. Направление письма — <b>справа налево</b>. Нужно знать начертание, название, произношение и транслитерацию каждой буквы.<br><button type="button" class="menu-btn text alphabet-toggle" aria-expanded="false" onclick="toggleAlphabetExtras()"><span class="msym" aria-hidden="true">visibility</span><span class="alphabet-toggle__label">Показать всё</span></button><br><table class="md-table--alphabet">
+<tr><th>Буква</th><th class="alphabet-col--final">Конечная</th><th class="alphabet-col--cursive">Курсив</th><th>Название</th><th>Произношение</th><th class="alphabet-col--translit">Транслитерация</th></tr>
+<tr><td lang="he"><span class="alphabet-glyph">א</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">א</span></td><td>а́леф</td><td>—</td><td class="alphabet-col--translit">ʾ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">בּ / ב</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ב</span></td><td>бет</td><td>б / в</td><td class="alphabet-col--translit">b / ḇ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">גּ / ג</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ג</span></td><td>ги́мел</td><td>г</td><td class="alphabet-col--translit">g / ḡ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">דּ / ד</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ד</span></td><td>да́лет</td><td>д</td><td class="alphabet-col--translit">d / ḏ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ה</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ה</span></td><td>хе</td><td>х</td><td class="alphabet-col--translit">h</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ו</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ו</span></td><td>вав</td><td>в</td><td class="alphabet-col--translit">w</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ז</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ז</span></td><td>за́йин</td><td>з</td><td class="alphabet-col--translit">z</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ח</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ח</span></td><td>хет</td><td>х</td><td class="alphabet-col--translit">ḥ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ט</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ט</span></td><td>тет</td><td>т</td><td class="alphabet-col--translit">ṭ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">י</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">י</span></td><td>йод</td><td>й</td><td class="alphabet-col--translit">y</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">כּ / כ</span></td><td lang="he" class="alphabet-col--final"><span class="alphabet-glyph">ך</span></td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">כ</span></td><td>каф</td><td>к / х</td><td class="alphabet-col--translit">k / ḵ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ל</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ל</span></td><td>ла́мед</td><td>л</td><td class="alphabet-col--translit">l</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">מ</span></td><td lang="he" class="alphabet-col--final"><span class="alphabet-glyph">ם</span></td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">מ</span></td><td>мем</td><td>м</td><td class="alphabet-col--translit">m</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">נ</span></td><td lang="he" class="alphabet-col--final"><span class="alphabet-glyph">ן</span></td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">נ</span></td><td>нун</td><td>н</td><td class="alphabet-col--translit">n</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ס</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ס</span></td><td>са́мех</td><td>с</td><td class="alphabet-col--translit">s</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ע</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ע</span></td><td>а́йин</td><td>—</td><td class="alphabet-col--translit">ʿ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">פּ / פ</span></td><td lang="he" class="alphabet-col--final"><span class="alphabet-glyph">ף</span></td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">פ</span></td><td>пе</td><td>п / ф</td><td class="alphabet-col--translit">p / p̄</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">צ</span></td><td lang="he" class="alphabet-col--final"><span class="alphabet-glyph">ץ</span></td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">צ</span></td><td>ца́де</td><td>ц</td><td class="alphabet-col--translit">ṣ</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ק</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ק</span></td><td>коф</td><td>к</td><td class="alphabet-col--translit">q</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">ר</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ר</span></td><td>реш</td><td>р</td><td class="alphabet-col--translit">r</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">שׂ / שׁ</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ש</span></td><td>син / шин</td><td>с / ш</td><td class="alphabet-col--translit">ś / š</td></tr>
+<tr><td lang="he"><span class="alphabet-glyph">תּ / ת</span></td><td class="alphabet-col--final">—</td><td lang="he" class="alphabet-col--cursive"><span class="alphabet-glyph alphabet-glyph--cursive">ת</span></td><td>тав</td><td>т</td><td class="alphabet-col--translit">t / ṯ</td></tr>
 </table><br><br><b>2. Конечные буквы</b><br>Пять букв на конце слова пишутся иначе. Начертание меняется, произношение и транслитерация — нет.<br>• <span class="script">כ</span> → <span class="script">ך</span>, как в <span class="script">דרך</span> «дорога»<br>• <span class="script">מ</span> → <span class="script">ם</span>, как в <span class="script">עם</span> «народ»<br>• <span class="script">נ</span> → <span class="script">ן</span>, как в <span class="script">זקן</span> «старейшина»<br>• <span class="script">פ</span> → <span class="script">ף</span>, как в <span class="script">כסף</span> «серебро»<br>• <span class="script">צ</span> → <span class="script">ץ</span><br><br><b>3. Буквы «бегадкефат»</b><br>Шесть согласных имеют по два произношения — смычное и щелевое. Различает их точка внутри буквы, «слабый» дагеш: с дагешем звук смычный, без него щелевой. «Слабый» дагеш ставится только в этих шести буквах.<br><table>
 <tr><th>Смычные</th><td lang="he">בּ</td><td lang="he">גּ</td><td lang="he">דּ</td><td lang="he">כּ</td><td lang="he">פּ</td><td lang="he">תּ</td></tr>
 <tr><th>Щелевые</th><td lang="he">ב</td><td lang="he">ג</td><td lang="he">ד</td><td lang="he">כ</td><td lang="he">פ</td><td lang="he">ת</td></tr>

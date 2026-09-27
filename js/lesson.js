@@ -376,6 +376,40 @@ function grammarBlockHtml(chunk) {
     return out;
 }
 
+// Таблица алфавита главы 1 иврита показывает три колонки из шести: конечные
+// формы, курсив и транслитерацию раскрывает одна кнопка «Показать всё» /
+// «Скрыть всё» (разметка и кнопка — в data/hebrew-lessons.js). Состояние
+// запоминается между сеансами, как тема и размер текста: это настройка
+// показа, а не прогресс, поэтому ключ с приставкой app_, а не courseKey.
+const ALPHABET_EXTRAS_KEY = 'app_alphabet_extras';
+
+function alphabetExtrasOn() {
+    try { return localStorage.getItem(ALPHABET_EXTRAS_KEY) === '1'; }
+    catch (e) { return false; }
+}
+
+// Приводит разметку к сохранённому состоянию: класс на таблице, подпись и
+// иконку на кнопке. Вызывается после отрисовки материала урока и после клика,
+// поэтому кнопка и таблица не могут разойтись.
+function renderAlphabetExtras() {
+    let on = alphabetExtrasOn();
+    document.querySelectorAll('.md-table--alphabet').forEach(table => {
+        table.classList.toggle('is-expanded', on);
+    });
+    document.querySelectorAll('.alphabet-toggle').forEach(btn => {
+        btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+        let label = btn.querySelector('.alphabet-toggle__label');
+        if (label) label.textContent = on ? 'Скрыть всё' : 'Показать всё';
+        let icon = btn.querySelector('.msym');
+        if (icon) icon.textContent = on ? 'visibility_off' : 'visibility';
+    });
+}
+
+function toggleAlphabetExtras() {
+    try { localStorage.setItem(ALPHABET_EXTRAS_KEY, alphabetExtrasOn() ? '0' : '1'); } catch (e) {}
+    renderAlphabetExtras();
+}
+
 // Возврат с экрана упражнения — на вкладку «Упражнения» того же урока.
 function closeLessonDrill() {
     resetLessonDrill();
@@ -404,6 +438,9 @@ function openLesson(lesson) {
     });
 
     document.getElementById('grammarContent').innerHTML = renderGrammarHtml(data.grammar);
+    // Разметка алфавитной таблицы приходит из данных, а её раскрытое состояние
+    // живёт в хранилище: приводим одно к другому сразу после отрисовки.
+    renderAlphabetExtras();
 
     // Словарь урока — под грамматикой, на той же вкладке
     let container = document.getElementById('vocabList');
