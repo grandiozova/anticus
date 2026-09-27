@@ -207,7 +207,7 @@
 
     <div class="card">
         <h3><span class="msym">format_size</span>Размер текста</h3>
-        <p class="md-body-medium settings-hint">Греческий и еврейский следуют за общим размером; еврейский крупнее из-за огласовки.</p>
+        <p class="md-body-medium settings-hint">Текст изучаемого языка по умолчанию крупнее общего; кнопка рядом возвращает язык к общему размеру.</p>
 
         <div class="font-scale">
             <div class="font-scale__head">
@@ -230,16 +230,16 @@
                 <div class="font-scale font-scale--compact">
                     <div class="font-scale__head">
                         <label class="font-scale__label" for="greekFontScale">Греческий</label>
-                        <span class="font-scale__state" id="greekFontScaleState">как общий</span>
-                        <span class="font-scale__value" id="greekFontScaleValue">100%</span>
+                        <span class="font-scale__state" id="greekFontScaleState">задан отдельно</span>
+                        <span class="font-scale__value" id="greekFontScaleValue">160%</span>
                         <button type="button" class="md-icon-button font-scale__reset" id="greekFontScaleReset"
-                                hidden onclick="resetFontScale('greek')" title="Вернуть к общему размеру"
+                                onclick="resetFontScale('greek')" title="Вернуть к общему размеру"
                                 aria-label="Вернуть греческий к общему размеру">
                             <span class="msym">restart_alt</span>
                         </button>
                     </div>
                     <input class="md-slider" type="range" id="greekFontScale"
-                           min="0.8" max="1.6" step="0.05" value="1"
+                           min="0.8" max="1.6" step="0.05" value="1.6"
                            data-font-scale="greek" oninput="setFontScale('greek', this.value)">
                     <p class="font-scale__preview"><span class="font-scale__sample greek">ἄνθρωπος</span><span class="font-scale__gloss">— человек</span></p>
                 </div>
@@ -247,16 +247,16 @@
                 <div class="font-scale font-scale--compact">
                     <div class="font-scale__head">
                         <label class="font-scale__label" for="hebrewFontScale">Еврейский</label>
-                        <span class="font-scale__state" id="hebrewFontScaleState">как общий +20%</span>
-                        <span class="font-scale__value" id="hebrewFontScaleValue">120%</span>
+                        <span class="font-scale__state" id="hebrewFontScaleState">задан отдельно</span>
+                        <span class="font-scale__value" id="hebrewFontScaleValue">160%</span>
                         <button type="button" class="md-icon-button font-scale__reset" id="hebrewFontScaleReset"
-                                hidden onclick="resetFontScale('hebrew')" title="Вернуть к общему размеру"
+                                onclick="resetFontScale('hebrew')" title="Вернуть к общему размеру"
                                 aria-label="Вернуть еврейский к общему размеру">
                             <span class="msym">restart_alt</span>
                         </button>
                     </div>
                     <input class="md-slider" type="range" id="hebrewFontScale"
-                           min="0.8" max="1.6" step="0.05" value="1.2"
+                           min="0.8" max="1.6" step="0.05" value="1.6"
                            data-font-scale="hebrew" oninput="setFontScale('hebrew', this.value)">
                     <p class="font-scale__preview"><span class="font-scale__sample hebrew">מִשְׁפָּט</span><span class="font-scale__gloss">— правосудие</span></p>
                 </div>

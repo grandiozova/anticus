@@ -221,8 +221,11 @@ Two multipliers, and they are not the same thing:
 - `--md-ref-script-scale` is the **accessibility slider** (js/fontscale.js), always
   present. `--md-ref-script-size` is the **size step** — how much larger than the
   Russian around it the studied language is drawn by design, `1.5` Greek / `1.6`
-  Hebrew, switched by `data-script` exactly like the typeface. Hebrew's step sits on
-  top of its 1.2 slider baseline, so its ratio is 1.92.
+  Hebrew, switched by `data-script` exactly like the typeface. Both language sliders
+  default to the top of their range (160%) while the interface defaults to 100%
+  (`FONT_SCALE_DEFAULT`); the two multipliers multiply, so at that default the
+  studied text is 2.4× Greek / 2.56× Hebrew the size of the Russian around it. The
+  reset button returns a language to “follows the general”.
 - Where the text *is* the subject, both go on: grammar prose, `.md-prompt-strong`,
   `.options--script .option-btn`, the word-bank chips, and the two word lists —
   the dictionary headword (`.word-item .word-row strong`) and the example in an
@@ -233,8 +236,9 @@ Two multipliers, and they are not the same thing:
   `max(<base> * var(--md-ref-script-size), var(--md-ref-script-min-size)) *
   var(--md-ref-script-scale)`. Before the step it would lift Hebrew's base to
   1.25rem and inflate the result to 38px, making the list sparser instead of more
-  readable. The row keeps its 56px M3 minimum either way, so the list does not
-  change density — only the words get bigger.
+  readable. At the slider's default (160%) the dictionary row is 38.4px Greek /
+  40.96px Hebrew, standing at 66 / 69px rather than the 56px M3 minimum; at a
+  slider of 100% it is exactly 56px.
 - **Greek grammar prose carries no markup** — its Greek words sit inside `<b>`/`<i>`.
   `wrapScriptRuns()` (js/lesson.js) marks the runs at render time; it skips text that
   is already marked and never touches lifted tables. Don't hand-mark `data/lessons.js`.
@@ -244,8 +248,9 @@ Two multipliers, and they are not the same thing:
   (`.course-card__icon`), so the old `rem` + slider sizes grew the letter to the full
   diameter at 160% (Greek 48px) and past it (Hebrew 53.76px). 30px is exactly what the
   Greek letter was at 100%; the Hebrew one drops from 40.32px because that figure was
-  the Hebrew slider's 1.2 baseline, which exists for niqqud — and the badge holds a
-  bare `א` with none. `tests/fontscale.test.js` exempts these two rules from the
+  a slider baseline rather than a fixed design size — at the 160% default it would be
+  the whole diameter. The badge holds a bare `א` with no niqqud to keep legible.
+  `tests/fontscale.test.js` exempts these two rules from the
   multiplier check and asserts they stay bare `px` instead, so the exemption cannot
   quietly become a forgotten rule.
 - **Never write a stray comment terminator in a stylesheet.** One inside the `.script`

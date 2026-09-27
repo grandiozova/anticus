@@ -275,7 +275,7 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
 
 - **Course** is the first card: which course is open, a button back to the start screen, and `app_default_course` — whether the start screen asks on every load or drops straight into one course.
 - **Theme** is a four-way choice — `system` / `light` / `dark` / `sepia` — stored in `app_theme` as the *mode*, never as the resolved colour. `sepia` is a warm light scheme built on the same M3 tone map as `:root`, not a filter over it. Storing the resolved value is what breaks "follow the system": the app would pin whatever the OS happened to be on first run. `system` stays live via a `matchMedia` listener. A value written by an older build (`light`/`dark`) is still read as a valid manual choice, and the pre-courses key `greek_theme` is read as a fallback and migrated forward once.
-- **Text size** is the interface slider, always visible with a live sample under it, and the two per-language sliders (Greek and Hebrew) folded into a collapsed «Расширенные настройки» disclosure — the same `.open` + `max-height` idiom as the dictionary's expandable entries (`toggleFontScaleAdvanced()` in `js/fontscale.js`). The language sliders follow the interface one until they are moved, and a button returns them to it. Hebrew follows it at 120% rather than 100%, for the niqqud. Each keeps a live sample in a tighter preview (`.font-scale--compact`); the sample's own size is not reduced, because 1.25rem is the floor at which niqqud stays readable. See "Text size".
+- **Text size** is the interface slider, always visible with a live sample under it, and the two per-language sliders (Greek and Hebrew) folded into a collapsed «Расширенные настройки» disclosure — the same `.open` + `max-height` idiom as the dictionary's expandable entries (`toggleFontScaleAdvanced()` in `js/fontscale.js`). The interface slider starts at 100% and the two language sliders start at the top of their range, **160%**, so the studied language opens larger than the Russian around it. They are therefore *not* following the interface one by default, and the reset button is visible from the first visit; pressing it returns a language to the interface size, which on Hebrew means +20% rather than exactly it, for the niqqud. Each keeps a live sample in a tighter preview (`.font-scale--compact`); the sample's own size is not reduced, because 1.25rem is the floor at which niqqud stays readable. See "Text size".
 - **Support the project** sits between data management and licenses. It is one optional external link (`target="_blank" rel="noopener noreferrer"`) to a donation page, framed as voluntary support for the developer's time and hosting costs. Nothing is gated, no functionality depends on it, and the text names no textbook or rights holder.
 - **Licenses** come from the `LICENSES` array; add an entry when you add a dependency. Only the middle of that list is open licences: the app's own code is first and is all-rights-reserved (see `LICENSE`), and the course materials are last as their holders' copyright. Both are statements, not licences, and carry no `url`.
 - The nav bar now holds **five** destinations — the M3 maximum. A sixth needs a different pattern, not a sixth item. That is exactly why the course picker is a full-screen overlay rather than a destination.
@@ -663,16 +663,23 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   resolved scheme. Keys are `app_font_scale`, `app_greek_font_scale`,
   `app_hebrew_font_scale` — `app_` because size is an application setting, not a
   per-course one.
-- **"Follows the general" is not the same as "equal to the general".**
-  `FONT_SCALE_AUTO_BASE` gives each language a baseline: 1 for Greek, **1.2 for
-  Hebrew**, because niqqud are dots under and inside the letter and the interface
-  size does not carry them — the same reason `--md-ref-script-min-size` exists.
-  So Hebrew ships at 120% and *still tracks* the general slider; it is a baseline
-  for `'auto'`, not a stored override, which is why no reset button shows on a
-  fresh install. The derived value goes through `clampFontScale()`, so it lands on
-  a step of the slider and cannot leave the range: at a general of 1.4 the Hebrew
-  1.68 is cut to 1.6, and the state label computes the real difference rather than
-  claiming "+20%" where the ceiling has eaten it.
+- **The default is a size, not a mode, and "follows the general" is not the same as
+  "equal to the general".** A first visit has no key in `localStorage` at all, and
+  `FONT_SCALE_DEFAULT` fills that in with the **top of the range, 160%**, for both
+  languages — the studied text is the subject, so it opens larger than the Russian
+  around it while the interface stays at 100%. The default is deliberately *not*
+  written to storage on boot: absence of the key is what "first visit" means, so
+  changing the default later still reaches everyone who never touched a slider.
+  `'auto'` is a separate state, reached only through the reset button, and
+  `FONT_SCALE_AUTO_BASE` gives each language a baseline for it: 1 for Greek,
+  **1.2 for Hebrew**, because niqqud are dots under and inside the letter and the
+  interface size does not carry them — the same reason `--md-ref-script-min-size`
+  exists. So a language returned to the interface size still rides *above* it on
+  Hebrew, and the reset button does show on a fresh install, because there is
+  something to return from. The derived value goes through `clampFontScale()`, so
+  it lands on a step of the slider and cannot leave the range: at a general of 1.4
+  the Hebrew 1.68 is cut to 1.6, and the state label computes the real difference
+  rather than claiming "+20%" where the ceiling has eaten it.
 - **Every `font-size` on studied-language text must carry at least the slider
   multiplier**: `font-size: calc(<size> * var(--md-ref-script-scale))`. Where the
   text *is* the subject — grammar prose, the drill prompt, the answer options, the
@@ -690,8 +697,10 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   the original text. It is a constant, not a preference: `-greek: 1.5` and
   `-hebrew: 1.6` in `:root`, with `--md-ref-script-size: var(…-hebrew)` under
   `:root[data-script="hebrew"]` — the same course-switched pattern as the typeface
-  and the direction, so no rule branches on the course. Hebrew's step is *on top
-  of* its 1.2 slider baseline, so the intended ratio is 1.92. Only four things ask
+  and the direction, so no rule branches on the course. The step multiplies with
+  the slider, so at the shipped 160% the intended ratio is 1.6 × 1.6 = 2.56 for
+  Hebrew and 1.5 × 1.6 = 2.4 for Greek, and 1.6 × 1.2 = 1.92 for Hebrew once its
+  slider has been returned to "follows the general". Only four things ask
   for the step, each at its own base: `.grammar-p/.grammar-h/.grammar-list .script`
   and `.question .script` (1em — the size of the prose/line they sit in),
   `.md-prompt-strong` (1.375rem — the `.question` line, the Russian text on that
@@ -713,10 +722,11 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   instead: `max(<base> * var(--md-ref-script-size), var(--md-ref-script-min-size)) *
   var(--md-ref-script-scale)`. The floor still does its job (Hebrew never drops
   below 20px even at the smallest slider position) and no longer distorts the step.
-  In the dictionary at the default position that is 24px Greek / 30.7px Hebrew, and
-  the row still measures exactly its M3 minimum of 56px — the headword's own line
-  box (1.3) is smaller than the padding allows, so **the list does not get sparser**:
-  same row height, same pitch, same number of rows on screen.
+  In the dictionary at the slider's default (160%) that is 38.4px Greek / 40.96px
+  Hebrew, and the row stands at 66 / 69px — sparser than the M3 minimum, because
+  what the row has to hold is the headword's own line box. At a slider of 100% the
+  row is exactly its 56px minimum: the density of the list is the slider's doing,
+  not the step's.
 - **The answer-options rule deliberately has no `--md-ref-script-min-size`.** At
   the step its smallest possible value is still ≈28px, so the 20px niqqud floor
   would never engage — and on Hebrew, where the floor *is* the base, `max()` would
@@ -735,10 +745,11 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   (`.course-card__icon`), so the old `rem` + slider form grew the letter to the whole
   diameter at 160% (Greek 48px) and past it (Hebrew 53.76px). 30px is exactly what the
   Greek letter was at 100%; the Hebrew one drops from 40.32px, because that figure was
-  the Hebrew slider's 1.2 baseline — which exists for niqqud, and the badge holds a bare
-  `א` with none. `tests/fontscale.test.js` exempts these two rules from the multiplier
-  check and asserts they stay bare `px` instead, so the exemption cannot quietly become
-  a forgotten rule.
+  a slider baseline rather than a fixed design size — and a badge that took the 160%
+  default would be the whole diameter and then some. It carries no niqqud either, so
+  nothing there needs the extra size. `tests/fontscale.test.js` exempts these two rules
+  from the multiplier check and asserts they stay bare `px` instead, so the exemption
+  cannot quietly become a forgotten rule.
 - **`--md-ref-script-min-size` is `0px`, and the unit is load-bearing.** Inside
   `max()` every argument must be the same type, and a bare `0` is a `<number>`,
   not a length: `max(1.0625rem, 0)` is invalid and the browser drops the whole
@@ -754,14 +765,14 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   `layout.css`, which overrides it — and the narrow screen is where they run out
   of room first.
 
-Ranges: 0.8–1.6, step 0.05. The general and Greek defaults are 1, and at 1 the
-slider multiplier collapses to 1, so the slider changes nothing by itself — but the
-studied language is no longer drawn at the Russian size: the **size step** is part
-of the design, and it applies at every slider position (Greek prose 16 → 24px,
-Hebrew 16 → 30.7px). Hebrew's slider default is 1.2 — the one deliberate
-exception. `--app-hebrew-scale` is therefore `1.2` in `tokens.css` too, matching
-what `initFontScale()` will set, so Hebrew does not flash at the smaller size
-before the scripts run.
+Ranges: 0.8–1.6, step 0.05. The interface default is 1 and **both language defaults
+are 1.6, the top of the range**: the studied text opens 60% larger than the Russian
+around it, which together with the **size step** is what the language is meant to
+look like (Greek prose 16 → 38.4px, Hebrew 16 → 41px at the default). `'auto'` —
+"follows the general" — is what the reset button restores, not what a fresh install
+gets. `--app-greek-scale` / `--app-hebrew-scale` are therefore `1.6` in `tokens.css`
+too, matching what `initFontScale()` sets, so the studied language does not flash at
+the smaller size before the scripts run.
 
 **The flashcard headword has its own size per script, written out.**
 `.flashcard-word` is `4rem` for Greek and `4.21875rem` for Hebrew, switched by

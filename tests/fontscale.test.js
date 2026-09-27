@@ -24,37 +24,56 @@ const token = (app, name) =>
 
 // ------------------------------------------------------------ значения по умолчанию
 
-test('без настроек общий и греческий — единицы, еврейский крупнее', () => {
+test('без настроек языки стоят на верхнем делении, общий — на 100%', () => {
     const app = loadApp(GREEK);
     assert.strictEqual(token(app, '--app-font-scale'), '1');
-    assert.strictEqual(token(app, '--app-greek-scale'), '1');
-    // Огласовку кеглем интерфейса не разобрать — см. FONT_SCALE_AUTO_BASE.
-    assert.strictEqual(token(app, '--app-hebrew-scale'), '1.2');
+    // Изучаемый текст открывается крупнее русского вокруг него — см.
+    // FONT_SCALE_DEFAULT. При общем 1 добавка над корнем равна самому размеру.
+    assert.strictEqual(token(app, '--app-greek-scale'), '1.6');
+    assert.strictEqual(token(app, '--app-hebrew-scale'), '1.6');
+    // Умолчание в хранилище не пишется: отсутствие ключа и есть «первый
+    // заход». Запись заморозила бы его для всех, кто ползунка не касался.
+    assert.strictEqual(app.window.localStorage.getItem('app_greek_font_scale'), null);
+    assert.strictEqual(app.window.localStorage.getItem('app_hebrew_font_scale'), null);
     assert.deepStrictEqual(app.errors, []);
     app.close();
 });
 
-test('еврейский по умолчанию 120% и остаётся привязанным к общему', () => {
-    // Крупнее — но это основание для «как общий», а не отдельно заданный
-    // размер: кнопки возврата быть не должно, возвращать нечего.
+test('оба языка по умолчанию 160% и отвязаны от общего', () => {
+    // Отдельно заданный размер, а не основание для «как общий»: значит и
+    // кнопка возврата видна сразу — возвращать есть к чему.
     const app = loadApp(GREEK);
     const w = app.window;
     w.showSettings();
 
-    assert.strictEqual(w.effectiveFontScale('hebrew'), 1.2);
-    assert.strictEqual(w.isFontScaleAuto('hebrew'), true);
-    assert.strictEqual(app.document.getElementById('hebrewFontScaleValue').textContent, '120%');
-    assert.strictEqual(app.document.getElementById('hebrewFontScaleReset').hidden, true);
-    assert.strictEqual(app.document.getElementById('hebrewFontScaleState').textContent, 'как общий +20%');
-    // Греческий такой прибавки не имеет: его диакритики стоят над строкой.
-    assert.strictEqual(w.effectiveFontScale('greek'), 1);
-    assert.strictEqual(app.document.getElementById('greekFontScaleState').textContent, 'как общий');
+    for (const lang of ['greek', 'hebrew']) {
+        assert.strictEqual(w.effectiveFontScale(lang), 1.6);
+        assert.strictEqual(w.isFontScaleAuto(lang), false);
+        assert.strictEqual(app.document.getElementById(lang + 'FontScaleValue').textContent, '160%');
+        assert.strictEqual(app.document.getElementById(lang + 'FontScaleReset').hidden, false);
+        assert.strictEqual(app.document.getElementById(lang + 'FontScaleState').textContent, 'задан отдельно');
+        assert.strictEqual(app.document.querySelector('[data-font-scale="' + lang + '"]').value, '1.6');
+    }
+    app.close();
+});
+
+test("в хранилище 'auto' — выбор пользователя, а не первый заход", () => {
+    // Пустой ключ и ключ 'auto' — разные вещи, и путать их нельзя: первый даёт
+    // умолчание, второй означает, что язык вернули кнопкой к общему размеру.
+    const app = loadApp({ storage: { app_default_course: 'greek', app_greek_font_scale: 'auto' } });
+    assert.strictEqual(app.window.isFontScaleAuto('greek'), true);
+    assert.strictEqual(app.window.effectiveFontScale('greek'), 1);
+    // Иврита в хранилище нет — он на умолчании.
+    assert.strictEqual(app.window.effectiveFontScale('hebrew'), 1.6);
     app.close();
 });
 
 test('еврейское основание едет за общим, оставаясь на 20% выше', () => {
     const app = loadApp(GREEK);
     const w = app.window;
+    // Основание — это состояние 'auto', то есть кнопка возврата. По умолчанию
+    // язык на неё не смотрит, поэтому сначала возвращаем его к общему.
+    w.resetFontScale('hebrew');
 
     w.setFontScale('general', 1.2);
     assert.strictEqual(w.effectiveFontScale('hebrew'), 1.45, '1.2 × 1.2 = 1.44, ближайшее деление шага');
@@ -71,6 +90,7 @@ test('у верхней границы прибавка срезается, и �
     const app = loadApp(GREEK);
     const w = app.window;
     w.showSettings();
+    w.resetFontScale('hebrew');
 
     w.setFontScale('general', 1.6);
     assert.strictEqual(w.effectiveFontScale('hebrew'), 1.6);
@@ -92,10 +112,12 @@ test('корень масштабируется от --app-font-scale, а не b
 
 // ------------------------------------------------------------ «как общий»
 
-test('языковой размер по умолчанию следует за общим', () => {
+test('язык, возвращённый кнопкой, снова следует за общим', () => {
     const app = loadApp(GREEK);
     const w = app.window;
 
+    w.resetFontScale('greek');
+    w.resetFontScale('hebrew');
     w.setFontScale('general', 1.4);
     // Абсолютный размер греческого — тот же 1.4…
     assert.strictEqual(w.effectiveFontScale('greek'), 1.4);
@@ -115,9 +137,10 @@ test('в хранилище лежит auto, а не копия общего', (
     // перестала бы за ним следовать — та же причина, по которой тема хранит
     // 'system', а не вычисленную светлую.
     const app = loadApp(GREEK);
+    app.window.resetFontScale('greek');
     app.window.setFontScale('general', 1.2);
     assert.strictEqual(app.window.localStorage.getItem('app_font_scale'), '1.2');
-    assert.notStrictEqual(app.window.localStorage.getItem('app_greek_font_scale'), '1.2');
+    assert.strictEqual(app.window.localStorage.getItem('app_greek_font_scale'), 'auto');
     app.close();
 });
 
@@ -134,10 +157,11 @@ test('сдвинутый языковой ползунок отвязывает�
     assert.strictEqual(w.effectiveFontScale('greek'), 1.5);
     // 1.5 / 1.2 = 1.25: общий уже в корне, добавка достраивает до 1.5.
     assert.strictEqual(token(app, '--app-greek-scale'), '1.25');
-    // Еврейский не трогали — он остался при общем, со своим основанием 1.2:
-    // 1.2 × 1.2 = 1.44, ближайшее деление 1.45, добавка 1.45 / 1.2.
-    assert.strictEqual(w.isFontScaleAuto('hebrew'), true);
-    assert.strictEqual(token(app, '--app-hebrew-scale'), '1.2083');
+    // Еврейский не трогали — он остался на своём размере по умолчанию, а
+    // общий вырос: абсолютный 1.6 сохраняется, значит добавка падает до
+    // 1.6 / 1.2. Иначе на экране он уехал бы вместе с корнем.
+    assert.strictEqual(w.isFontScaleAuto('hebrew'), false);
+    assert.strictEqual(token(app, '--app-hebrew-scale'), '1.3333');
     app.close();
 });
 
@@ -240,7 +264,10 @@ test('настройка переживает перезапуск', () => {
     const second = loadApp({ storage: saved });
     assert.strictEqual(second.window.effectiveFontScale('general'), 1.25);
     assert.strictEqual(second.window.effectiveFontScale('hebrew'), 1.45);
-    assert.strictEqual(second.window.isFontScaleAuto('greek'), true);
+    // Греческий не трогали, и в хранилище его нет — второй заход берёт
+    // умолчание, а не подобранное значение первого.
+    assert.strictEqual(second.window.isFontScaleAuto('greek'), false);
+    assert.strictEqual(second.window.effectiveFontScale('greek'), 1.6);
     second.close();
 });
 
@@ -270,11 +297,12 @@ test('ползунки и подписи показывают действующ
     w.setFontScale('general', 1.2);
     assert.strictEqual(app.document.querySelector('[data-font-scale="general"]').value, '1.2');
     assert.strictEqual(app.document.getElementById('generalFontScaleValue').textContent, '120%');
-    // Языковой ползунок на «как общий» стоит там же, где общий, — иначе
-    // пользователь не поймёт, какой размер у него сейчас на самом деле.
-    assert.strictEqual(app.document.querySelector('[data-font-scale="greek"]').value, '1.2');
-    assert.strictEqual(app.document.getElementById('greekFontScaleValue').textContent, '120%');
-    assert.strictEqual(app.document.getElementById('greekFontScaleState').textContent, 'как общий');
+    // Языковой ползунок отвязан и стоит на своём размере — не там же, где
+    // общий: подпись обязана показывать тот размер, что и в самом деле на
+    // экране.
+    assert.strictEqual(app.document.querySelector('[data-font-scale="greek"]').value, '1.6');
+    assert.strictEqual(app.document.getElementById('greekFontScaleValue').textContent, '160%');
+    assert.strictEqual(app.document.getElementById('greekFontScaleState').textContent, 'задан отдельно');
     app.close();
 });
 
@@ -284,14 +312,18 @@ test('кнопка возврата видна только у отвязанн�
     w.showSettings();
 
     const reset = app.document.getElementById('greekFontScaleReset');
+    const state = app.document.getElementById('greekFontScaleState');
+    // По умолчанию язык отвязан — возвращать есть к чему.
+    assert.strictEqual(reset.hidden, false);
+    assert.strictEqual(state.textContent, 'задан отдельно');
+
+    w.resetFontScale('greek');
     assert.strictEqual(reset.hidden, true, 'на «как общий» возвращать нечего');
+    assert.strictEqual(state.textContent, 'как общий');
 
     w.setFontScale('greek', 1.3);
     assert.strictEqual(reset.hidden, false);
-    assert.strictEqual(app.document.getElementById('greekFontScaleState').textContent, 'задан отдельно');
-
-    w.resetFontScale('greek');
-    assert.strictEqual(reset.hidden, true);
+    assert.strictEqual(state.textContent, 'задан отдельно');
     app.close();
 });
 
