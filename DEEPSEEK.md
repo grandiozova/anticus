@@ -70,8 +70,10 @@ Published on GitHub Pages: https://grandiozova.github.io/anticus/
 ## Before you start editing
 
 1. Find the section of this file that covers your task and read it fully.
-2. Run `npm test` first (241 tests, ~30s). If it fails before you change anything,
-   say so — that failure is not yours to fix unless asked.
+2. Run `npm test` first. If it fails before you change anything, say so — that failure
+   is not yours to fix unless asked. (Don't hardcode the current test count anywhere in
+   this file — it changes every time a task adds tests, and a stale number is worse
+   than no number.)
 3. Read the actual code before editing. Every function is global — grep for its name,
    then open the file. For `reference/`, start from its `INDEX.md`, don't grep the
    whole folder.
@@ -187,19 +189,12 @@ Reuse existing classes instead of inventing new visual patterns:
 
 Typography: Russian UI text uses Noto Sans. Studied-language text (headwords,
 flashcards, prayer text) uses `--md-ref-typeface-script` (Noto Serif for Greek, Noto
-Serif Hebrew for Hebrew) — never apply the serif to Russian UI text. Рукописный иврит
-(курсив в упражнении письма) — `--md-ref-typeface-cursive-hebrew` (Gveret Levin),
-а маркер
-`.script--cursive` объявлен составным — `.script.script--cursive`: правила
-компонентов задают гарнитуру сами и лежат в более позднем файле, и одиночный класс
-при равной специфичности им молча проигрывает. Icons are
-Material Symbols Rounded via `<span class="msym">name</span>` — no emoji.
-
-**Карточки иврита печатаются в 1.5 раза крупнее** базовой шкалы
-(`.flashcard-word` и `.card-declension__word`, ветка `:root[data-script="hebrew"]`
-в `screens.css`, плюс мобильный кегль в `layout.css`) — иначе огласовка
-сливается с буквой. Множитель ползунка размера сохранён; греческие карточки
-не меняются. Это намеренное отступление от шкалы, не повод его «чинить».
+Serif Hebrew for Hebrew) — never apply the serif to Russian UI text. Cursive Hebrew
+(the handwriting-practice exercise) uses `--md-ref-typeface-cursive-hebrew` (Gveret
+Levin); its marker class is deliberately compound — `.script.script--cursive`, not just
+`.script--cursive` — because component rules set their own `font-family` and load
+later, so a single class silently loses at equal specificity. Icons are Material
+Symbols Rounded via `<span class="msym">name</span>` — no emoji.
 
 Layout: bottom nav bar under 905px width, nav rail at ≥905px (same markup, CSS-only).
 If you add a nav destination, check both. Nav bar is capped at 5 destinations (already
@@ -249,46 +244,33 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   correct answer **first**: `options: q => [q.correct].concat(otherValues(..., 3))`.
   Forgetting the correct value in front produces an unanswerable question.
 - Never put the answer inside the question text itself.
-- **Письмо от руки — одно упражнение с выбором начертания впереди.** Печатный
-  и рукописный варианты — один и тот же вопрос с разным показом, поэтому вид
-  `letter_write` один, а начертание выбирается **один раз на весь заход**
-  экраном выбора (`showLetterWriteChoice`), который показывается до первой
-  буквы и повторяется при каждом заходе, в том числе по «Ещё раз» с экрана
-  результата. Живёт этот экран внутри `#exerciseQuestion` (карточка со списком
-  пунктов `.lesson-item`, как меню урока), а не перекрытием, как выбор курса:
-  так остаются заголовок «Написание буквы» и кнопка «назад». Выбор хранится
-  в `letterWriteStyle`; `startExercise` — это врата (пусто или выбор), а сам
-  прогон вопросов — `beginExercise(type, style)`. Экрана выбора нет у курса без
-  `cursiveWriting` (`courseCursiveWriting()`), то есть у греческого.
-  Показ буквы — только начертание, без имени: имя уже было вопросом перед
-  рисованием. Кегль показа — `calc(3.5rem * var(--md-ref-script-scale))`
-  с такой же по множителю строкой; он подобран так, чтобы показ влезал
-  в карточку на любом положении ползунков размера текста.
-  В еврейской главе 1 вопросы — `HEBREW_WRITE_LETTERS`: пул без изменений плюс
-  5 конечных из `finals` (в самом пуле конечных нет: это вопрос о начертании,
-  и `heb_letter_final` держит их отдельно), причём конечные помечены
-  `finalForm: true` — по этой пометке вопрос пишет «каф (конечная)» до рисования.
-  Шин и син этот вид различает сам: `\u05E9\u05C1` («шин») и `\u05E9\u05C2`
-  («син») стоят в списке письма вместо одной буквы ש из пула — в остальных видах
-  ש остаётся одной буквой с двумя чтениями, и трогать пул нельзя (на порядке
-  букв стоит `letter_order`).
-  **Внешность письма (styles/screens.css).** Карточка холста тянется вместе с
-  окном: `max-width: clamp(280px, 100%, 560px)`, у греческой потолок 720px —
-  греческому нужно место под две формы буквы (Σ σ). Предпочтение задано
-  процентом, а не `vw`: колонка приложения и так текучая, и `60vw` на телефоне
-  оказалось бы у́же доступного места (карточка стала бы у́же, чем была).
-  Потолок всё равно не достижим раньше контейнера: у экрана упражнения
-  `.card` внутри `.app` это 752px. **Оборот карточки — это она же**, поэтому
-  ширина и тон поверхности заданы правилами, которые перечисляют оба селектора
-  сразу (`.writing-canvas-card, .md-flashcard.md-flashcard--writing` и пара с
-  `--writing-greek` для 720px), и расходиться им негде: при «Готово» не должен
-  меняться ни оттенок (роль врезки, как у таблиц, а не `surface-container-high`
-  обычной карточки), ни ширина. Курс оборота задаёт `md-flashcard--writing-greek`
-  из `completeLetterWritingPractice()`. Кнопки: на холсте
-  `.writing-practice .md-button-row` — `space-between`, поэтому «Очистить»
-  слева, «Готово» справа; на обороте `.letter-write-actions` — `flex-end`,
-  чтобы «Далее» встало у того же правого края. Обе строки — 752px шириной, и
-  без этого главное действие перескакивало с одного края на другой.
+- **Handwriting practice (`letter_write`) is one exercise kind with an upfront
+  script-style choice** — print and cursive are the same question shown differently,
+  never two separate exercise kinds:
+  - The style is chosen **once per run**, via a choice screen (`showLetterWriteChoice`)
+    shown before the first letter and again on every fresh run, including "Ещё раз"
+    from the result screen.
+  - It lives inside `#exerciseQuestion` as a card + `.lesson-item` list (like a lesson
+    menu), not a full-screen overlay like the course picker — so the "Написание буквы"
+    title and back button stay on screen.
+  - The choice is stored in `letterWriteStyle`. `startExercise` is the gate (shows the
+    choice, or nothing); `beginExercise(type, style)` runs the actual questions.
+  - Courses without `cursiveWriting` (`courseCursiveWriting()` false — i.e. Greek)
+    never see the choice screen; they only ever get print.
+  - The reveal shows only the letterform(s), never the name — the name was already the
+    question, before drawing. Reveal size is
+    `calc(3.5rem * var(--md-ref-script-scale))` (same line-height ratio), chosen to fit
+    the reveal card at every text-size slider position.
+  - Hebrew chapter 1's questions are `HEBREW_WRITE_LETTERS`: the untouched alphabet
+    pool plus the 5 final forms from `finals` (finals aren't part of the pool itself —
+    this is a writing-only concern; `heb_letter_final` keeps them as its own separate
+    drill).
+  - Finals are marked `finalForm: true` on the question — that's what makes the prompt
+    read "каф (конечная)" before drawing.
+  - Shin/sin are split **only in this list**: `\u05E9\u05C1` ("шин") and `\u05E9\u05C2`
+    ("син") replace the pool's single `ש` entry here. Every other exercise (including
+    `letter_order`, which walks the pool in sequence) keeps `ש` as one letter with two
+    readings — don't touch `HEBREW_ALPHABET.letters` itself to "fix" this.
 
 ## Courses
 
@@ -301,20 +283,6 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
 - Switching a course calls `applyCourse(id)`, which resets stats, clears
   `allVocabCache`, and re-renders. Any new cross-screen cache must be reset there too.
 
-## Настройки
-
-- Порядок карточек на экране настроек: курс, оформление, размер текста,
-  управление данными, поддержка проекта, лицензии.
-- **«Поддержать проект»** — одна необязательная внешняя ссылка на страницу
-  добровольного доната (`target="_blank" rel="noopener noreferrer"`). В тексте
-  нет ни учебников, ни правообладателей: это поддержка времени разработчика и
-  хостинга, она ничего не открывает и ни на что в приложении не влияет.
-- **«Размер текста»**: общий ползунок виден всегда, греческий и еврейский
-  спрятаны в свёрнутый по умолчанию блок «Расширенные настройки». Приём тот же,
-  что у примеров в словаре, — класс `.open` и `max-height` (`toggleFontScaleAdvanced()`
-  в `js/fontscale.js`). Языковые блоки плотнее (`.font-scale--compact`), но кегль
-  образца не уменьшается: 1.25rem — минимум, на котором огласовка ещё различима.
-
 ## Offline (`sw.js`)
 
 - Precaches everything in `CORE_ASSETS`: every file in `styles/`, `data/`, `js/`, plus
@@ -323,7 +291,9 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   online testing.
 - Bump `CACHE_VERSION` in `sw.js` whenever `CORE_ASSETS` changes.
 - Navigation and same-origin assets are network-first (fresh build wins online, cache
-  is the offline fallback). Fonts are cache-first.
+  is the offline fallback). Fonts are cache-first — a Google-hosted font not already in
+  `CORE_ASSETS` (e.g. Gveret Levin) only becomes available offline after it has been
+  loaded once online, same as the app's other Google fonts. That's expected, not a bug.
 
 ## Finishing a task
 
@@ -331,7 +301,8 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   only — contrast, rendering, and offline have no automated check (see below). If you
   changed how something looks and didn't check it in a browser, say so explicitly.
 - Update this file in the same change if you settle a decision or discover a rule that
-  wasn't written down.
+  wasn't written down. Write new notes in English, matching the rest of the file —
+  don't mix languages within the document.
 - Commit only when explicitly asked. Commit messages in Russian, one short line
   matching the existing log style. **No AI attribution in commits or PRs** — no
   `Co-Authored-By`, no mention of an AI assistant, even if your tool adds it by default.
