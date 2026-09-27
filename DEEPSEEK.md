@@ -70,15 +70,19 @@ Published on GitHub Pages: https://grandiozova.github.io/anticus/
 ## Before you start editing
 
 1. Find the section of this file that covers your task and read it fully.
-2. Run `npm test` first. If it fails before you change anything, say so — that failure
-   is not yours to fix unless asked. (Don't hardcode the current test count anywhere in
-   this file — it changes every time a task adds tests, and a stale number is worse
-   than no number.)
+2. Run `npm test` first (241 tests, ~30s). If it fails before you change anything,
+   say so — that failure is not yours to fix unless asked.
 3. Read the actual code before editing. Every function is global — grep for its name,
    then open the file. For `reference/`, start from its `INDEX.md`, don't grep the
    whole folder.
 4. **Do not guess a data shape from a neighboring entry.** `data/hebrew-lessons.js`
    has a field-by-field authoring guide at the top of the file — follow it.
+5. **Match verification effort to the change's blast radius.** A trivial, purely
+   textual edit (renaming a lesson title, fixing a typo, changing one string) needs
+   `npm test` and nothing else — don't run a full Playwright sweep across every
+   screen/theme/viewport for that. Reserve the full render/offline verification
+   checklist for changes that touch shared CSS, layout, navigation, or anything
+   rendered on more than one screen.
 
 ## Hard rules — breaking these causes real, hard-to-spot bugs
 
@@ -131,7 +135,7 @@ invisible until someone hits the specific path (offline load, one specific theme
 | a screen | markup in `index.html` **+** `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` in `js/shell.js` |
 | an exercise kind | `EXERCISE_TYPES` (`js/exercises.js`) **+** `LESSON_DRILL_GROUPS` (`js/lesson.js`) and/or `TEST_TYPES` (`js/test.js`) |
 | a color role | `:root`, `[data-theme="dark"]`, **and** `[data-theme="sepia"]` in `tokens.css` |
-| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))`; add `var(--md-ref-script-size)` too where the text is the subject (grammar prose, prompt, answers, word bank) |
+| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` |
 | a part-of-speech `type` value | `VOCAB_TYPE_ORDER` **+** `TYPE_LABELS` in `js/vocab.js` |
 | a cache that spans screens | a reset for it inside `applyCourse()` in `js/course.js` |
 | a new dependency/font/asset | an entry in `data/licenses.js` |
@@ -189,12 +193,13 @@ Reuse existing classes instead of inventing new visual patterns:
 
 Typography: Russian UI text uses Noto Sans. Studied-language text (headwords,
 flashcards, prayer text) uses `--md-ref-typeface-script` (Noto Serif for Greek, Noto
-Serif Hebrew for Hebrew) — never apply the serif to Russian UI text. Cursive Hebrew
-(the handwriting-practice exercise) uses `--md-ref-typeface-cursive-hebrew` (Gveret
-Levin); its marker class is deliberately compound — `.script.script--cursive`, not just
-`.script--cursive` — because component rules set their own `font-family` and load
-later, so a single class silently loses at equal specificity. Icons are Material
-Symbols Rounded via `<span class="msym">name</span>` — no emoji.
+Serif Hebrew for Hebrew) — never apply the serif to Russian UI text. Рукописный иврит
+(курсив в упражнении письма) — `--md-ref-typeface-cursive-hebrew` (Gveret Levin),
+а маркер
+`.script--cursive` объявлен составным — `.script.script--cursive`: правила
+компонентов задают гарнитуру сами и лежат в более позднем файле, и одиночный класс
+при равной специфичности им молча проигрывает. Icons are
+Material Symbols Rounded via `<span class="msym">name</span>` — no emoji.
 
 Layout: bottom nav bar under 905px width, nav rail at ≥905px (same markup, CSS-only).
 If you add a nav destination, check both. Nav bar is capped at 5 destinations (already
@@ -213,49 +218,6 @@ full-screen overlay, not a nav item).
 - Hebrew niqqud have a minimum readable size (`--md-ref-script-min-size: 1.25rem`).
   Any small `font-size` on studied-language text must use
   `calc(max(<size>, var(--md-ref-script-min-size)) * var(--md-ref-script-scale))`.
-
-## Sizing studied-language text
-
-Two multipliers, and they are not the same thing:
-
-- `--md-ref-script-scale` is the **accessibility slider** (js/fontscale.js), always
-  present. `--md-ref-script-size` is the **size step** — how much larger than the
-  Russian around it the studied language is drawn by design, `1.5` Greek / `1.6`
-  Hebrew, switched by `data-script` exactly like the typeface. Both language sliders
-  default to the top of their range (160%) while the interface defaults to 100%
-  (`FONT_SCALE_DEFAULT`); the two multipliers multiply, so at that default the
-  studied text is 2.4× Greek / 2.56× Hebrew the size of the Russian around it. The
-  reset button returns a language to “follows the general”.
-- Where the text *is* the subject, both go on: grammar prose, `.md-prompt-strong`,
-  `.options--script .option-btn`, the word-bank chips, and the two word lists —
-  the dictionary headword (`.word-item .word-row strong`) and the example in an
-  expanded entry (`.word-details .vocab-example__script`). Everything genuinely
-  small (paradigm cells, the error list, the row's Russian translation, the
-  flashcard context line) keeps only the slider.
-- **In the word lists the floor goes after the step**, not before:
-  `max(<base> * var(--md-ref-script-size), var(--md-ref-script-min-size)) *
-  var(--md-ref-script-scale)`. Before the step it would lift Hebrew's base to
-  1.25rem and inflate the result to 38px, making the list sparser instead of more
-  readable. At the slider's default (160%) the dictionary row is 38.4px Greek /
-  40.96px Hebrew, standing at 66 / 69px rather than the 56px M3 minimum; at a
-  slider of 100% it is exactly 56px.
-- **Greek grammar prose carries no markup** — its Greek words sit inside `<b>`/`<i>`.
-  `wrapScriptRuns()` (js/lesson.js) marks the runs at render time; it skips text that
-  is already marked and never touches lifted tables. Don't hand-mark `data/lessons.js`.
-- **The course badge on the start screen is the one studied-language size that is
-  deliberately static.** `.course-card__glyph.greek` / `.hebrew` are `30px` / `32px`
-  written in `px`, carrying no multiplier at all. The badge is a fixed 48px circle
-  (`.course-card__icon`), so the old `rem` + slider sizes grew the letter to the full
-  diameter at 160% (Greek 48px) and past it (Hebrew 53.76px). 30px is exactly what the
-  Greek letter was at 100%; the Hebrew one drops from 40.32px because that figure was
-  a slider baseline rather than a fixed design size — at the 160% default it would be
-  the whole diameter. The badge holds a bare `א` with no niqqud to keep legible.
-  `tests/fontscale.test.js` exempts these two rules from the
-  multiplier check and asserts they stay bare `px` instead, so the exemption cannot
-  quietly become a forgotten rule.
-- **Never write a stray comment terminator in a stylesheet.** One inside the `.script`
-  comment in `base.css` deleted the whole rule for months — no font, no direction, no
-  multiplier. `tests/static.test.js` guards against it; keep comment blocks balanced.
 
 ## Paradigm / declension tables
 
@@ -287,33 +249,29 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   correct answer **first**: `options: q => [q.correct].concat(otherValues(..., 3))`.
   Forgetting the correct value in front produces an unanswerable question.
 - Never put the answer inside the question text itself.
-- **Handwriting practice (`letter_write`) is one exercise kind with an upfront
-  script-style choice** — print and cursive are the same question shown differently,
-  never two separate exercise kinds:
-  - The style is chosen **once per run**, via a choice screen (`showLetterWriteChoice`)
-    shown before the first letter and again on every fresh run, including "Ещё раз"
-    from the result screen.
-  - It lives inside `#exerciseQuestion` as a card + `.lesson-item` list (like a lesson
-    menu), not a full-screen overlay like the course picker — so the "Написание буквы"
-    title and back button stay on screen.
-  - The choice is stored in `letterWriteStyle`. `startExercise` is the gate (shows the
-    choice, or nothing); `beginExercise(type, style)` runs the actual questions.
-  - Courses without `cursiveWriting` (`courseCursiveWriting()` false — i.e. Greek)
-    never see the choice screen; they only ever get print.
-  - The reveal shows only the letterform(s), never the name — the name was already the
-    question, before drawing. Reveal size is
-    `calc(3.5rem * var(--md-ref-script-scale))` (same line-height ratio), chosen to fit
-    the reveal card at every text-size slider position.
-  - Hebrew chapter 1's questions are `HEBREW_WRITE_LETTERS`: the untouched alphabet
-    pool plus the 5 final forms from `finals` (finals aren't part of the pool itself —
-    this is a writing-only concern; `heb_letter_final` keeps them as its own separate
-    drill).
-  - Finals are marked `finalForm: true` on the question — that's what makes the prompt
-    read "каф (конечная)" before drawing.
-  - Shin/sin are split **only in this list**: `\u05E9\u05C1` ("шин") and `\u05E9\u05C2`
-    ("син") replace the pool's single `ש` entry here. Every other exercise (including
-    `letter_order`, which walks the pool in sequence) keeps `ש` as one letter with two
-    readings — don't touch `HEBREW_ALPHABET.letters` itself to "fix" this.
+- **Письмо от руки — одно упражнение с выбором начертания впереди.** Печатный
+  и рукописный варианты — один и тот же вопрос с разным показом, поэтому вид
+  `letter_write` один, а начертание выбирается **один раз на весь заход**
+  экраном выбора (`showLetterWriteChoice`), который показывается до первой
+  буквы и повторяется при каждом заходе, в том числе по «Ещё раз» с экрана
+  результата. Живёт этот экран внутри `#exerciseQuestion` (карточка со списком
+  пунктов `.lesson-item`, как меню урока), а не перекрытием, как выбор курса:
+  так остаются заголовок «Написание буквы» и кнопка «назад». Выбор хранится
+  в `letterWriteStyle`; `startExercise` — это врата (пусто или выбор), а сам
+  прогон вопросов — `beginExercise(type, style)`. Экрана выбора нет у курса без
+  `cursiveWriting` (`courseCursiveWriting()`), то есть у греческого.
+  Показ буквы — только начертание, без имени: имя уже было вопросом перед
+  рисованием. Кегль показа — `calc(3.5rem * var(--md-ref-script-scale))`
+  с такой же по множителю строкой; он подобран так, чтобы показ влезал
+  в карточку на любом положении ползунков размера текста.
+  В еврейской главе 1 вопросы — `HEBREW_WRITE_LETTERS`: пул без изменений плюс
+  5 конечных из `finals` (в самом пуле конечных нет: это вопрос о начертании,
+  и `heb_letter_final` держит их отдельно), причём конечные помечены
+  `finalForm: true` — по этой пометке вопрос пишет «каф (конечная)» до рисования.
+  Шин и син этот вид различает сам: `\u05E9\u05C1` («шин») и `\u05E9\u05C2`
+  («син») стоят в списке письма вместо одной буквы ש из пула — в остальных видах
+  ש остаётся одной буквой с двумя чтениями, и трогать пул нельзя (на порядке
+  букв стоит `letter_order`).
 
 ## Courses
 
@@ -334,9 +292,7 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   online testing.
 - Bump `CACHE_VERSION` in `sw.js` whenever `CORE_ASSETS` changes.
 - Navigation and same-origin assets are network-first (fresh build wins online, cache
-  is the offline fallback). Fonts are cache-first — a Google-hosted font not already in
-  `CORE_ASSETS` (e.g. Gveret Levin) only becomes available offline after it has been
-  loaded once online, same as the app's other Google fonts. That's expected, not a bug.
+  is the offline fallback). Fonts are cache-first.
 
 ## Finishing a task
 
@@ -344,8 +300,7 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   only — contrast, rendering, and offline have no automated check (see below). If you
   changed how something looks and didn't check it in a browser, say so explicitly.
 - Update this file in the same change if you settle a decision or discover a rule that
-  wasn't written down. Write new notes in English, matching the rest of the file —
-  don't mix languages within the document.
+  wasn't written down.
 - Commit only when explicitly asked. Commit messages in Russian, one short line
   matching the existing log style. **No AI attribution in commits or PRs** — no
   `Co-Authored-By`, no mention of an AI assistant, even if your tool adds it by default.
