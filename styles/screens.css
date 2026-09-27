@@ -1117,13 +1117,22 @@ body.start-open .md-content { display: none; }
 .course-card__glyph.greek {
     direction: ltr;
     unicode-bidi: isolate;
-    font-size: calc(1.875rem * var(--app-greek-scale));
+    /* Буква на бейдже курса — знак, а не текст для чтения: бейдж круглый и
+       фиксированный (48px, .course-card__icon). Поэтому кегль задан в px и
+       намеренно не несёт ни общего множителя (--app-font-scale приходит через
+       rem), ни языкового ползунка — иначе на 160% греческая буква вырастала до
+       самого диаметра, а ивритская вылезала за него. Исключение из правила
+       «кегль изучаемого языка несёт множитель» закреплено в
+       tests/fontscale.test.js. Греческая 30px — ровно то, что было при общем
+       100%; ивритская 32px вместо прежних 40.32px: те были основанием ползунка
+       иврита (×1.2), а оно существует ради огласовки, которой на бейдже нет. */
+    font-size: 30px;
     transform: translateY(-1px);
 }
 .course-card__glyph.hebrew {
     direction: rtl;
     unicode-bidi: isolate;
-    font-size: calc(2.1rem * var(--app-hebrew-scale));
+    font-size: 32px;
     transform: translateY(1px);
 }
 .course-card__text { flex: 1; min-width: 0; }

@@ -238,6 +238,16 @@ Two multipliers, and they are not the same thing:
 - **Greek grammar prose carries no markup** — its Greek words sit inside `<b>`/`<i>`.
   `wrapScriptRuns()` (js/lesson.js) marks the runs at render time; it skips text that
   is already marked and never touches lifted tables. Don't hand-mark `data/lessons.js`.
+- **The course badge on the start screen is the one studied-language size that is
+  deliberately static.** `.course-card__glyph.greek` / `.hebrew` are `30px` / `32px`
+  written in `px`, carrying no multiplier at all. The badge is a fixed 48px circle
+  (`.course-card__icon`), so the old `rem` + slider sizes grew the letter to the full
+  diameter at 160% (Greek 48px) and past it (Hebrew 53.76px). 30px is exactly what the
+  Greek letter was at 100%; the Hebrew one drops from 40.32px because that figure was
+  the Hebrew slider's 1.2 baseline, which exists for niqqud — and the badge holds a
+  bare `א` with none. `tests/fontscale.test.js` exempts these two rules from the
+  multiplier check and asserts they stay bare `px` instead, so the exemption cannot
+  quietly become a forgotten rule.
 - **Never write a stray comment terminator in a stylesheet.** One inside the `.script`
   comment in `base.css` deleted the whole rule for months — no font, no direction, no
   multiplier. `tests/static.test.js` guards against it; keep comment blocks balanced.

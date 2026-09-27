@@ -729,6 +729,16 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   wins and drops the multiplier. That is how the settings preview came out frozen
   at one size while its slider moved — caught in a browser, not by the suite,
   because jsdom expands neither `calc()` nor `var()`.
+- **The course badge on the start screen is the one studied-language size that is
+  deliberately static.** `.course-card__glyph.greek` / `.hebrew` are `30px` / `32px`
+  written in `px`, with no multiplier at all. The badge is a fixed 48px circle
+  (`.course-card__icon`), so the old `rem` + slider form grew the letter to the whole
+  diameter at 160% (Greek 48px) and past it (Hebrew 53.76px). 30px is exactly what the
+  Greek letter was at 100%; the Hebrew one drops from 40.32px, because that figure was
+  the Hebrew slider's 1.2 baseline — which exists for niqqud, and the badge holds a bare
+  `א` with none. `tests/fontscale.test.js` exempts these two rules from the multiplier
+  check and asserts they stay bare `px` instead, so the exemption cannot quietly become
+  a forgotten rule.
 - **`--md-ref-script-min-size` is `0px`, and the unit is load-bearing.** Inside
   `max()` every argument must be the same type, and a bare `0` is a `<number>`,
   not a length: `max(1.0625rem, 0)` is invalid and the browser drops the whole
