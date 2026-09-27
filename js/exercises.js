@@ -555,7 +555,17 @@ function completeLetterWritingPractice() {
     // Начертание взято из выбора на весь заход, а не у вида: печатное и
     // рукописное — один и тот же вопрос, и отличается у них только гарнитура
     // (.script--cursive, styles/base.css). Кегль, направление и цвет — те же.
+    //
+    // Оборот — та же карточка, что холст, только с показом буквы: ширина и тон
+    // поверхности у них общие (md-flashcard--writing, styles/screens.css),
+    // поэтому при перевороте не меняется ничего, кроме содержимого. Потолок
+    // ширины у курсов разный, отсюда второй модификатор у греческого.
+    // letter-write-actions ставит «Далее» у правого края — туда же, где на
+    // холсте стоит «Готово».
     const cursive = letterWriteStyle === 'cursive';
+    const writingCardClass = 'md-flashcard md-flashcard--writing' +
+        (isGreek ? ' md-flashcard--writing-greek' : '') +
+        ' md-flashcard--back md-flashcard--has-flip md-flashcard--flip';
     const reveal = isGreek ?
         '<div class="letter-write-reveal">' +
         '<div class="letter-write-reveal__forms">' +
@@ -567,10 +577,10 @@ function completeLetterWritingPractice() {
         '</div>';
 
     box.innerHTML = progressHead('Упражнение ' + (exerciseState.index + 1) + ' из ' + exerciseState.total, exerciseState.index, exerciseState.total) +
-        '<div class="flashcard-flip"><div class="md-flashcard md-flashcard--back md-flashcard--has-flip md-flashcard--flip">' +
+        '<div class="flashcard-flip"><div class="' + writingCardClass + '">' +
         reveal +
         '</div></div>' +
-        '<div class="md-button-row"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
+        '<div class="md-button-row letter-write-actions"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
 }
 
 function initLetterWriteCanvas() {
