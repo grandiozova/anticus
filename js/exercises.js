@@ -456,29 +456,32 @@ function exerciseWritingStyle(key) {
 // начертание выбирается один раз на всё упражнение — экраном выбора, который
 // показывается до первой буквы и повторяется при каждом заходе.
 const LETTER_WRITE_STYLES = [
-    { style: 'print', label: 'Печатные', hint: 'Обычное начертание буквы', icon: 'draw' },
-    { style: 'cursive', label: 'Курсив', hint: 'Рукописное, как в прописях', icon: 'history_edu' }
+    { style: 'print', label: 'Печатные' },
+    { style: 'cursive', label: 'Курсив' }
 ];
-// Образец в подписи — одна буква, показанная обоими начертаниями: только по ней
-// и видно, что выбираешь. א — первая буква алфавита, и в курсиве она отличается
-// от печатной заметно. Записана кодом: так знак не потеряется при правке.
+// Образец — одна буква, показанная обоими начертаниями: только по ней и видно,
+// что выбираешь. א — первая буква алфавита, и в курсиве она отличается от
+// печатной заметно. Записана кодом: так знак не потеряется при правке.
 const LETTER_WRITE_SAMPLE = '\u05D0';
 
-// Экран выбора начертания — тот же список вариантов, что и везде в приложении:
-// карточка с заголовком и пунктами .lesson-item (menuItemHtml), как в меню урока
-// или в списке упражнений. Живёт он внутри экрана упражнения, а не перекрытием,
-// как выбор курса: так остаются и заголовок «Написание буквы», и кнопка «назад»,
-// то есть из выбора можно выйти, не начав упражнение.
+// Экран выбора начертания — список .lesson-item, но без круглого значка: в
+// пункте стоит сама буква в нужном начертании, а за ней — слово, которым это
+// начертание называется («א Печатные», «א Курсив»). Живёт он внутри экрана
+// упражнения, а не перекрытием, как выбор курса: так остаются и заголовок
+// «Написание буквы» в app bar, и кнопка «назад», то есть из выбора можно выйти,
+// не начав упражнение.
 function showLetterWriteChoice() {
     const box = document.getElementById('exerciseQuestion');
     if (!box) return;
     const rows = LETTER_WRITE_STYLES.map(o =>
-        menuItemHtml(o.icon, o.label,
-            '<span class="script' + (o.style === 'cursive' ? ' script--cursive' : '') + '">' +
-                LETTER_WRITE_SAMPLE + '</span> ' + o.hint,
-            'startLetterWrite(\'' + o.style + '\')'));
+        '<button class="lesson-item lesson-item--single" onclick="startLetterWrite(\'' + o.style + '\')">' +
+            '<span class="lesson-item__text"><span class="lesson-item__headline">' +
+                '<span class="script' + (o.style === 'cursive' ? ' script--cursive' : '') + '">' +
+                    LETTER_WRITE_SAMPLE + '</span> ' + o.label +
+            '</span></span>' +
+            '<span class="lesson-item__trailing msym">chevron_right</span>' +
+        '</button>');
     box.innerHTML = '<div class="card letter-write-choice">' +
-        '<h3><span class="msym">draw</span>Как писать буквы</h3>' +
         '<div class="lesson-list">' + rows.join('<hr class="md-divider">') + '</div>' +
         '</div>';
 }

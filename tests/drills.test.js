@@ -129,12 +129,20 @@ test('письмо начинается с выбора начертания н�
     assert.ok(!app.document.querySelector('#exerciseQuestion canvas'), 'холст показан до выбора');
     assert.strictEqual(app.get('exerciseState.questions.length'), 0, 'вопросы начались до выбора');
     const rows = rowsIn();
+    assert.strictEqual(rows.length, 2, 'пунктов выбора не два');
     assert.strictEqual(rows.map(r => r.querySelector('.lesson-item__headline').textContent).join(' | '),
-        'Печатные | Курсив', 'пункты выбора названы не так');
-    // Образец в подписи — та же буква в двух начертаниях: по нему и видно, что
+        '\u05D0 Печатные | \u05D0 Курсив', 'пункты выбора названы не так');
+    // Ни заголовка «Как писать буквы», ни круглого значка, ни поясняющей строки:
+    // в пункте стоит сама буква-образец, а за ней — название начертания.
+    assert.strictEqual(
+        app.document.querySelectorAll('#exerciseQuestion .letter-write-choice h3, ' +
+            '#exerciseQuestion .letter-write-choice .lesson-item__avatar, ' +
+            '#exerciseQuestion .letter-write-choice .lesson-item__supporting').length,
+        0, 'в выборе начертания остались заголовок, значок или поясняющая строка');
+    // Образец в пункте — та же буква в двух начертаниях: по нему и видно, что
     // выбираешь, поэтому у курсива он помечен .script--cursive.
-    const samples = rows.map(r => r.querySelector('.lesson-item__supporting .script'));
-    assert.ok(samples[0] && samples[1], 'в подписях пунктов нет образца буквы');
+    const samples = rows.map(r => r.querySelector('.lesson-item__headline .script'));
+    assert.ok(samples[0] && samples[1], 'в пунктах нет образца буквы');
     assert.strictEqual(samples[0].textContent.trim(), samples[1].textContent.trim(),
         'образцы в пунктах — разные буквы');
     assert.ok(!samples[0].classList.contains('script--cursive'), 'печатный образец помечен курсивом');
