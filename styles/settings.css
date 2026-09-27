@@ -213,6 +213,80 @@
     line-height: 1.25rem;
 }
 
+/* --- «Расширенные настройки» --- */
+/* Языковые ползунки убраны под раскрывающийся заголовок: в свёрнутом виде
+   карточка вдвое короче. Приём тот же, что у примеров в словаре
+   (styles/screens.css, .word-details): тело при max-height: 0, открытое —
+   фиксированный максимум. Заголовок — <button>, поэтому у него уже есть
+   клавиатура и состояние; слой состояния рисует ::before, как у кнопок. */
+.settings-disclosure {
+    margin-top: 8px;
+}
+.settings-disclosure__head {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    /* Область нажатия 48dp по M3, как у остальных кнопок экрана. */
+    min-height: 48px;
+    padding: 8px 16px;
+    border: 0;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: transparent;
+    color: var(--md-sys-color-primary);
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.00625rem;
+    text-align: start;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.settings-disclosure__head::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+.settings-disclosure__head:hover::before { opacity: var(--md-sys-state-hover-opacity); }
+.settings-disclosure__head:focus-visible::before { opacity: var(--md-sys-state-focus-opacity); }
+.settings-disclosure__head:active::before { opacity: var(--md-sys-state-pressed-opacity); }
+.settings-disclosure__chevron {
+    margin-left: auto;
+    font-size: 20px;
+    transition: transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+}
+.settings-disclosure__head[aria-expanded="true"] .settings-disclosure__chevron { transform: rotate(180deg); }
+.settings-disclosure__body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-emphasized);
+}
+/* С запасом на два языковых блока при максимальном размере текста (1.6):
+   у transition по max-height видимая часть растёт, пока он меньше содержимого,
+   поэтому запас не влияет на плавность — только на отсутствие обрезки. */
+.settings-disclosure__body.open { max-height: 640px; }
+
+/* Языковой ползунок под «Расширенными настройками» — плотнее общего:
+   меньше поля блока и образца, отступ между ползунком и образцом короче.
+   Кегль образца не уменьшаем: 1.25rem — минимум, на котором огласовка
+   ещё различима, и он не зависит от курса (образцы видны в обоих). */
+.font-scale--compact {
+    margin-top: 12px;
+    padding: 12px;
+}
+.font-scale--compact .font-scale__preview {
+    margin-top: 4px;
+    padding: 8px 12px;
+}
+
 /* Какой курс открыт сейчас — над кнопкой «Сменить курс». */
 .settings-course {
     margin-bottom: 16px;

@@ -196,3 +196,29 @@ test('ссылки на лицензии открываются безопасн
     }
     app.close();
 });
+
+// ------------------------------------------------------------ поддержка проекта
+
+test('карточка поддержки стоит между данными и лицензиями', () => {
+    const app = loadApp();
+    app.window.showSettings();
+    const heads = [...app.document.querySelectorAll('#settingsSection > .card > h3')]
+        .map(h => h.textContent.trim());
+    const iData = heads.findIndex(t => t.includes('Управление данными'));
+    const iSupport = heads.findIndex(t => t.includes('Поддержать проект'));
+    const iLicenses = heads.findIndex(t => t.includes('Лицензии'));
+    assert.ok(iData !== -1 && iSupport === iData + 1 && iLicenses === iSupport + 1,
+        'порядок карточек настроек: ' + heads.join(' | '));
+    app.close();
+});
+
+test('ссылка поддержки открывается в новой вкладке и безопасно', () => {
+    const app = loadApp();
+    app.window.showSettings();
+    const link = app.document.querySelector('a[href="https://pay.cloudtips.ru/p/f5c48f2b"]');
+    assert.ok(link, 'нет ссылки на добровольную поддержку');
+    assert.strictEqual(link.getAttribute('target'), '_blank');
+    assert.match(link.getAttribute('rel') || '', /noopener/);
+    assert.match(link.getAttribute('rel') || '', /noreferrer/);
+    app.close();
+});

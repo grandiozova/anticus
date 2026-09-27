@@ -172,3 +172,17 @@ function initFontScale() {
     applyFontScales();
     syncFontScaleControls();
 }
+
+// «Расширенные настройки»: языковые ползунки убраны под раскрывающийся
+// заголовок, чтобы карточка по умолчанию была короткой. Приём тот же, что у
+// примеров в словаре (toggleVocabExamples в js/vocab.js): класс .open на теле
+// плюс max-height из styles/settings.css. Состояние не сохраняется — свёрнуто
+// по умолчанию при каждой загрузке, как и написано в разметке.
+function toggleFontScaleAdvanced() {
+    let toggle = document.getElementById('fontScaleAdvancedToggle');
+    let body = document.getElementById('fontScaleAdvancedBody');
+    if (!toggle || !body) return;
+    let opening = !body.classList.contains('open');
+    body.classList.toggle('open', opening);
+    toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+}

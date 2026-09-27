@@ -432,3 +432,37 @@ test('ползунок выкрашен токенами, а не фиксиро
     assert.deepStrictEqual(literals, [], 'в ползунке фиксированные цвета: ' + literals.join(', '));
     assert.match(block, /--md-sys-color-primary/, 'активная часть дорожки не из токена');
 });
+
+// ------------------------------------------------------------ расширенные настройки
+
+test('языковые ползунки свёрнуты под «Расширенными настройками»', () => {
+    // Карточка размера текста была очень высокой: три ползунка с образцами
+    // подряд. Общий остаётся видимым, языковые прячутся под раскрывающийся
+    // заголовок — тем же приёмом, что примеры в словаре (.open + max-height).
+    const app = loadApp(GREEK);
+    const w = app.window;
+    w.showSettings();
+
+    const toggle = app.document.getElementById('fontScaleAdvancedToggle');
+    const body = app.document.getElementById('fontScaleAdvancedBody');
+    assert.ok(toggle && body, 'нет раскрывающегося блока размера текста');
+    assert.strictEqual(toggle.getAttribute('aria-expanded'), 'false', 'блок открыт по умолчанию');
+    assert.strictEqual(body.classList.contains('open'), false, 'тело блока открыто по умолчанию');
+
+    // Языковые ползунки лежат именно внутри тела, а не просто рядом.
+    for (const which of ['greek', 'hebrew']) {
+        const input = app.document.querySelector('[data-font-scale="' + which + '"]');
+        assert.ok(body.contains(input), which + ': ползунок не спрятан под раскрывающийся блок');
+    }
+    // Общий — снаружи, он виден всегда.
+    assert.strictEqual(body.contains(app.document.querySelector('[data-font-scale="general"]')), false,
+        'общий ползунок попал в свёрнутый блок');
+
+    toggle.click();
+    assert.strictEqual(body.classList.contains('open'), true);
+    assert.strictEqual(toggle.getAttribute('aria-expanded'), 'true');
+    toggle.click();
+    assert.strictEqual(body.classList.contains('open'), false);
+    assert.strictEqual(toggle.getAttribute('aria-expanded'), 'false');
+    app.close();
+});

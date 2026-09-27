@@ -301,6 +301,20 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
 - Switching a course calls `applyCourse(id)`, which resets stats, clears
   `allVocabCache`, and re-renders. Any new cross-screen cache must be reset there too.
 
+## Настройки
+
+- Порядок карточек на экране настроек: курс, оформление, размер текста,
+  управление данными, поддержка проекта, лицензии.
+- **«Поддержать проект»** — одна необязательная внешняя ссылка на страницу
+  добровольного доната (`target="_blank" rel="noopener noreferrer"`). В тексте
+  нет ни учебников, ни правообладателей: это поддержка времени разработчика и
+  хостинга, она ничего не открывает и ни на что в приложении не влияет.
+- **«Размер текста»**: общий ползунок виден всегда, греческий и еврейский
+  спрятаны в свёрнутый по умолчанию блок «Расширенные настройки». Приём тот же,
+  что у примеров в словаре, — класс `.open` и `max-height` (`toggleFontScaleAdvanced()`
+  в `js/fontscale.js`). Языковые блоки плотнее (`.font-scale--compact`), но кегль
+  образца не уменьшается: 1.25rem — минимум, на котором огласовка ещё различима.
+
 ## Offline (`sw.js`)
 
 - Precaches everything in `CORE_ASSETS`: every file in `styles/`, `data/`, `js/`, plus

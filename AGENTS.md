@@ -257,14 +257,12 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
 
 ## Settings screen
 
-`settingsSection` is the fifth navigation destination and the home for anything that is not study content: theme, text size, data management, licenses.
+`settingsSection` is the fifth navigation destination and the home for anything that is not study content: theme, text size, data management, support, licenses.
 
 - **Course** is the first card: which course is open, a button back to the start screen, and `app_default_course` — whether the start screen asks on every load or drops straight into one course.
 - **Theme** is a four-way choice — `system` / `light` / `dark` / `sepia` — stored in `app_theme` as the *mode*, never as the resolved colour. `sepia` is a warm light scheme built on the same M3 tone map as `:root`, not a filter over it. Storing the resolved value is what breaks "follow the system": the app would pin whatever the OS happened to be on first run. `system` stays live via a `matchMedia` listener. A value written by an older build (`light`/`dark`) is still read as a valid manual choice, and the pre-courses key `greek_theme` is read as a fallback and migrated forward once.
-- **Text size** is three sliders — interface, Greek, Hebrew — where the two
-  language ones follow the interface one until they are moved, and a button
-  returns them to it. Hebrew follows it at 120% rather than 100%, for the niqqud.
-  Each has a live sample beside it. See "Text size".
+- **Text size** is the interface slider, always visible with a live sample under it, and the two per-language sliders (Greek and Hebrew) folded into a collapsed «Расширенные настройки» disclosure — the same `.open` + `max-height` idiom as the dictionary's expandable entries (`toggleFontScaleAdvanced()` in `js/fontscale.js`). The language sliders follow the interface one until they are moved, and a button returns them to it. Hebrew follows it at 120% rather than 100%, for the niqqud. Each keeps a live sample in a tighter preview (`.font-scale--compact`); the sample's own size is not reduced, because 1.25rem is the floor at which niqqud stays readable. See "Text size".
+- **Support the project** sits between data management and licenses. It is one optional external link (`target="_blank" rel="noopener noreferrer"`) to a donation page, framed as voluntary support for the developer's time and hosting costs. Nothing is gated, no functionality depends on it, and the text names no textbook or rights holder.
 - **Licenses** come from the `LICENSES` array; add an entry when you add a dependency. Only the middle of that list is open licences: the app's own code is first and is all-rights-reserved (see `LICENSE`), and the course materials are last as their holders' copyright. Both are statements, not licences, and carry no `url`.
 - The nav bar now holds **five** destinations — the M3 maximum. A sixth needs a different pattern, not a sixth item. That is exactly why the course picker is a full-screen overlay rather than a destination.
 

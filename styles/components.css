@@ -28,6 +28,9 @@
     justify-content: center;
     gap: 8px;
     text-align: center;
+    /* Кнопка бывает и ссылкой (поддержка проекта на экране настроек) —
+       подчёркивание из <a> тут лишнее, как у ссылок в списке лицензий. */
+    text-decoration: none;
     -webkit-tap-highlight-color: transparent;
     transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
                 color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
