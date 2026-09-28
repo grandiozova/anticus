@@ -1113,15 +1113,11 @@ body.start-open .md-content { display: none; }
     color: var(--md-sys-color-on-surface);
     margin-bottom: 8px;
 }
-.start-screen__subtitle {
-    color: var(--md-sys-color-on-surface-variant);
-    margin-bottom: 24px;
-}
-.start-screen__list { display: flex; flex-direction: column; gap: 12px; }
-.start-screen__hint {
-    display: block;
-    margin-top: 24px;
-    color: var(--md-sys-color-on-surface-variant);
+.start-screen__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
 }
 
 /* Карточка курса — тот же выразительный контейнер, что .md-feature-card,
