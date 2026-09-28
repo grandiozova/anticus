@@ -159,8 +159,8 @@ function showPrayerExerciseQuestion() {
             html += `<span class="chip" onclick="prayerPickWord('${escArg(w)}')">${w}</span>`;
         });
         html += `</div>`;
-        html += `<div class="md-button-row"><button class="menu-btn primary" onclick="prayerCheckTranslate()"><span class="msym">check</span>Проверить</button>`;
-        html += `<button class="menu-btn text" onclick="prayerClearTranslate()"><span class="msym">undo</span>Очистить</button></div>`;
+        html += `<div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="prayerClearTranslate()"><span class="msym">undo</span>Очистить</button>`;
+        html += `<button class="menu-btn primary" onclick="prayerCheckTranslate()"><span class="msym">check</span>Проверить</button></div>`;
         container.innerHTML = html;
         prayerExerciseState.chosen = [];
     }

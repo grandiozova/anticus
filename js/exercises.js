@@ -565,7 +565,7 @@ function completeLetterWritingPractice() {
         '<div class="flashcard-flip"><div class="' + writingCardClass + '">' +
         reveal +
         '</div></div>' +
-        '<div class="md-button-row letter-write-actions"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
+        '<div class="md-button-row exercise-next-actions"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
 }
 
 function initLetterWriteCanvas() {
@@ -655,7 +655,7 @@ function showExercise() {
         let words = shuffle(q.all_words);
         html += '<div class="question">Переведите на ' + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div><div class="build-area build-area--script" id="buildArea"></div><div class="word-bank word-bank--script" id="wordBank">';
         for (let w of words) html += '<span class="chip" onclick="pickWord(\'' + escArg(w) + '\')">' + w + '</span>';
-        html += '</div><div class="md-button-row"><button class="menu-btn primary" onclick="checkTranslationRu()"><span class="msym">check</span>Готово</button><button class="menu-btn text" onclick="clearChosen()"><span class="msym">undo</span>Очистить</button></div>';
+        html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="clearChosen()"><span class="msym">undo</span>Очистить</button><button class="menu-btn primary" onclick="checkTranslationRu()"><span class="msym">check</span>Готово</button></div>';
         window._trans_ru = q;
         window._chosen = [];
     } else if (exerciseWritingStyle(s.type)) {
@@ -740,7 +740,7 @@ function checkTranslationRu() {
         exerciseState.correct++;
         container.innerHTML = `
             <div class="feedback ok"><span>Верно! <strong class="script">${corr.join(' ')}</strong></span></div>
-            <button class="menu-btn primary" onclick="nextExercise()">Далее<span class="msym">arrow_forward</span></button>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
         `;
     } else {
         stats.totalWrong++;
@@ -748,7 +748,7 @@ function checkTranslationRu() {
         recordError(lesson, { word: q.russian, correct: corr.join(' '), your: chosen.join(' ') });
         container.innerHTML = `
             <div class="feedback fail"><span>Неверно. Правильный порядок: <strong class="script">${corr.join(' ')}</strong></span></div>
-            <button class="menu-btn primary" onclick="nextExercise()">Далее<span class="msym">arrow_forward</span></button>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
         `;
     }
     saveStats();

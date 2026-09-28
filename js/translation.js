@@ -19,7 +19,7 @@ function checkTranslationBuild() {
         stats.totalCorrect++;
         container.innerHTML = `
             <div class="feedback ok"><span>Верно! <strong${answerCls}>${correct.join(' ')}</strong></span></div>
-            <button class="menu-btn primary" onclick="nextTranslation()">Далее<span class="msym">arrow_forward</span></button>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextTranslation()"><span class="msym">arrow_forward</span>Далее</button></div>
         `;
     } else {
         stats.totalWrong++;
@@ -28,7 +28,7 @@ function checkTranslationBuild() {
         stats.errors[lesson].push({ word: q.source, correct: correct.join(' '), your: chosen.join(' ') });
         container.innerHTML = `
             <div class="feedback fail"><span>Неверно. Правильный порядок: <strong${answerCls}>${correct.join(' ')}</strong></span></div>
-            <button class="menu-btn primary" onclick="nextTranslation()">Далее<span class="msym">arrow_forward</span></button>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextTranslation()"><span class="msym">arrow_forward</span>Далее</button></div>
         `;
     }
     saveStats();
@@ -139,8 +139,8 @@ function showTranslation() {
         html += '<span class="chip" data-chip-idx="' + idx + '" onclick="transPickWord(\'' + escArg(w) + '\', ' + idx + ')">' + w + '</span>';
     });
     html += '</div>';
-    html += '<div class="md-button-row"><button class="menu-btn primary" onclick="checkTranslationBuild()"><span class="msym">check</span>Проверить</button>';
-    html += '<button class="menu-btn text" onclick="transClear()"><span class="msym">undo</span>Очистить</button></div>';
+    html += '<div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="transClear()"><span class="msym">undo</span>Очистить</button>';
+    html += '<button class="menu-btn primary" onclick="checkTranslationBuild()"><span class="msym">check</span>Проверить</button></div>';
  
     container.innerHTML = html;
     translationState.chosen = [];
@@ -213,7 +213,7 @@ function checkExerciseTranslation(index) {
         exerciseState.correct++;
         container.innerHTML = `
             <div class="feedback ok"><span>Верно! <strong>${q.keywords.join(', ')}</strong></span></div>
-            <button class="menu-btn primary" onclick="nextExercise()">Далее<span class="msym">arrow_forward</span></button>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
         `;
     } else {
         stats.totalWrong++;
@@ -221,7 +221,7 @@ function checkExerciseTranslation(index) {
         recordError(lesson, { word: q.greek, correct: q.keywords.join(', '), your: ans });
         container.innerHTML = `
             <div class="feedback fail"><span>Неверно. Ключевые слова: <strong>${q.keywords.join(', ')}</strong></span></div>
-            <button class="menu-btn primary" onclick="nextExercise()">Далее<span class="msym">arrow_forward</span></button>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
         `;
     }
     saveStats();

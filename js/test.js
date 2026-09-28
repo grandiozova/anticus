@@ -77,7 +77,7 @@ function showTest() {
         html += '<div class="build-area build-area--script" id="testBuildArea"></div>' +
             '<div class="word-bank word-bank--script" id="testWordBank">';
         for (let w of words) html += '<span class="chip" onclick="testPickWord(\'' + escArg(w) + '\')">' + w + '</span>';
-        html += '</div><div class="md-button-row"><button class="menu-btn primary" onclick="testTranslationRu()"><span class="msym">check</span>Готово</button><button class="menu-btn text" onclick="testClearChosen()"><span class="msym">undo</span>Очистить</button></div>';
+        html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="testClearChosen()"><span class="msym">undo</span>Очистить</button><button class="menu-btn primary" onclick="testTranslationRu()"><span class="msym">check</span>Готово</button></div>';
         window._test_ru = q;
         window._test_chosen = [];
     } else {
@@ -116,7 +116,7 @@ function testAnswer(sel, corr) {
     let feedbackText = ok ? 'Верно!' : 'Неверно. Правильный ответ: <strong' + strongCls + '>' + corr + '</strong>';
     container.innerHTML = `
         <div class="feedback ${feedbackClass}"><span>${feedbackText}</span></div>
-        <div class="md-button-row">
+        <div class="md-button-row exercise-next-actions">
             <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>Далее</button>
         </div>
     `;
@@ -142,7 +142,7 @@ function testTranslation() {
     testState.answered = true;
     container.innerHTML = `
         <div class="feedback ${feedbackClass}"><span>${feedbackText}</span></div>
-        <div class="md-button-row">
+        <div class="md-button-row exercise-next-actions">
             <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>Далее</button>
         </div>
     `;
@@ -186,7 +186,7 @@ function testTranslationRu() {
     testState.answered = true;
     container.innerHTML = `
         <div class="feedback ${feedbackClass}"><span>${feedbackText}</span></div>
-        <div class="md-button-row">
+        <div class="md-button-row exercise-next-actions">
             <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>Далее</button>
         </div>
     `;

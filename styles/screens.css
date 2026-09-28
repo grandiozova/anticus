@@ -104,6 +104,12 @@
 .md-button-row.letter-write-actions {
     justify-content: flex-end;
 }
+/* Кнопка «Далее» после ответа — у правого края, а не сразу под текстом слева:
+   глаз после чтения обратной связи остаётся на той же строке, а палец на
+   телефоне достаёт до неё, не возвращаясь к левому краю. */
+.exercise-next-actions {
+    justify-content: flex-end;
+}
 #letterWriteCanvas {
     width: 100%;
     display: block;
