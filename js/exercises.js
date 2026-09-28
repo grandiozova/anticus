@@ -545,8 +545,9 @@ function completeLetterWritingPractice() {
     // поверхности у них общие (md-flashcard--writing, styles/screens.css),
     // поэтому при перевороте не меняется ничего, кроме содержимого. Потолок
     // ширины у курсов разный, отсюда второй модификатор у греческого.
-    // letter-write-actions ставит «Далее» у правого края — туда же, где на
-    // холсте стоит «Готово».
+    // exercise-actions разводит «Назад» и «Далее» по краям — так же, как на
+    // холсте разведены «Очистить» и «Готово» (styles/screens.css), поэтому
+    // «Назад» встаёт на место «Очистить».
     const cursive = letterWriteStyle === 'cursive';
     const writingCardClass = 'md-flashcard md-flashcard--writing' +
         (isGreek ? ' md-flashcard--writing-greek' : '') +
@@ -561,11 +562,31 @@ function completeLetterWritingPractice() {
         '<div class="letter-write-reveal__forms script' + (cursive ? ' script--cursive' : '') + '">' + q.letter + '</div>' +
         '</div>';
 
+    // Назад к холсту: «Готово» можно нажать, не дорисовав или не написав букву,
+    // — тогда ответ засчитан, а написать хочется. Кнопка стоит там же, где на
+    // холсте стоит «Очистить»: слева, на своём месте между двумя шагами
+    // (exercise-actions разводит обе кнопки по краям, styles/screens.css).
     box.innerHTML = progressHead('Упражнение ' + (exerciseState.index + 1) + ' из ' + exerciseState.total, exerciseState.index, exerciseState.total) +
         '<div class="flashcard-flip"><div class="' + writingCardClass + '">' +
         reveal +
         '</div></div>' +
-        '<div class="md-button-row exercise-next-actions"><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
+        '<div class="md-button-row exercise-actions"><button type="button" class="menu-btn outlined" onclick="backToLetterWriteCanvas()"><span class="msym">edit</span>Назад</button><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
+}
+
+// Возврат к письму после показа буквы. Отменяет засчитанный ответ и отдаёт тот
+// же вопрос с тем же id — обработчики showExercise навешиваются заново, потому
+// что состояние осталось на прежнем индексе (completeLetterWritingPractice его
+// не двигает; двигает nextExercise, который здесь не зовётся).
+//
+// Кегль, направление и гарнитуру холста задаёт разметка; вправлять цвет
+// последнего штриха не нужно — холст был очищен перед началом вопроса.
+function backToLetterWriteCanvas() {
+    if (!exerciseState || !exerciseState.type) return;
+    if (!exerciseWritingStyle(exerciseState.type)) return;
+    if (stats.totalCorrect > 0) stats.totalCorrect--;
+    if (exerciseState.correct > 0) exerciseState.correct--;
+    saveStats();
+    showExercise();
 }
 
 function initLetterWriteCanvas() {
@@ -580,18 +601,50 @@ function initLetterWriteCanvas() {
     if (!ctx) return;
 
     const state = { drawing: false, lastX: 0, lastY: 0 };
+    // Размер буфера холста и его CSS-рамка — не одно и то же. Рамку задаёт
+    // вёрстка (карточка тянется вместе с окном), а буфер надо под неё подогнать,
+    // иначе браузер растянет нарисованное: штрих ляжет не под пальцем, а линии
+    // выйдут размытыми. На телефоне колонка у́же, чем холст был в разметке
+    // по умолчанию, и без этой подгонки всё поле оказывалось растянутым.
+    //
+    // Подгоняем на каждом изменении рамки, а не только по window.resize:
+    // рамку меняет и контейнер (.app у́же на телефоне), а окно при этом может
+    // не менять размера. Наблюдатель на самой карточке видит оба случая —
+    // выбор начертания, поворот экрана, смена размера окна — и один.
     const resize = () => {
         const rect = canvas.getBoundingClientRect();
         if (!rect.width || !rect.height) return;
         const ratio = Math.max(1, window.devicePixelRatio || 1);
-        canvas.width = Math.round(rect.width * ratio);
-        canvas.height = Math.round(rect.height * ratio);
+        const w = Math.round(rect.width * ratio);
+        const h = Math.round(rect.height * ratio);
+        // Тот же размер — ничего не трогаем: только тогда сохранённый штрих
+        // не пропадёт зря.
+        if (canvas.width === w && canvas.height === h) return;
+        // Было нарисовано — запоминаем и возвращаем после сброса буфера.
+        // Менять размер canvas.width/height обнуляет содержимое, и на повороте
+        // экрана рисунок иначе бы пропадал; переносим его один в один, потому
+        // что рисуем мы в CSS-пикселях (см. setTransform ниже), а не в пикселях
+        // буфера.
+        let previous = null;
+        if (canvas.width && canvas.height) {
+            try {
+                previous = document.createElement('canvas');
+                previous.width = canvas.width;
+                previous.height = canvas.height;
+                previous.getContext('2d').drawImage(canvas, 0, 0);
+            } catch (error) {
+                previous = null;
+            }
+        }
+        canvas.width = w;
+        canvas.height = h;
         ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
         ctx.lineWidth = 6;
         ctx.lineCap = 'round';
         ctx.lineJoin = 'round';
         ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--md-sys-color-primary').trim() || '#6750a4';
         ctx.clearRect(0, 0, rect.width, rect.height);
+        if (previous) ctx.drawImage(previous, 0, 0, rect.width, rect.height);
     };
 
     const pointerPos = (event) => {
@@ -631,7 +684,21 @@ function initLetterWriteCanvas() {
     canvas.addEventListener('pointercancel', finishStroke);
 
     resize();
-    window.addEventListener('resize', resize);
+    // Наблюдатель держим на карточке, а не на окне: первую отрисовку холст
+    // получает до того, как разметка обрела свою ширину, а размер меняет и
+    // контейнер (на телефоне карточка сужается без изменения окна).
+    //
+    // Наблюдатель живёт ровно столько, сколько сам холст: каждый вопрос
+    // рисуется заново (showExercise переписывает #exerciseQuestion), вместе с
+    // ним уходит и старый холст, и наблюдатель за ним. Отключать его по клику
+    // нельзя — любой тап внутри упражнения (по тому же холсту, «Очистить»,
+    // «Готово») погасил бы слежение, и окно перестало бы подгонять поле.
+    // Резерв — window.resize: старые браузеры ResizeObserver не знают.
+    if (typeof ResizeObserver === 'function') {
+        new ResizeObserver(resize).observe(canvas.parentElement || canvas);
+    } else {
+        window.addEventListener('resize', resize);
+    }
 }
 
 function showExercise() {

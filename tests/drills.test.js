@@ -113,6 +113,125 @@ test('греческий показ буквы идёт прописной вп�
     app.close();
 });
 
+test('после показа буквы можно вернуться к письму', () => {
+    // «Готово» можно нажать, не дорисовав букву, — тогда ответ засчитан, а
+    // написать хочется. Кнопка «Назад» возвращает тот же вопрос с холстом и
+    // снимает засчитанный ответ, чтобы «Готово» засчитало его заново, а не
+    // удвоило счёт.
+    const app = loadApp();
+    const w = app.window;
+    const state = () => app.get('exerciseState');
+    const nextBtn = () => [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]
+        .find(b => /Далее/.test(b.textContent));
+    const backBtn = () => [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]
+        .find(b => /Назад/.test(b.textContent));
+
+    w.openLesson(1);
+    w.startLessonDrill('exercise', 'letter_write');
+    const index = state().index;
+    const before = state().correct;
+    const totalBefore = w.eval('stats.totalCorrect');
+
+    w.completeLetterWritingPractice();
+    // Ответ засчитан, показан показ буквы и «Далее».
+    assert.strictEqual(state().correct, before + 1, 'ответ не засчитан');
+    assert.strictEqual(w.eval('stats.totalCorrect'), totalBefore + 1, 'счётчик ответов не вырос');
+    assert.ok(nextBtn(), 'после показа нет кнопки «Далее»');
+    assert.ok(!app.document.querySelector('#letterWriteCanvas'), 'холст остался после показа');
+
+    // «Назад» — тот же вопрос с холстом, без показа.
+    const back = backBtn();
+    assert.ok(back, 'после показа нет кнопки «Назад»');
+    // Стоит там же, где «Очистить»: у левого края строки.
+    assert.ok(back.classList.contains('menu-btn') && back.classList.contains('outlined'),
+        '«Назад» — не текстовая кнопка рядом с главным действием');
+    assert.strictEqual(back.parentElement.className.indexOf('exercise-actions') >= 0, true,
+        '«Назад» потеряла общий с холстом ряд кнопок');
+    back.click();
+
+    assert.ok(app.document.querySelector('#exerciseQuestion #letterWriteCanvas'), '«Назад» не вернула холст');
+    assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal').length, 0,
+        'после «Назад» остался показ буквы');
+    assert.strictEqual(state().index, index, '«Назад» сдвинула вопрос');
+    assert.strictEqual(state().correct, before, '«Назад» не сняла засчитанный ответ');
+    assert.strictEqual(w.eval('stats.totalCorrect'), totalBefore, '«Назад» не вернула счётчик ответов');
+    // На возвращённом холсте те же кнопки, что и были: «Очистить» и «Готово».
+    assert.ok([...app.document.querySelectorAll('#exerciseQuestion .menu-btn')].some(b => /Очистить/.test(b.textContent)),
+        'на возвращённом холсте нет «Очистить»');
+    assert.ok([...app.document.querySelectorAll('#exerciseQuestion .menu-btn')].some(b => /Готово/.test(b.textContent)),
+        'на возвращённом холсте нет «Готово»');
+
+    // И «Готово» снова засчитывает ответ — ровно один раз.
+    w.completeLetterWritingPractice();
+    assert.strictEqual(state().correct, before + 1, 'повторное «Готово» не засчитало ответ');
+    assert.strictEqual(w.eval('stats.totalCorrect'), totalBefore + 1, 'повторное «Готово» удвоило счётчик');
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('холст письма подгоняется под свою ширину, а не растягивается', () => {
+    // jsdom ни вёрстку, ни canvas не умеет, поэтому и замер, и 2d-контекст
+    // подменяем сами: рамка объявляется заранее, а буфер обязан прийти к ней, а
+    // не к 300×150 по умолчанию. Это и есть регрессия, которую ловим: холст
+    // получал размер один раз, до того как карточка стала своей ширины, а CSS
+    // потом растягивал буфер — на телефоне штрих уезжал из-под пальца, а линии
+    // выходили размытыми.
+    const app = loadApp();
+    const w = app.window;
+
+    w.eval(`
+        HTMLCanvasElement.prototype.getBoundingClientRect = function () {
+            return { width: 300, height: 200, left: 0, top: 0, right: 300, bottom: 200 };
+        };
+        // Заглушка 2d-контекста: приложению нужны только эти вызовы, и все они
+        // должны пройти, иначе initLetterWriteCanvas вернётся до подгонки.
+        const noop = function () {};
+        const fakeCtx = {
+            setTransform: noop, clearRect: noop, beginPath: noop, moveTo: noop,
+            lineTo: noop, stroke: noop, drawImage: noop,
+            getImageData: function () { return { data: [] }; }
+        };
+        HTMLCanvasElement.prototype.getContext = function () { return fakeCtx; };
+        window.ResizeObserver = undefined;
+    `);
+
+    w.openLesson(1);
+    w.startLessonDrill('exercise', 'letter_write');
+
+    const canvas = app.document.querySelector('#letterWriteCanvas');
+    assert.ok(canvas, 'холст письма не отрисовался');
+    assert.strictEqual(canvas.width, 300, 'ширина буфера не подогнана под рамку');
+    assert.strictEqual(canvas.height, 200, 'высота буфера не подогнана под рамку');
+
+    // Подгонка обязана продолжаться после клика по упражнению. Первая версия
+    // гасила наблюдатель на первом же тапе внутри #exerciseQuestion — то есть
+    // на первом штрихе по холсту, — и окно после этого поле больше не двигало.
+    // Ловим это прямо: свой ResizeObserver считает подписки, а клик по холсту
+    // их число менять не должен. jsdom настоящего ResizeObserver не имеет.
+    w.eval(`
+        window.__roLive = 0;
+        const RealRO = window.ResizeObserver;
+        window.ResizeObserver = function (cb) {
+            window.__roLive++;
+            this.__cb = cb;
+            this.observe = function () {};
+            this.disconnect = function () { window.__roLive--; };
+        };
+    `);
+    // Перерисовываем холст — приложение заводит на нём наблюдателя…
+    w.showExercise();
+    const canvas2 = app.document.querySelector('#letterWriteCanvas');
+    assert.strictEqual(w.eval('window.__roLive'), 1, 'наблюдатель за холстом не заведён');
+    // …и клик по упражнению (тапа по холсту достаточно) не должен его гасить.
+    canvas2.click();
+    assert.strictEqual(w.eval('window.__roLive'), 1,
+        'клик по упражнению отключил наблюдатель за холстом — поле перестанет тянуться');
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 test('письмо начинается с выбора начертания на весь заход', () => {
     // Печатное и рукописное — один и тот же вопрос с разным показом, поэтому
     // начертание выбирается один раз, до первой буквы, и держится до конца
