@@ -776,12 +776,12 @@ too, matching what `initFontScale()` sets, so the studied language does not flas
 the smaller size before the scripts run.
 
 **The flashcard headword has its own size per script, written out.**
-`.flashcard-word` is `4rem` for Greek and `4.21875rem` for Hebrew, switched by
+`.flashcard-word` is `3.5rem` for both Greek and Hebrew, switched by
 `:root[data-script="hebrew"]`, with a narrow-screen twin for each in `layout.css`
-(Greek `2.75rem`, Hebrew `3rem`). The two are **not** derived from one another by
-a multiplier, and that is deliberate: Greek words run longer and need less
-enlargement, while Hebrew needs the extra size specifically so niqqud stay visible
-against the letters they sit in. Both keep `var(--md-ref-script-scale)`, so the
+(Greek `2.375rem`, Hebrew `2.5rem`). The two are **not** derived from one another by
+a multiplier: Greek words run longer and Hebrew needs the extra size so niqqud stay
+visible against the letters they sit in, so the pair is tuned by hand and may move
+apart again. Both keep `var(--md-ref-script-scale)`, so the
 language slider still governs them. The card's back face
 (`.card-declension__word`) is a separate, smaller size — it is the declension
 drill's caption, not a second headword — and is left as it is.

@@ -50,13 +50,13 @@
        настройка размера текста — именно там места и не хватает больше всего.
        Правило перебивает базовое из styles/screens.css (блок идёт позже
        и медиазапрос весит больше), поэтому кегль здесь выписан целиком. */
-    .flashcard-word { font-size: calc(2.75rem * var(--md-ref-script-scale)); line-height: 3.25rem; }
+    .flashcard-word { font-size: calc(2.375rem * var(--md-ref-script-scale)); line-height: 2.875rem; }
     /* У иврита свой кегль и здесь; правило нужно именно тут: ветка иврита из
        screens.css специфичнее базового .flashcard-word и без этого правила
        перебила бы мобильный кегль. */
     :root[data-script="hebrew"] .flashcard-word {
-        font-size: calc(3rem * var(--md-ref-script-scale));
-        line-height: 3.75rem;
+        font-size: calc(2.5rem * var(--md-ref-script-scale));
+        line-height: 3rem;
     }
     .flashcard-translation { font-size: 1.25rem; line-height: 1.75rem; }
     .question { font-size: 1.125rem; line-height: 1.5rem; }

@@ -738,8 +738,8 @@
        отношение к русскому тексту вокруг (см. --md-ref-script-size в
        styles/tokens.css). Множитель ползунка остаётся: настройка обязана
        работать и здесь. */
-    font-size: calc(4rem * var(--md-ref-script-scale));
-    line-height: 4.625rem;
+    font-size: calc(3.5rem * var(--md-ref-script-scale));
+    line-height: 4.125rem;
     font-weight: 400;
     color: var(--md-sys-color-on-surface);
     word-break: break-word;
@@ -752,8 +752,8 @@
    тем же атрибутом, каким tokens.css выбирает шрифт и предел кегля.
    Множитель ползунка сохранён, иначе настройка перестала бы её слушать. */
 :root[data-script="hebrew"] .flashcard-word {
-    font-size: calc(4.21875rem * var(--md-ref-script-scale));
-    line-height: 4.875rem;
+    font-size: calc(3.5rem * var(--md-ref-script-scale));
+    line-height: 4.125rem;
 }
 .flashcard-translation {
     font-size: 1.5rem;
