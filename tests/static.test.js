@@ -66,6 +66,36 @@ test('в стилях нет закрывающего */ вне коммента
     }
 });
 
+test('display у экрана задан только вместе с .active', () => {
+    // Экраны скрыты правилом `.section { display: none }` (styles/layout.css),
+    // а показ — это `.active`. Селектор по id (1,0,0) сильнее обоих (0,1,0),
+    // поэтому display, написанный у экрана без .active, отменяет скрытие
+    // навсегда. Так экран упражнения остался висеть над «Настройками»: ему
+    // понадобился flex, чтобы колонка занимала высоту окна.
+    const ids = new Set();
+    for (const m of HTML.matchAll(/<[a-z]+([^>]*)>/gi)) {
+        const attrs = m[1];
+        const cls = (attrs.match(/class="([^"]*)"/) || [])[1] || '';
+        if (!/(^|\s)section(\s|$)/.test(cls)) continue;
+        const id = (attrs.match(/id="([^"]*)"/) || [])[1];
+        if (id) ids.add(id);
+    }
+    assert.ok(ids.size > 0, 'в index.html не нашлось ни одного .section');
+    for (const rel of STYLES) {
+        const src = read(rel).replace(/\/\*[\s\S]*?\*\//g, '');
+        for (const m of src.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
+            if (!/(^|[;\s])display\s*:/.test(m[2])) continue;
+            for (const part of m[1].split(',')) {
+                const sel = part.trim().replace(/\s+/g, ' ');
+                const bare = sel.match(/^#([A-Za-z0-9_-]+)$/);
+                if (bare && ids.has(bare[1])) {
+                    assert.fail(rel + ': «' + sel + '» задаёт display — нужен селектор с .active');
+                }
+            }
+        }
+    }
+});
+
 test('каждый подключённый файл существует', () => {
     for (const rel of [...SCRIPTS, ...STYLES]) {
         assert.ok(fs.existsSync(repoPath(rel)), 'index.html ссылается на несуществующий ' + rel);

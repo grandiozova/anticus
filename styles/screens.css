@@ -96,9 +96,14 @@
 #drillSection {
     min-height: calc(100dvh - var(--app-bar-height) - var(--safe-top)
         - var(--nav-bar-height) - var(--safe-bottom) - 88px);
-    display: flex;
     flex-direction: column;
 }
+/* display — только у активного экрана. Селектор по id (1,0,0) сильнее
+   `.section { display: none }` (0,1,0) из styles/layout.css, поэтому flex,
+   объявленный без .active, оставлял экран упражнения висеть после ухода с
+   него: любой следующий экран («Настройки», словарь) открывался ниже
+   брошенной карточки с упражнением. */
+#drillSection.active { display: flex; }
 #drillSection > .card {
     flex: 1 1 auto;
     display: flex;
