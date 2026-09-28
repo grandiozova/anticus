@@ -4,7 +4,7 @@
 .md-snackbar {
     position: fixed;
     left: 50%;
-    bottom: calc(var(--nav-bar-height) + var(--safe-bottom) + 16px);
+    bottom: calc(var(--nav-bar-height) + var(--safe-bottom) + 40px);
     z-index: 40;
     min-height: 48px;
     max-width: min(560px, calc(100vw - 32px));
