@@ -433,12 +433,13 @@ test('каждый кегль текста изучаемого языка не�
             const draws = /--md-ref-typeface-(script|greek|hebrew)\b/.test(body);
             const marked = /\.(script|greek|hebrew)\b|\[data-script/.test(sel);
             if (!draws && !marked) continue;
-            // Единственное намеренное исключение: буква на бейдже курса
-            // (.course-card__glyph). Это знак в круглой плашке фиксированного
-            // диаметра, а не текст для чтения — на общем 160% буква вырастала
-            // до самого диаметра. Кегль там в px, и это закреплено отдельной
-            // проверкой ниже, чтобы исключение не превратилось в забытое правило.
-            if (sel.indexOf('.course-card__glyph') !== -1) continue;
+            // Намеренные исключения: буквы-знаки курса. Это не текст для
+            // чтения, а знак фиксированного роста вместо иконки — буква на
+            // круглой плашке стартового экрана (.course-card__glyph) и та же
+            // буква в переключателе курса в настройках (.course-glyph).
+            // Кегль там в px, и это закреплено отдельной проверкой ниже,
+            // чтобы исключение не превратилось в забытое правило.
+            if (sel.indexOf('.course-card__glyph') !== -1 || sel.indexOf('.course-glyph') !== -1) continue;
             const size = body.match(/font-size: ([^;]+);/);
             if (!size) continue;
             if (/var\(--(md-ref-script-scale|md-ref-script-size|app-greek-scale|app-hebrew-scale)\)/.test(size[1])) continue;
@@ -449,21 +450,34 @@ test('каждый кегль текста изучаемого языка не�
         'кегль без множителя размера:\n  ' + missing.join('\n  '));
 });
 
-test('буква на бейдже курса не едет за ползунками размера', () => {
-    // То самое исключение из проверки выше, и оно намеренное: бейдж — круглая
-    // плашка фиксированного диаметра (48px), и буква в ней должна оставаться
-    // одного размера на всём диапазоне ползунка. Раньше кегль был в rem с
-    // языковым множителем: на 160% «Ω» вырастала до 48px, то есть до самого
-    // диаметра, а ивритская «א» — до 53.76px и вылезала за плашку.
-    const css = read('styles/screens.css');
-    for (const lang of ['greek', 'hebrew']) {
-        const at = css.indexOf('.course-card__glyph.' + lang + ' {');
-        assert.notStrictEqual(at, -1, 'нет правила .course-card__glyph.' + lang);
-        const body = css.slice(at, css.indexOf('}', at));
-        const size = body.match(/font-size: ([^;]+);/);
-        assert.ok(size, 'у бейджа курса (' + lang + ') не задан кегль');
-        assert.match(size[1].trim(), /^\d+px$/,
-            'кегль бейджа курса (' + lang + ') снова масштабируется: ' + size[1].trim());
+test('буквы-знаки курса не едут за ползунками размера', () => {
+    // Те самые исключения из проверки выше, и они намеренные: бейдж курса —
+    // круглая плашка фиксированного диаметра (48px), буква в нём должна
+    // оставаться одного размера на всём диапазоне ползунка. Раньше кегль был
+    // в rem с языковым множителем: на 160% «Ω» вырастала до 48px, то есть до
+    // самого диаметра, а ивритская «א» — до 53.76px и вылезала за плашку.
+    // В настройках буква стоит там, где раньше стояла иконка книги, и растёт
+    // вместе с ней (18px), а не вместе с текстом урока.
+    const marks = [
+        ['styles/screens.css', '.course-card__glyph.', 'на бейдже курса'],
+        ['styles/settings.css', '.course-glyph.', 'в переключателе курса']
+    ];
+    for (const [file, prefix, what] of marks) {
+        const css = read(file);
+        for (const lang of ['greek', 'hebrew']) {
+            // Ищем все вхождения, а не первое: у знака в настройках есть ещё
+            // правило на узком экране, и оно тоже должно остаться в px.
+            let at = css.indexOf(prefix + lang);
+            assert.notStrictEqual(at, -1, 'нет правила ' + prefix + lang);
+            while (at !== -1) {
+                const body = css.slice(at, css.indexOf('}', at));
+                const size = body.match(/font-size: ([^;]+);/);
+                assert.ok(size, 'у знака ' + what + ' (' + lang + ') не задан кегль');
+                assert.match(size[1].trim(), /^\d+px$/,
+                    'кегль знака ' + what + ' (' + lang + ') снова масштабируется: ' + size[1].trim());
+                at = css.indexOf(prefix + lang, at + 1);
+            }
+        }
     }
 });
 

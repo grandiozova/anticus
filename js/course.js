@@ -226,6 +226,15 @@ function syncCourseControls() {
             b.setAttribute('aria-checked',
                 b.getAttribute('data-default-course') === value ? 'true' : 'false');
         });
+        // Буква курса вместо иконки книги — та же и из того же поля реестра,
+        // что буква на бейдже стартового экрана (renderStartScreen): знак
+        // курса должен быть один, иначе он разъедется в двух местах.
+        group.querySelectorAll('[data-course-glyph]').forEach(el => {
+            let c = COURSES[el.getAttribute('data-course-glyph')];
+            if (!c) return;
+            el.textContent = c.glyph || '';
+            el.className = 'course-glyph' + (c.glyphClass ? ' ' + c.glyphClass : '');
+        });
     }
 }
 
