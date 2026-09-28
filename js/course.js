@@ -227,13 +227,6 @@ function syncCourseControls() {
                 b.getAttribute('data-default-course') === value ? 'true' : 'false');
         });
     }
-    let hint = document.getElementById('defaultCourseHint');
-    if (hint) {
-        let value = defaultCourseSetting();
-        hint.textContent = value === DEFAULT_COURSE_ASK
-            ? 'При запуске приложение предложит выбрать курс.'
-            : 'При запуске сразу открывается ' + COURSES[value].name.toLowerCase() + '.';
-    }
 }
 
 // ------------------------------------------------------------ запуск
