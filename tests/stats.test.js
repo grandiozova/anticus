@@ -199,7 +199,7 @@ test('ссылки на лицензии открываются безопасн
 
 // ------------------------------------------------------------ поддержка проекта
 
-test('карточка поддержки стоит между данными и лицензиями', () => {
+test('карточка поддержки стоит первой в настройках', () => {
     const app = loadApp();
     app.window.showSettings();
     const heads = [...app.document.querySelectorAll('#settingsSection > .card > h3')]
@@ -207,7 +207,7 @@ test('карточка поддержки стоит между данными �
     const iData = heads.findIndex(t => t.includes('Управление данными'));
     const iSupport = heads.findIndex(t => t.includes('Поддержать проект'));
     const iLicenses = heads.findIndex(t => t.includes('Лицензии'));
-    assert.ok(iData !== -1 && iSupport === iData + 1 && iLicenses === iSupport + 1,
+    assert.ok(iSupport === 0 && iData === iSupport + 4 && iLicenses === iData + 1,
         'порядок карточек настроек: ' + heads.join(' | '));
     app.close();
 });
