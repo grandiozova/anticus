@@ -189,19 +189,20 @@ const HEBREW_LESSONS_DATA = {
             // Подписи те же, что у heb_begadkefat в главе 3, где тот же вопрос
             // задаётся о букве в слове, — иначе один ответ назывался бы двумя
             // способами (это проверяет tests/alphabet.test.js).
+            // Подпись начинается с русского звука в скобках: «(в) ḇ, щелевое».
             heb_begadkefat: [
-                {letter:"בּ", correct:"b, смычное", distractors:["ḇ, щелевое"]},
-                {letter:"ב", correct:"ḇ, щелевое", distractors:["b, смычное"]},
-                {letter:"גּ", correct:"g, смычное", distractors:["ḡ, щелевое"]},
-                {letter:"ג", correct:"ḡ, щелевое", distractors:["g, смычное"]},
-                {letter:"דּ", correct:"d, смычное", distractors:["ḏ, щелевое"]},
-                {letter:"ד", correct:"ḏ, щелевое", distractors:["d, смычное"]},
-                {letter:"כּ", correct:"k, смычное", distractors:["ḵ, щелевое"]},
-                {letter:"כ", correct:"ḵ, щелевое", distractors:["k, смычное"]},
-                {letter:"פּ", correct:"p, смычное", distractors:["p̄, щелевое"]},
-                {letter:"פ", correct:"p̄, щелевое", distractors:["p, смычное"]},
-                {letter:"תּ", correct:"t, смычное", distractors:["ṯ, щелевое"]},
-                {letter:"ת", correct:"ṯ, щелевое", distractors:["t, смычное"]}
+                {letter:"בּ", correct:"(б) b, смычное", distractors:["(в) ḇ, щелевое"]},
+                {letter:"ב", correct:"(в) ḇ, щелевое", distractors:["(б) b, смычное"]},
+                {letter:"גּ", correct:"(г) g, смычное", distractors:["(г) ḡ, щелевое"]},
+                {letter:"ג", correct:"(г) ḡ, щелевое", distractors:["(г) g, смычное"]},
+                {letter:"דּ", correct:"(д) d, смычное", distractors:["(д) ḏ, щелевое"]},
+                {letter:"ד", correct:"(д) ḏ, щелевое", distractors:["(д) d, смычное"]},
+                {letter:"כּ", correct:"(к) k, смычное", distractors:["(х) ḵ, щелевое"]},
+                {letter:"כ", correct:"(х) ḵ, щелевое", distractors:["(к) k, смычное"]},
+                {letter:"פּ", correct:"(п) p, смычное", distractors:["(ф) p̄, щелевое"]},
+                {letter:"פ", correct:"(ф) p̄, щелевое", distractors:["(п) p, смычное"]},
+                {letter:"תּ", correct:"(т) t, смычное", distractors:["(т) ṯ, щелевое"]},
+                {letter:"ת", correct:"(т) ṯ, щелевое", distractors:["(т) t, смычное"]}
             ]
         }
     },
@@ -318,12 +319,12 @@ const HEBREW_LESSONS_DATA = {
                 {word:"מִשְׁפְּטֵי", correct:"מִשְׁ|פְּ|טֵי", distractors:["מִ|שְׁ|פְּטֵי","מִ|שְׁפְּ|טֵי","מִ|שְׁפְּטֵ|י"]},
             ],
             heb_begadkefat: [
-                {word:"בַּ֫יִת", letter:"בּ", correct:"b, смычное", distractors:["ḇ, щелевое"]},
-                {word:"דָּבָר", letter:"ב", correct:"ḇ, щелевое", distractors:["b, смычное"]},
-                {word:"מַלְכָּה", letter:"כּ", correct:"k, смычное", distractors:["ḵ, щелевое"]},
-                {word:"מֶ֫לֶךְ", letter:"ךְ", correct:"ḵ, щелевое", distractors:["k, смычное"]},
-                {word:"סֵ֫פֶר", letter:"פ", correct:"p̄, щелевое", distractors:["p, смычное"]},
-                {word:"תּוֹרָה", letter:"תּ", correct:"t, смычное", distractors:["ṯ, щелевое"]}
+                {word:"בַּ֫יִת", letter:"בּ", correct:"(б) b, смычное", distractors:["(в) ḇ, щелевое"]},
+                {word:"דָּבָר", letter:"ב", correct:"(в) ḇ, щелевое", distractors:["(б) b, смычное"]},
+                {word:"מַלְכָּה", letter:"כּ", correct:"(к) k, смычное", distractors:["(х) ḵ, щелевое"]},
+                {word:"מֶ֫לֶךְ", letter:"ךְ", correct:"(х) ḵ, щелевое", distractors:["(к) k, смычное"]},
+                {word:"סֵ֫פֶר", letter:"פ", correct:"(ф) p̄, щелевое", distractors:["(п) p, смычное"]},
+                {word:"תּוֹרָה", letter:"תּ", correct:"(т) t, смычное", distractors:["(т) ṯ, щелевое"]}
             ],
             translate_greek_to_russian: [
                 {greek:"יְהוָה", keywords:["Яхве"]},
