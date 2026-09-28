@@ -228,6 +228,19 @@ test('холст письма подгоняется под свою ширин�
     assert.strictEqual(w.eval('window.__roLive'), 1,
         'клик по упражнению отключил наблюдатель за холстом — поле перестанет тянуться');
 
+    // Смена высоты окна обязана пересобирать буфер. Высота поля теперь считается
+    // от высоты окна (100dvh), а ResizeObserver на карточке такое изменение
+    // передаёт не во всех браузерах, — поэтому слежение обязано дублироваться
+    // window.resize. Проверяем сам путь: шлём событие и смотрим на буфер.
+    w.eval(`
+        HTMLCanvasElement.prototype.getBoundingClientRect = function () {
+            return { width: 250, height: 400, left: 0, top: 0, right: 250, bottom: 400 };
+        };
+    `);
+    w.dispatchEvent(new w.Event('resize'));
+    assert.strictEqual(canvas2.width, 250, 'window.resize не сузил буфер под новую рамку');
+    assert.strictEqual(canvas2.height, 400, 'window.resize не растянул буфер под новую высоту окна');
+
     assert.deepStrictEqual(app.errors, []);
     app.close();
 });
