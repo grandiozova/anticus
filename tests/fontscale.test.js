@@ -439,7 +439,15 @@ test('каждый кегль текста изучаемого языка не�
             // буква в переключателе курса в настройках (.course-glyph).
             // Кегль там в px, и это закреплено отдельной проверкой ниже,
             // чтобы исключение не превратилось в забытое правило.
-            if (sel.indexOf('.course-card__glyph') !== -1 || sel.indexOf('.course-glyph') !== -1) continue;
+            // Третий такой случай — заголовок словарной статьи: его кегль
+            // закреплён по просьбе владельца (словарь не должен ехать за
+            // ползунками), тоже в px и тоже закреплён проверкой ниже.
+            // Четвёртый — пример употребления: он читается там же, в строке
+            // словаря и в «В словосочетании», и закреплён так же.
+            if (sel.indexOf('.course-card__glyph') !== -1 ||
+                sel.indexOf('.course-glyph') !== -1 ||
+                sel.indexOf('.word-item .word-row strong') !== -1 ||
+                sel.indexOf('.vocab-example__script') !== -1) continue;
             const size = body.match(/font-size: ([^;]+);/);
             if (!size) continue;
             if (/var\(--(md-ref-script-scale|md-ref-script-size|app-greek-scale|app-hebrew-scale)\)/.test(size[1])) continue;
@@ -448,6 +456,66 @@ test('каждый кегль текста изучаемого языка не�
     }
     assert.deepStrictEqual(missing, [],
         'кегль без множителя размера:\n  ' + missing.join('\n  '));
+});
+
+test('кегль словарной статьи закреплён, свой у каждого письма и не едет за ползунками', () => {
+    // Словарь листают, а не читают: заголовок статьи — единственный текст
+    // изучаемого языка, отвязанный от ползунков размера. Значение живёт
+    // токеном в px, со своей величиной у каждого письма (иврит чуть крупнее:
+    // огласовка сидит внутри буквы), а ветку выбирает курс через
+    // data-script — ровно как у гарнитуры, шага и направления. Проверяем
+    // и токены, и то, что правило берёт именно токен: вернуть туда шаг с
+    // ползунком — значит потерять просьбу владельца молча.
+    const tokens = read('styles/tokens.css');
+    const greek = tokens.match(/--md-ref-script-headword-size: (\d+)px;/);
+    assert.ok(greek, 'кегль словарной статьи не задан');
+    const hebrew = tokens.match(/:root\[data-script="hebrew"\] \{[\s\S]*?--md-ref-script-headword-size: (\d+)px;/);
+    assert.ok(hebrew, 'ивриту не задан свой кегль словарной статьи');
+    assert.ok(Number(hebrew[1]) > Number(greek[1]),
+        'ивритская статья должна быть чуть крупнее греческой — огласовка теснее');
+
+    const css = read('styles/screens.css');
+    const at = css.indexOf('\n.word-item .word-row strong {');
+    assert.notStrictEqual(at, -1, 'правила словарной статьи нет');
+    const body = css.slice(at, css.indexOf('}', at));
+    const size = body.match(/font-size: ([^;]+);/);
+    assert.strictEqual(size[1].trim(), 'var(--md-ref-script-headword-size)',
+        'кегль словарной статьи снова считает себя от ползунков');
+    // Строка списка обязана остаться M3-минимумом 56px: кегль подобран так,
+    // чтобы её line box в него помещался. 28px × 1.3 + 16px отступов — 52.4px.
+    assert.match(css, /\.word-item \.word-row \{[^}]*min-height: 56px/, 'строка словаря потеряла высоту M3');
+    assert.match(body, /line-height: 1\.3/, 'высота строки статьи разошлась с кеглем');
+});
+
+test('пример употребления закреплён так же, как статья, и свой у каждого письма', () => {
+    // Пример читают в списке, а не подряд, и он живёт в том же компоненте в
+    // двух местах — раскрытая статья словаря и «В словосочетании» под
+    // карточкой. Оба места — одно правило, поэтому отдельного правила для
+    // статьи быть не должно: пока их было два, статья поднимала пример шагом
+    // кегля до 40.8px, то есть пример выходил крупнее самого слова.
+    const tokens = read('styles/tokens.css');
+    const greek = tokens.match(/--md-ref-script-example-size: (\d+)px;/);
+    assert.ok(greek, 'кегль примера не задан');
+    const hebrew = tokens.match(/:root\[data-script="hebrew"\] \{[\s\S]*?--md-ref-script-example-size: (\d+)px;/);
+    assert.ok(hebrew, 'ивриту не задан свой кегль примера');
+    assert.ok(Number(hebrew[1]) > Number(greek[1]),
+        'ивритский пример должен быть чуть крупнее греческого — огласовка теснее');
+
+    const head = tokens.match(/--md-ref-script-headword-size: (\d+)px;/);
+    assert.ok(Number(greek[1]) < Number(head[1]),
+        'пример не должен перекрывать статью: слово читается первым');
+
+    const css = read('styles/components.css');
+    assert.strictEqual(css.indexOf('.word-details .vocab-example__script'), -1,
+        'у примера снова два кегля — статья и карточка разойдутся');
+    const at = css.indexOf('\n.vocab-example__script {');
+    assert.notStrictEqual(at, -1, 'правила примера нет');
+    const body = css.slice(at, css.indexOf('}', at));
+    const size = body.match(/font-size: ([^;]+);/);
+    assert.strictEqual(size[1].trim(), 'var(--md-ref-script-example-size)',
+        'кегль примера снова считает себя от ползунков');
+    // Строка числом: закреплённый кегль не смеет идти за общим ползунком.
+    assert.match(body, /line-height: 1\.4;/, 'высота строки примера отвязалась от кегля');
 });
 
 test('буквы-знаки курса не едут за ползунками размера', () => {
@@ -509,8 +577,7 @@ test('шаг кегля изучаемого языка свой у каждог
     };
     const screens = read('styles/screens.css');
     const TARGETS = ['.grammar-p .script, .grammar-h .script, .grammar-list .script',
-        '.question .script', '.md-prompt-strong', '.options--script .option-btn',
-        '.word-item .word-row strong'];
+        '.question .script', '.md-prompt-strong', '.options--script .option-btn'];
     for (const sel of TARGETS) {
         const body = ruleBody(screens, sel);
         assert.ok(body, sel + ' — правила нет');
@@ -520,10 +587,6 @@ test('шаг кегля изучаемого языка свой у каждог
     }
     // Пример в раскрытой словарной статье живёт в components.css и набран тем
     // же шагом: это тоже текст для чтения, а не подпись строки списка.
-    const exampleBody = ruleBody(read('styles/components.css'), '.word-details .vocab-example__script');
-    assert.ok(exampleBody && exampleBody.includes('var(--md-ref-script-size)') &&
-        exampleBody.includes('var(--md-ref-script-scale)'),
-        'пример в словаре отстал от прозы материала');
     const bankBody = ruleBody(read('styles/components.css'),
         '.word-bank--script .chip, .build-area--script .token');
     assert.ok(bankBody && bankBody.includes('var(--md-ref-script-size)') &&

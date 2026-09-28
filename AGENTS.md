@@ -207,8 +207,8 @@ Structural facts worth knowing before editing:
 - Functions call freely across files — they are all globals on `window`, and every file is loaded before anything runs. There is no import graph to keep in sync; the only ordering rule is the one about `boot.js` above.
 - Top-level `let` and `const` bindings — state (`stats`, `testState`, `allFlashcardState`, …) *and* the data (`LESSONS_DATA`, `PRAYER_DATA`, `LICENSES`) — are **not** on `window`; splitting the data into their own files did not change this, because `const` at the top level of a classic script never creates a window property. `function` declarations *are* on `window`. So a harness can call `window.openLesson(3)` but must reach data through `window.eval('LESSONS_DATA')`. Test through the DOM, not through `window.someState`.
 - **Формы слова тренируются на обороте карточки, а не отдельным упражнением.** `declension_fill` больше не значится в `LESSON_DRILL_GROUPS`: круглая кнопка в углу карточки (появляется только после «Показать перевод») переворачивает её и запускает тот же вопрос о форме с теми же `.option-btn`. Вопросы собирает `cardDeclensionQuestions()` (`js/flashcards.js`) из двух источников — авторских `exercises.declension_fill` урока про это же слово (их дистракторы продуманы вручную, и их же берёт «Тест», поэтому данные не осиротели) и остальной парадигмы из `declension_forms`. Ключи генерируемых форм намеренно совпадают с авторскими (`gen_sg`, `2pl`, `nom_pl_m`, `dat_sg_f`), иначе один и тот же падеж попадёт в колоду дважды. Результат кешируется в `word._declQuestions` — тем же приёмом, что `entry._examples`. Ответ перерисовывает только `#cardDeclension`, а не всю карточку: иначе анимация переворота проигрывалась бы на каждый вариант.
-- **The dictionary and the flashcards share one cache.** `buildAllVocabCache()` (`js/vocab.js`) collects the vocabulary of every lesson ≥ `VOCAB_FIRST_LESSON` (lesson 1 is the letter names, not words), de-duplicates it and serves both screens; `startAllFlashcards(type)` builds its deck from there, not from `LESSONS_DATA` directly. A card and a dictionary entry are therefore literally the same object — which is why `findUsageExamples()` caches the full set in `entry._examples` and slices it, instead of caching whatever count the first caller asked for.
-- **The lesson's word list and the dictionary are the same row.** `#vocabList` (`js/lesson.js`) and `#allVocabContent` (`js/vocab.js`) both emit `.word-item > .word-row > strong + span`, and one CSS rule sizes the headword for both — so the two screens cannot drift apart, and a change to `.word-item .word-row strong` shows up in the lesson's material tab as well as in Словарь. The dictionary's rows are expandable in place (`.word-details` holds the examples), the lesson's hold a paradigm table instead.
+- **The dictionary and the flashcards share one cache.** `buildAllVocabCache()` (`js/vocab.js`) collects the vocabulary of every lesson ≥ `VOCAB_FIRST_LESSON` (lesson 1 is the letter names, not words), de-duplicates it and serves both screens; `startAllFlashcards(type)` builds its deck from there, not from `LESSONS_DATA` directly. A card and a dictionary entry are therefore literally the same object — which is why `findUsageExamples()` caches the full set in `entry._examples` and slices it, instead of caching whatever count the first caller asked for. The example search is **course-agnostic**: it walks `lesson.translation` and the `translate_*` drills of whichever course is open, and matches the word through its own paradigm forms. The Greek-looking names of its helpers (`foldAccents`, `tokenizeGreek`, `GREEK_WORD_SOURCE`) are historical — they cut tokens at “letter + diacritic”, which is right for Hebrew too, and strip only Greek accents, so niqqud stays part of the compared word. Both courses' rows are expandable in place: `vocabEntryHasDetails()` gives the dictionary the same paradigm table (in a `.md-table-scroll`, so it turns over with the script) and the same usage example the lesson's word list shows. In Hebrew that is 16 of 163 words — the ones the chapters' own sentences happen to contain — and that is the point: examples are never written by hand, they are sentences the textbook prints.
+- **The lesson's word list and the dictionary are the same row.** `#vocabList` (`js/lesson.js`) and `#allVocabContent` (`js/vocab.js`) both emit `.word-item > .word-row > strong + span`, and one CSS rule sizes the headword for both — so the two screens cannot drift apart, and a change to `.word-item .word-row strong` shows up in the lesson's material tab as well as in Словарь. (That one rule is also why the fixed headword size of "Text size" applies to both lists at once.) The dictionary's rows are expandable in place (`.word-details` holds the examples), the lesson's hold a paradigm table instead.
 - **Part of speech is a filter, not just a heading.** `item.type` in `data/lessons.js` drives the dictionary's section headings, the `.filter-chip` row above both screens, and which words go into a flashcard deck. The permitted values are listed in `VOCAB_TYPE_ORDER` and `TYPE_LABELS` (`js/vocab.js`): `noun`, `verb`, `adjective`, `pronoun`, `adverb`, `preposition`, `conjunction`, `particle`, `article`, `other`. A new type must go into both lists, or its words fall into «Прочее» and get no chip.
 - Progress is `localStorage` only, and the keys are **per course**: `courseKey('stats')` and `courseKey('last_lesson')` resolve to `greek_stats` / `hebrew_last_lesson` and so on. Genuinely global settings take an `app_` prefix instead — `app_theme`, `app_course`, `app_default_course`. Never hard-code a course's key. See "Courses". All reads/writes must stay wrapped in `try/catch` — they throw in private-mode Safari.
 
@@ -363,6 +363,19 @@ One decision already settled in the data, so it does not get re-litigated: **`א
 occurs twice in chapter 6 as two different words.** The dictionary forbids duplicate
 headwords, so the preposition sense is folded into a comment and only the object-marker
 entry ships. It is not a missing entry.
+
+**Usage examples for Hebrew are never authored — they are the book's own sentences.**
+The dictionary and the flashcards ask `findUsageExamples()` for a sentence a word
+appears in, and that search reads `lesson.translation`; so a Hebrew example exists
+exactly where a chapter already prints a sentence containing the word (16 of 163 words
+today, and every one of them comes from a `translation` drill that was copied out of
+`reference/nbbs-hebrew/`). Two consequences: adding examples means adding the *book's*
+sentences to a chapter's `translation`, never writing Hebrew phrases by hand; and a word
+the book never uses in a sentence gets no example at all — the row simply is not
+expandable, and that is correct, not a gap. `tests/hebrew-content.test.js` holds the
+line by requiring each shown example to occur **as a whole sentence** in the reference,
+which the token-by-token check cannot do: one valid niqqud sign substituted for another
+looks identical on screen.
 
 ## Exercise types
 
@@ -692,9 +705,12 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   `fontscale.test.js` re-derives the list of such rules from the stylesheets and
   fails on one without a multiplier; `layout.css` is on that list, because a
   narrow-screen override that forgot the multiplier once hid the whole language
-  step on phones. Where the *content* decides the language rather than the course
-  — `.greek` / `.hebrew` / `[lang="he"]`, and the two samples on the settings
-  screen — use `--app-greek-scale` / `--app-hebrew-scale` by name instead.
+  step on phones. The exemptions are named in that sweep — the two course glyphs,
+  the dictionary headword and the usage example, each of them fixed on purpose and
+  each of them pinned by its own test below. Where the *content* decides the
+  language rather than the course — `.greek` / `.hebrew` / `[lang="he"]`, and the
+  two samples on the settings screen — use `--app-greek-scale` /
+  `--app-hebrew-scale` by name instead.
 - **The size step is a separate axis from the slider, and it is per language.**
   `--md-ref-script-size` answers "how much larger than the Russian around it is
   the studied language drawn by design", the way it is in a reader that enlarges
@@ -710,27 +726,44 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   `.md-prompt-strong` (1.375rem — the `.question` line, the Russian text on that
   screen), `.options--script .option-btn` (1.125rem, ≈0.82 of the prompt — answers
   read as secondary but stay legible) and the word-bank chips, which *are* answers.
-  The two word lists take it too — the dictionary headword
-  (`.word-item .word-row strong`, one rule for the dictionary *and* the lesson's
-  word list) at 1rem and the example in an expanded entry
-  (`.word-details .vocab-example__script`) at its old 1.0625rem. Everything that is
-  genuinely small — paradigm cells, the error list, the row's Russian translation,
-  the flashcard context line (`.flashcard-context .vocab-example__script`) — keeps
-  only the slider multiplier and is reached by size, not by the step.
-- **Where the floor sits relative to the step is a real decision, not a detail.**
-  The usual order is `max(<base>, var(--md-ref-script-min-size)) * …` — the floor
-  raises the *base*. That is wrong once a step is multiplied in: Hebrew's base
-  would be lifted from 1rem to 1.25rem and the result inflated by the whole 1.92 —
-  38px in a dictionary row or an example card, which makes the list sparser rather
-  than more readable. So the two list rules put the floor on the *designed size*
-  instead: `max(<base> * var(--md-ref-script-size), var(--md-ref-script-min-size)) *
-  var(--md-ref-script-scale)`. The floor still does its job (Hebrew never drops
-  below 20px even at the smallest slider position) and no longer distorts the step.
-  In the dictionary at the slider's default (160%) that is 38.4px Greek / 40.96px
-  Hebrew, and the row stands at 66 / 69px — sparser than the M3 minimum, because
-  what the row has to hold is the headword's own line box. At a slider of 100% the
-  row is exactly its 56px minimum: the density of the list is the slider's doing,
-  not the step's.
+  Everything that is genuinely small — paradigm cells, the error list, the row's
+  Russian translation — keeps only the slider multiplier and is reached by size,
+  not by the step. **Neither the dictionary headword nor the usage example takes the
+  step or the slider any more** — both are fixed, see the next bullet.
+- **The dictionary headword and the usage example are fixed sizes, and that is the
+  one deliberate exception to everything above.** They are the two halves of one
+  decision by the owner: a list of hundreds of words is scanned, not read, so the
+  dictionary must not move when the text-size sliders do. `.word-item .word-row
+  strong` — one rule for the all-vocabulary screen *and* the lesson's word list —
+  is `font-size: var(--md-ref-script-headword-size)`: `26px` for Greek, `28px`
+  under `:root[data-script="hebrew"]`. `.vocab-example__script` — one rule for the
+  example in an expanded entry *and* the "В словосочетании" line under a flashcard
+  — is `var(--md-ref-script-example-size)`: `22px` / `24px`. Both tokens are in
+  `px`, so *neither* slider reaches them (the general one lives in the root
+  `font-size`, and `px` does not resolve against that), and Hebrew's extra 2px are
+  not decoration: niqqud sit inside and under the letter and read tighter at the
+  same size. The example sits one step below the headword (0.85×) so the word is
+  read first and the sentence second — before, the expanded entry took the size
+  step and put the example at 40.8px, larger than the word itself. Two knock-on
+  rights fall out of the fixed sizes: the row is back at its M3 56px minimum
+  (`28px × 1.3 + 16px` of padding is 52.4px) while the headword still dominates the
+  Russian gloss beside it (`0.875rem`), and the niqqud floor is no longer needed
+  on either token — 24px is above its 20px at every slider position, and the floor
+  is not a slider either. Both of those rules used to carry a floor-then-step
+  `calc()`; `fontscale.test.js` exempts them from the multiplier sweep instead and
+  pins both values (Hebrew > Greek, example < headword, `line-height` a number so
+  the fixed size is not dragged back by a `rem` line box), so the exemption cannot
+  quietly become a forgotten rule.
+- **Do not multiply the niqqud floor into a stepped size the wrong way round.**
+  `max(<base>, var(--md-ref-script-min-size)) * var(--md-ref-script-size) * …`
+  lifts Hebrew's *base* from 1rem to 1.25rem and then inflates the whole 1.92 — the
+  word bank does exactly that and lands at 38px, which is right for a chip that *is*
+  the answer, but on a list row or an example card it made the block sparser rather
+  than more readable. Where a floor is still wanted on a stepped size, put it on the
+  *designed* size instead: `max(<base> * var(--md-ref-script-size),
+  var(--md-ref-script-min-size)) * var(--md-ref-script-scale)`. No rule uses that
+  form today — the two that did are the fixed sizes above — so it is recorded here
+  for the next stepped rule, not as a description of the current code.
 - **The answer-options rule deliberately has no `--md-ref-script-min-size`.** At
   the step its smallest possible value is still ≈28px, so the 20px niqqud floor
   would never engage — and on Hebrew, where the floor *is* the base, `max()` would

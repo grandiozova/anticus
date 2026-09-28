@@ -117,6 +117,83 @@ test('словарь курса совпадает со словарём спр�
     assert.deepStrictEqual(wrongFreq, [], 'частота разошлась со справочником');
 });
 
+test('примеры в еврейском словаре взяты из пособия дословно', () => {
+    // Словарь иврита раскрывает слово так же, как греческий: парадигма плюс
+    // пример употребления. Примеры при этом не пишутся руками — они берутся
+    // из переводов глав (lesson.translation), то есть из строк, которые
+    // пособие печатает само. Проверяется здесь именно дословность: в
+    // расшифрованном тексте должно найтись предложение целиком, а не
+    // отдельные слова. Перестановка огласовки или дагеша внутри слова на
+    // экране выглядит так же, и никакая сверка по словам её не поймает.
+    const app = loadApp(GREEK);
+    const w = app.window;
+    w.applyCourse('hebrew');
+    w.showAllVocab();
+
+    const rows = JSON.parse(app.get(`
+        JSON.stringify(getAllVocab().map(function (e) {
+            var ex = findUsageExamples(e, 1);
+            return {
+                id: e.id, word: e.greek, has: vocabEntryHasDetails(e),
+                forms: !!e.declension_forms,
+                table: renderVocabExamplesHtml(e).indexOf('class="md-table-scroll"') !== -1,
+                ex: ex.length ? ex[0].greek : null
+            };
+        }))
+    `));
+
+    const withEx = rows.filter(r => r.ex);
+    assert.ok(withEx.length >= 10, 'примеров в еврейском словаре подозрительно мало: ' + withEx.length);
+
+    // Парадигма идёт на экран в полосе прокрутки — той же, что в словаре
+    // урока: только она разворачивает таблицу вместе с письмом. Без полосы
+    // та же таблица встала бы первой колонкой влево.
+    const withForms = rows.filter(r => r.forms);
+    assert.ok(withForms.length > 0, 'в еврейском словаре не осталось ни одного слова с парадигмой');
+    assert.deepStrictEqual(withForms.filter(r => !r.table).map(r => r.word), [],
+        'парадигма словаря отрисована вне полосы прокрутки');
+
+    // Раскрывается ровно то, о чём есть что показать, и ничего сверх того:
+    // шеврон в разметке — это и есть «раскрывается».
+    const expandable = rows.filter(r => r.has);
+    const chevrons = app.document.querySelectorAll('#allVocabContent .word-item .vocab-chevron').length;
+    assert.strictEqual(chevrons, expandable.length,
+        'шевронов в списке ' + chevrons + ', а раскрывать есть что у ' + expandable.length);
+
+    // Раскрываем строку с примером и смотрим, что на экран попал именно он.
+    const sample = withEx[0];
+    w.toggleVocabExamples(sample.id);
+    const details = app.document.querySelector('#allVocabContent .word-item[data-vocab-id="' + sample.id + '"] .word-details');
+    assert.ok(details, 'у строки нет блока подробностей');
+    const shown = details.querySelector('.vocab-example__script');
+    assert.ok(shown, 'пример не отрисовался: ' + details.innerHTML.slice(0, 200));
+    assert.strictEqual(shown.textContent, sample.ex, 'на экране не тот пример');
+    assert.ok(!/undefined|NaN|\[object Object\]/.test(details.innerHTML), 'служебное значение в примере');
+
+    // Полоса прокрутки обязана быть прямым потомком блока подробностей:
+    // правило разворота — дочернее (.word-details > .md-table-scroll).
+    w.toggleVocabExamples(withForms[0].id);
+    const formDetails = app.document.querySelector(
+        '#allVocabContent .word-item[data-vocab-id="' + withForms[0].id + '"] .word-details');
+    const strip = formDetails.children[0];
+    assert.ok(strip && strip.classList.contains('md-table-scroll') && strip.querySelector('table'),
+        'парадигма отрисована без полосы прокрутки: ' + formDetails.innerHTML.slice(0, 120));
+
+    // Пробелы в справочнике переносятся по строкам, а знаков конца
+    // предложения в нём нет вовсе: их дописывает asSentence()/endPunctFrom().
+    const text = corpus().replace(/\s+/g, ' ');
+    const missing = [];
+    for (const r of withEx) {
+        const needle = String(r.ex).replace(/[.!?]+$/, '').replace(/\s+/g, ' ');
+        if (!text.includes(needle)) missing.push(r.word + ' -> ' + r.ex);
+    }
+    assert.deepStrictEqual(missing, [],
+        'этих предложений нет в расшифрованном пособии дословно:\n  ' + missing.join('\n  '));
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 test('у каждой словарной статьи есть перевод и часть речи', () => {
     const app = loadApp(GREEK);
     const bad = app.get(`

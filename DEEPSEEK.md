@@ -135,7 +135,7 @@ invisible until someone hits the specific path (offline load, one specific theme
 | a screen | markup in `index.html` **+** `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` in `js/shell.js` |
 | an exercise kind | `EXERCISE_TYPES` (`js/exercises.js`) **+** `LESSON_DRILL_GROUPS` (`js/lesson.js`) and/or `TEST_TYPES` (`js/test.js`) |
 | a color role | `:root`, `[data-theme="dark"]`, **and** `[data-theme="sepia"]` in `tokens.css` |
-| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` |
+| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` — except the dictionary headword (`.word-item .word-row strong` → `var(--md-ref-script-headword-size)`, 26px Greek / 28px Hebrew) and the usage example (`.vocab-example__script` → `var(--md-ref-script-example-size)`, 22px / 24px), which are deliberately fixed so the dictionary does not move with the sliders |
 | a part-of-speech `type` value | `VOCAB_TYPE_ORDER` **+** `TYPE_LABELS` in `js/vocab.js` |
 | a cache that spans screens | a reset for it inside `applyCourse()` in `js/course.js` |
 | a new dependency/font/asset | an entry in `data/licenses.js` |
@@ -156,6 +156,14 @@ invisible until someone hits the specific path (offline load, one specific theme
   from the reference — do not retype it to "fix" it.**
 - Hebrew course currently covers chapters 1–11 (nominal system) only. The verb
   (chapters 12–36) is out of scope — don't add it unless asked.
+- **Hebrew usage examples are never written by hand.** The dictionary and the
+  flashcards show a sentence from `lesson.translation` that contains the word
+  (`findUsageExamples()`, `js/vocab.js` — course-agnostic). To add one, add the
+  *book's* sentence to a chapter's `translation`, copied verbatim from
+  `reference/nbbs-hebrew/`. A word the book never uses in a sentence gets no
+  example, and its dictionary row is simply not expandable — that is correct, not
+  a gap. `tests/hebrew-content.test.js` requires every example shown to occur as a
+  whole sentence in the reference.
 
 ## Design system: Material 3 — mandatory, always
 

@@ -235,6 +235,14 @@ function endPunctFrom(russian) {
 // попадаются огрызки вроде «τῷ Χριστῷ», годные для зубрёжки, но не для примера.
 // Кешируем всегда полный набор и отдаём срез: карточкам нужен один пример,
 // словарю — три, а слово у них теперь одно и то же (общий кеш словаря).
+//
+// Курс здесь не выбирается: данные обоих курсов лежат в одной форме
+// (lesson.translation + упражнения на перевод), а слова ищутся по формам
+// слова из его же парадигмы. Греческие имена помощников ниже (foldAccents,
+// tokenizeGreek, GREEK_WORD_SOURCE) — исторические: токены они режут по
+// «буква + диакритика», что верно и для иврита, а снимают только греческие
+// знаки, поэтому огласовка в сравнении остаётся на месте и слово находится
+// в том виде, в каком набрано в главе.
 function findUsageExamples(entry, maxCount) {
     maxCount = maxCount || 3;
     if (entry._examples) return entry._examples.slice(0, maxCount);
@@ -307,28 +315,33 @@ function generateFallbackExample(entry) {
     return null;
 }
 
-function isHebrewCourse() {
-    return (activeCourse && activeCourse().id) === 'hebrew';
-}
-
-function isGreekCourse() {
-    return !isHebrewCourse();
-}
-
+// Строка словаря раскрывается, если о слове есть что показать: парадигма
+// (js/declension.js) или пример употребления. Курс тут ни при чём — правило
+// одно для обоих. Раньше у иврита стоял ранний выход «примеров нет»: их и
+// не искали, потому что еврейские главы писались позже греческих. Но они
+// есть и берутся из тех же переводов главы (lesson.translation), что и
+// греческие, — гейт снят, и словарь иврита показывает их вместе с
+// парадигмой. Формы слова при этом всё равно остаются из данных: пример —
+// это строка пособия, а не слово, собранное нами.
 function vocabEntryHasDetails(entry) {
     if (!entry) return false;
-    if (isHebrewCourse()) return false;
     if (entry.declension_forms) return true;
     return !!findUsageExamples(entry, 1).length;
 }
 
 function renderVocabExamplesHtml(entry) {
-    if (!entry || isHebrewCourse()) return '';
+    if (!entry) return '';
 
     let parts = [];
     if (entry.declension_forms) {
+        // Таблица идёт на экран в той же полосе прокрутки, что и в словаре
+        // урока (js/lesson.js): слишком широкая парадигма уезжает вбок, а не
+        // сжимает колонки, и — что важнее — именно полоса разворачивает её
+        // при письме справа налево (.word-details > .md-table-scroll,
+        // styles/screens.css). Без полосы еврейская парадигма встала бы
+        // первой колонкой влево, хотя в уроке та же таблица правая.
         let table = generateDeclensionTable(entry.declension_forms, null);
-        if (table) parts.push('<div class="vocab-declension">' + table + '</div>');
+        if (table) parts.push('<div class="md-table-scroll">' + table + '</div>');
     }
 
     let examples = findUsageExamples(entry, 1).slice(0, 1);
