@@ -309,3 +309,143 @@ test('каждое упражнение каждой главы проходит
     assert.deepStrictEqual(app.errors, [], 'ошибки во время прохождения: ' + app.errors.join(' | '));
     app.close();
 });
+
+// ============================================================
+// ЧТЕНИЕ СЛОВА И СТРОКА СЛОВАРЯ
+// ============================================================
+// Еврейское слово набирается один раз — в статье словаря, и показывается
+// дважды: коротко в строке и полностью в раскрытой статье. Обе половины
+// проверяются здесь, потому что обе набраны руками.
+
+test('у каждого еврейского слова есть чтение', () => {
+    // Строка словаря раскрывается ради чтения, и если его нет, нажатие на
+    // слово показывает пустоту. Формат — «русскими (latin)»: русская половина
+    // нужна тому, кто ещё не читает латинские знаки, латинская — тому, кто
+    // сверяется с пособием.
+    const app = loadApp(GREEK);
+    const rows = JSON.parse(app.get(`
+        JSON.stringify(Object.keys(HEBREW_LESSONS_DATA).flatMap(function (n) {
+            return (HEBREW_LESSONS_DATA[n].vocabulary || []).map(function (v) {
+                return { word: v.greek, translit: v.translit || '' };
+            });
+        }))
+    `));
+    app.close();
+    assert.ok(rows.length > 150, 'словарь курса подозрительно мал: ' + rows.length);
+
+    const bad = rows.filter(r => !/^\S.*\s\(.+\)$/.test(r.translit));
+    assert.deepStrictEqual(bad.map(r => r.word + ': «' + r.translit + '»'), [],
+        'чтение не в виде «русскими (latin)»');
+});
+
+test('латинская половина чтения набрана знаками пособия', () => {
+    // Знак спиранта (ḇ ḡ ḏ ḵ p̄ ṯ) — это буква с диакритикой, и заменить её
+    // похожей латинской очень легко: на экране разница почти не видна, а
+    // бегадкефат от такой подмены читается неверно. Здесь проверяется, что
+    // в латинской половине нет ни одного знака вне алфавитного пула: он
+    // собран из таблицы главы 1, то есть знаки в нём — те же, что в пособии.
+    const app = loadApp(GREEK);
+    const bad = app.get(`
+        (function () {
+            var allowed = {};
+            HEBREW_ALPHABET.letters.forEach(function (l) {
+                l.translit.split('/').forEach(function (s) {
+                    s.trim().split('').forEach(function (c) { allowed[c] = 1; });
+                });
+            });
+            // Гласные пул не перечисляет: он про буквы. Шва — знак пособия
+            // (U+01DD), а не похожий на него U+0259 из другого шрифта: второй
+            // на экране выглядит так же, и заметить подмену глазами нельзя.
+            // Маккеф — дефис в «аль-дэва́р».
+            ('aeiouāēīōûîôêăĕŏ -' + '\u01DD').split('').forEach(function (c) { allowed[c] = 1; });
+            var hits = [];
+            for (var n in HEBREW_LESSONS_DATA) {
+                for (var v of (HEBREW_LESSONS_DATA[n].vocabulary || [])) {
+                    var t = v.translit || '';
+                    var i = t.indexOf('('), j = t.lastIndexOf(')');
+                    if (i === -1 || j < i) continue;
+                    for (var c of t.slice(i + 1, j)) {
+                        if (!allowed[c]) hits.push(v.greek + ': «' + c + '» в ' + t);
+                    }
+                }
+            }
+            return hits.join(' | ');
+        })()
+    `);
+    app.close();
+    assert.strictEqual(bad, '', bad);
+});
+
+test('строка еврейского словаря коротка, а статья показывает остальное', () => {
+    const app = loadApp(GREEK);
+    const w = app.window;
+    w.applyCourse('hebrew');
+    w.showAllVocab();
+
+    const rows = JSON.parse(app.get(`
+        JSON.stringify(getAllVocab().map(function (e) {
+            return { id: e.id, word: e.greek, translit: e.translit,
+                     translation: e.translation,
+                     row: vocabRowGloss(e), extra: vocabExtraGlosses(e) };
+        }))
+    `));
+
+    // «слово, дело, вещь»: два коротких значения остаются в строке, третье
+    // уходит в статью. Запятая внутри скобок значения не делит, поэтому
+    // «имя (известность, слава)» — одно значение, а «Сим» — второе.
+    const davar = rows.find(r => r.translation === 'слово, дело, вещь');
+    const shem = rows.find(r => r.translation.indexOf('имя (') === 0);
+    assert.ok(davar && shem, 'в словаре нет слов, на которых проверяется разбор перевода');
+    assert.strictEqual(davar.row, 'слово, дело');
+    assert.deepStrictEqual(davar.extra, ['вещь']);
+    assert.strictEqual(shem.row, 'имя (известность, слава)');
+    assert.deepStrictEqual(shem.extra, ['Сим']);
+
+    // Длинного перечня в строке не остаётся ни у одного слова: иначе строка
+    // словаря снова превращается в абзац.
+    const long = rows.filter(r => w.splitVocabGlosses(r.row).length > 2);
+    assert.deepStrictEqual(long.map(r => r.word + ': ' + r.row), []);
+
+    // И то же самое на экране: строка короткая, чтение и остальные значения —
+    // в раскрытой статье, каждое своей строкой.
+    const item = app.document.querySelector('#allVocabContent .word-item[data-vocab-id="' + davar.id + '"]');
+    assert.ok(item, 'строка слова не отрисовалась');
+    assert.strictEqual(item.querySelector('.word-row > span').textContent, 'слово, дело');
+    assert.ok(item.querySelector('.word-row').getAttribute('onclick'), 'строка без чтения не раскрывается');
+
+    w.toggleVocabExamples(davar.id);
+    const details = item.querySelector('.word-details');
+    assert.strictEqual(details.querySelector('.vocab-translit').textContent, davar.translit,
+        'в статье не то чтение, что в данных');
+    assert.deepStrictEqual([...details.querySelectorAll('.vocab-gloss')].map(e => e.textContent),
+        ['вещь'], 'остальные значения не попали в статью');
+    assert.ok(!/undefined|NaN|\[object Object\]/.test(details.innerHTML), 'служебное значение в статье');
+
+    // Верх статьи — две колонки: чтение под самим словом (слева), остальные
+    // значения — под переводом строки (справа), без подписи «Ещё значения»:
+    // владелец просил просто переводы.
+    const head = details.querySelector('.vocab-entry-head');
+    assert.ok(head, 'верх статьи не собран в одну строку');
+    assert.strictEqual(head.firstElementChild.className, 'vocab-translit');
+    assert.strictEqual(head.lastElementChild.className, 'vocab-glosses');
+    assert.strictEqual(details.querySelector('.vocab-glosses__label'), null,
+        'вернулась подпись «Ещё значения»');
+
+    // Словарь урока устроен так же (js/lesson.js): та же строка, тот же верх
+    // статьи. Иначе на одном экране слова выглядели бы одним способом, а на
+    // другом — другим.
+    w.openLesson(3);
+    w.switchLessonPart('material');
+    const lessonRow = app.document.querySelector('#vocabList .word-item');
+    assert.ok(lessonRow, 'словарь урока пуст');
+    assert.strictEqual(lessonRow.querySelector('.word-row').getAttribute('role'), 'button',
+        'строка словаря урока не раскрывается');
+    assert.strictEqual(lessonRow.querySelector('.word-row > span').textContent, 'Яхве, Господь');
+    // Чтение берём из данных, а не набираем в тесте: в нём есть знак шва,
+    // и набранный руками он легко оказывается похожим, но другим знаком.
+    assert.strictEqual(lessonRow.querySelector('.vocab-translit').textContent,
+        w.getLessonData(3).vocabulary[0].translit, 'в словаре урока нет чтения слова');
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});

@@ -223,3 +223,38 @@ test('возврат в словарь сохраняет набранный з�
     assert.strictEqual(entries(app), found);
     app.close();
 });
+
+test('перевод делится по запятым, но не внутри скобок', () => {
+    // Уточнение в скобках принадлежит слову, рядом с которым стоит: «имя
+    // (известность, слава), Сим» — это два значения, а не три.
+    const app = openVocab();
+    // Array.from в области теста: массив из jsdom-области — другого прототипа,
+    // и deepStrictEqual сравнил бы ещё и его.
+    const split = s => Array.from(app.window.splitVocabGlosses(s));
+    assert.deepStrictEqual(split('слово, дело, вещь'), ['слово', 'дело', 'вещь']);
+    assert.deepStrictEqual(split('имя (известность, слава), Сим'), ['имя (известность, слава)', 'Сим']);
+    assert.deepStrictEqual(split('человек'), ['человек']);
+    assert.deepStrictEqual(split(''), []);
+    app.close();
+});
+
+test('у греческого строка словаря остаётся целой', () => {
+    // Сокращаются только переводы-перечни синонимов: так помечен еврейский
+    // курс (vocabShortGloss в data/courses.js). В греческом перечислении через
+    // запятую лежит ещё и управление падежом («в, во (куда; с Acc.)»), и
+    // укоротить строку значило бы спрятать половину словарной статьи.
+    const app = openVocab();
+    const bad = app.get(`
+        (function () {
+            let hits = [];
+            for (let e of getAllVocab()) {
+                if (vocabRowGloss(e) !== e.translation) hits.push(e.greek + ': «' + vocabRowGloss(e) + '»');
+                if (vocabExtraGlosses(e).length) hits.push(e.greek + ': лишние значения в статье');
+            }
+            return hits.join(' | ');
+        })()
+    `);
+    assert.strictEqual(bad, '', bad);
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});

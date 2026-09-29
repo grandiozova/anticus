@@ -56,7 +56,9 @@
        перебила бы мобильный кегль. */
     :root[data-script="hebrew"] .flashcard-word {
         font-size: calc(2.5rem * var(--md-ref-script-scale));
-        line-height: 3rem;
+        /* Множитель — как и в кегле: коробка строки обязана быть не меньше
+           букв с огласовкой, иначе чтение под словом липнет к никуду. */
+        line-height: calc(3rem * var(--md-ref-script-scale));
     }
     .flashcard-translation { font-size: 1.25rem; line-height: 1.75rem; }
     .question { font-size: 1.125rem; line-height: 1.5rem; }

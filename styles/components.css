@@ -711,7 +711,11 @@
 .word-item .word-row:focus-visible { outline-offset: -3px; }
 
 .word-item .vocab-chevron {
-    margin-left: auto;
+    /* Без margin-left: auto — строка уже имеет его на самом переводе
+       (.word-row > span, styles/screens.css), а два автоматических отступа
+       делят свободное место поровну и оставляют переводу половину строки:
+       «Яхве, Господь» переносилось на две строки. Шеврон просто идёт следом
+       за переводом и упирается в правый край вместе с ним. */
     color: var(--md-sys-color-on-surface-variant);
     font-size: 20px;
     transition: transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
@@ -749,6 +753,37 @@
     margin: 4px 0 0;
     overflow-x: auto;
     opacity: 1;
+}
+
+/* --- статья слова: чтение под словом, остальные значения — под переводом --- */
+/* Верх статьи — одна строка в две колонки: слева чтение слова, справа
+   значения, которых не хватило строке. Так каждая половина стоит под тем, к
+   чему относится: слово в строке слева, перевод справа. Если места мало,
+   колонка значений переносится под чтение и там остаётся справа — flex-wrap
+   и margin-left: auto. Общий ползунок размера текста их двигает (кегли в rem),
+   множители изучаемого языка — нет: это русские буквы и латиница, подсказка
+   к слову, а не само слово (.script им не ставится). */
+.vocab-entry-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 4px 16px;
+    padding: 4px 4px 2px;
+}
+.vocab-translit {
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--md-sys-color-on-surface);
+}
+.vocab-glosses {
+    margin-left: auto;
+    text-align: right;
+}
+.vocab-gloss {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--md-sys-color-on-surface);
 }
 
 .vocab-examples {

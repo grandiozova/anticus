@@ -32,6 +32,9 @@ function buildAllVocabCache() {
                 id: idCounter++,
                 greek: item.greek,
                 article: item.article || '',
+                // Чтение слова — только у иврита (data/hebrew-lessons.js),
+                // но поле берётся как есть: у греческого его просто нет.
+                translit: item.translit || '',
                 translation: item.translation,
                 type: item.type || 'other',
                 lesson: l,
@@ -315,26 +318,101 @@ function generateFallbackExample(entry) {
     return null;
 }
 
-// Строка словаря раскрывается, если о слове есть что показать: парадигма
-// (js/declension.js) или пример употребления. Курс тут ни при чём — правило
-// одно для обоих. Раньше у иврита стоял ранний выход «примеров нет»: их и
-// не искали, потому что еврейские главы писались позже греческих. Но они
-// есть и берутся из тех же переводов главы (lesson.translation), что и
-// греческие, — гейт снят. Пример — первое, что видит читатель при нажатии на
-// слово, а таблица форм ушла под кнопку «Показать формы» (renderVocabFormsHtml).
-// Формы слова при этом всё равно остаются из данных: пример — это строка
-// пособия, а не слово, собранное нами.
+// ------------------------------------------------------------
+// Строка словаря и верх раскрытой статьи
+// ------------------------------------------------------------
+// Перевод в данных — перечень значений через запятую: «слово, дело, вещь».
+// Запятая внутри скобок разделителем не считается: «имя (известность, слава),
+// Сим» — это два значения, а не три, и уточнение в скобках принадлежит слову,
+// рядом с которым стоит.
+function splitVocabGlosses(translation) {
+    let parts = [];
+    let current = '';
+    let depth = 0;
+    for (let ch of String(translation || '')) {
+        if (ch === '(') depth++;
+        if (ch === ')') depth = Math.max(0, depth - 1);
+        if (ch === ',' && depth === 0) {
+            parts.push(current);
+            current = '';
+            continue;
+        }
+        current += ch;
+    }
+    parts.push(current);
+    return parts.map(p => p.trim()).filter(Boolean);
+}
+
+// Коротким считается значение без уточнения в скобках и не длиннее восьми
+// знаков: «отец, праотец» в строке читается, «человек, Адам, человечество» — нет.
+const VOCAB_GLOSS_SHORT = 8;
+function isShortGloss(gloss) {
+    return gloss.length <= VOCAB_GLOSS_SHORT && gloss.indexOf('(') === -1;
+}
+
+// Перевод для строки словаря. По умолчанию — весь, как в данных: греческий
+// перевод и так короткий, а сокращать его нельзя (см. vocabShortGloss в
+// data/courses.js). У курса с этим флагом в строке остаётся первое значение,
+// а второе — только если оба короткие; остальное показывает раскрытая статья.
+function vocabRowGloss(entry) {
+    if (!entry) return '';
+    if (!activeCourse().vocabShortGloss) return entry.translation;
+    let glosses = splitVocabGlosses(entry.translation);
+    if (glosses.length < 2) return glosses[0] || entry.translation;
+    return isShortGloss(glosses[0]) && isShortGloss(glosses[1])
+        ? glosses[0] + ', ' + glosses[1]
+        : glosses[0];
+}
+
+// Значения, не поместившиеся в строку, — по одному в строке, «перевод под
+// переводом». У курса без vocabShortGloss их нет: там строка показывает весь
+// перевод целиком, и повторять его в статье незачем.
+function vocabExtraGlosses(entry) {
+    if (!entry || !activeCourse().vocabShortGloss) return [];
+    let glosses = splitVocabGlosses(entry.translation);
+    return glosses.slice(splitVocabGlosses(vocabRowGloss(entry)).length);
+}
+
+// Верх раскрытой статьи: слева чтение слова — прямо под самим словом, справа
+// значения, которых не хватило строке, — прямо под её переводом. Так каждая
+// половина статьи продолжает тот столбец, к которому относится: слово слева,
+// перевод справа (направление строки разбирает flex, а не порядок разметки).
+// Пример употребления и таблица форм идут следом (renderVocabDetailsHtml).
+function renderVocabEntryTopHtml(entry) {
+    if (!entry) return '';
+    let translit = entry.translit
+        ? '<div class="vocab-translit">' + escHtml(entry.translit) + '</div>'
+        : '';
+    let extra = vocabExtraGlosses(entry);
+    let glosses = extra.length
+        ? '<div class="vocab-glosses">' +
+            extra.map(g => '<div class="vocab-gloss">' + escHtml(g) + '</div>').join('') +
+        '</div>'
+        : '';
+    if (!translit && !glosses) return '';
+    return '<div class="vocab-entry-head">' + translit + glosses + '</div>';
+}
+
+// Строка словаря раскрывается, если о слове есть что показать: чтение
+// (translit, есть у каждого еврейского слова), значения, не поместившиеся в
+// строку, парадигма (js/declension.js) или пример употребления. Курс тут ни при
+// чём — правило одно для обоих. Раньше у иврита стоял ранний выход «примеров
+// нет»: их и не искали, потому что еврейские главы писались позже греческих.
+// Но они есть и берутся из тех же переводов главы (lesson.translation), что и
+// греческие, — гейт снят.
 function vocabEntryHasDetails(entry) {
     if (!entry) return false;
+    if (entry.translit) return true;
+    if (vocabExtraGlosses(entry).length) return true;
     if (entry.declension_forms) return true;
     return !!findUsageExamples(entry, 1).length;
 }
 
-// Тело раскрытой словарной статьи: сначала примеры употребления, а таблица форм
-// (парадигма) — по желанию, за кнопкой. Раньше таблица шла первой и
-// раскрывалась вместе со строкой: читатель видел парадигму раньше примера.
+// Тело раскрытой словарной статьи: чтение и остальные значения сверху, затем
+// пример употребления, а таблица форм (парадигма) — по желанию, за кнопкой.
+// Раньше первым шёл пример, а статьи слова не было вовсе.
 function renderVocabDetailsHtml(entry) {
-    return renderVocabExamplesHtml(entry) + renderVocabFormsHtml(entry);
+    return renderVocabEntryTopHtml(entry) + renderVocabExamplesHtml(entry) + renderVocabFormsHtml(entry);
 }
 
 // Пример употребления — или автопример, когда подлинного нет и парадигмы тоже
@@ -445,7 +523,7 @@ function renderVocabEntries(entries) {
             parts.push(
                 '<div class="word-item" data-vocab-id="', e.id, '">',
                     '<div class="word-row"' + rowAttrs + '>',
-                        '<strong>', art, e.greek, '</strong><span>', e.translation, '</span>',
+                        '<strong>', art, e.greek, '</strong><span>', vocabRowGloss(e), '</span>',
                         chevron,
                     '</div>',
                     expandable ? '<div class="word-details"></div>' : '',

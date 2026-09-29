@@ -456,7 +456,13 @@
     line-height: 1.3;
     color: var(--md-sys-color-on-surface);
 }
-.word-item .word-row > span {
+.word-item .word-row > span:not(.vocab-chevron) {
+    /* В строке словаря и в словаре урока последний <span> — это шеврон
+       (.vocab-chevron), и он тоже прямой потомок .word-row. Без :not() правило
+       ловило и его: шеврону доставались margin-left: auto и кегль перевода, —
+       и он уезжал вправо от перевода, оставляя между ними пустое поле, да ещё
+       и рисовался не своим кеглем (0.875rem вместо 20px из styles/components.css:
+       правила одной специфичности, а этот файл подключается позже). */
     /* перевод всегда прижат к правому краю, чтобы строка читалась как список */
     margin-left: auto;
     font-size: 0.875rem;
@@ -879,12 +885,29 @@
    Множитель ползунка сохранён, иначе настройка перестала бы её слушать. */
 :root[data-script="hebrew"] .flashcard-word {
     font-size: calc(3.5rem * var(--md-ref-script-scale));
-    line-height: 4.125rem;
+    /* Высота строки несёт тот же множитель, что и кегль (числа те же, что у
+       греческого: 4.125 / 3.5 — это 1.18 строки на кегль). Без множителя
+       коробка строки оставалась меньше самих букв: кегль иврита растёт шагом
+       письма, а 4.125rem — нет, и чернила вылезали за коробку вниз, к чтению
+       под словом. Никкуд сидит внутри буквы и под ней, и от этого запас
+       между словом и его чтением сходил почти в ноль. */
+    line-height: calc(4.125rem * var(--md-ref-script-scale));
 }
 .flashcard-translation {
     font-size: 1.5rem;
     line-height: 2rem;
     color: var(--md-sys-color-primary);
+    animation: md-feedback-in var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
+}
+/* Чтение слова на карточке — под самим словом и над переводом, тем же
+   порядком, что и в раскрытой статье словаря (js/vocab.js). Кегль в rem, а не
+   через множители письма: это русские буквы и латиница, то есть подсказка
+   о слове, а не изучаемый текст. Общий ползунок размера текста её поэтому
+   двигает, а языковой — нет, как и полагается подсказке. */
+.flashcard-translit {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    color: var(--md-sys-color-on-surface-variant);
     animation: md-feedback-in var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate);
 }
 .flashcard-buttons {

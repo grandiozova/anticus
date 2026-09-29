@@ -37,6 +37,33 @@ test('перевод показывается только после «Пока
     app.close();
 });
 
+test('чтение слова на карточке появляется вместе с переводом', () => {
+    // Чтение — это часть ответа, а не подсказка к вопросу: до «Показать
+    // перевод» его на карточке нет, а после — стоит между словом и переводом,
+    // тем же порядком, что и в раскрытой статье словаря (js/vocab.js).
+    const app = loadApp({ storage: { app_default_course: 'hebrew' } });
+    app.window.startAllFlashcards();
+
+    const box = () => app.document.querySelector('#allFlashcardContainer');
+    assert.ok(!box().querySelector('.flashcard-translit'), 'чтение видно до нажатия');
+
+    box().querySelector('.flashcard-buttons .show').click();
+    const shown = box().querySelector('.flashcard-translit');
+    assert.ok(shown, 'чтение не показалось вместе с переводом');
+
+    const word = app.get('allFlashcardState.words[allFlashcardState.index].translit');
+    assert.ok(word, 'у слова карточки нет чтения');
+    assert.strictEqual(shown.textContent, word, 'на карточке не то чтение, что в данных');
+
+    // Порядок на карточке: слово, чтение, перевод.
+    const order = [...box().querySelector('.md-flashcard').children].map(e => e.className);
+    const at = cls => order.findIndex(c => c.indexOf(cls) === 0);
+    assert.ok(at('flashcard-word') < at('flashcard-translit'), 'чтение не под словом');
+    assert.ok(at('flashcard-translit') < at('flashcard-translation'), 'чтение не перед переводом');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 test('фильтр по части речи задаёт колоду и держится между заходами', () => {
     const app = loadApp();
     app.window.startAllFlashcards('verb');

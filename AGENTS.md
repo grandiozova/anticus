@@ -87,6 +87,8 @@ online test. When you add:
 | a colour role | `:root`, `[data-theme="dark"]` **and** `[data-theme="sepia"]` |
 | a `font-size` on studied-language text | `* var(--md-ref-script-scale)` on it, plus `* var(--md-ref-script-size)` where it is the subject — see "Text size" |
 | a part-of-speech `type` | `VOCAB_TYPE_ORDER` + `TYPE_LABELS` |
+| a field on a vocabulary entry (`data/*-lessons.js`) | `buildAllVocabCache()` (`js/vocab.js`) copies each field by name — one it does not copy is invisible in Словарь while the lesson's own word list, which reads `data.vocabulary` directly, still shows it |
+| a per-course fact about how the dictionary row reads | the registry's field list in `data/courses.js` + `vocabRowGloss()`/`vocabExtraGlosses()` (`js/vocab.js`), and a test on the other course that pins its behaviour |
 | a cache that spans screens | a reset in `applyCourse()` |
 | a dependency, font or asset | an entry in `data/licenses.js` |
 | a test file | a row in the `tests/README.md` table |
@@ -207,8 +209,9 @@ Structural facts worth knowing before editing:
 - Functions call freely across files — they are all globals on `window`, and every file is loaded before anything runs. There is no import graph to keep in sync; the only ordering rule is the one about `boot.js` above.
 - Top-level `let` and `const` bindings — state (`stats`, `testState`, `allFlashcardState`, …) *and* the data (`LESSONS_DATA`, `PRAYER_DATA`, `LICENSES`) — are **not** on `window`; splitting the data into their own files did not change this, because `const` at the top level of a classic script never creates a window property. `function` declarations *are* on `window`. So a harness can call `window.openLesson(3)` but must reach data through `window.eval('LESSONS_DATA')`. Test through the DOM, not through `window.someState`.
 - **Формы слова тренируются на обороте карточки, а не отдельным упражнением.** `declension_fill` больше не значится в `LESSON_DRILL_GROUPS`: круглая кнопка в углу карточки (появляется только после «Показать перевод») переворачивает её и запускает тот же вопрос о форме с теми же `.option-btn`. Вопросы собирает `cardDeclensionQuestions()` (`js/flashcards.js`) из двух источников — авторских `exercises.declension_fill` урока про это же слово (их дистракторы продуманы вручную, и их же берёт «Тест», поэтому данные не осиротели) и остальной парадигмы из `declension_forms`. Ключи генерируемых форм намеренно совпадают с авторскими (`gen_sg`, `2pl`, `nom_pl_m`, `dat_sg_f`), иначе один и тот же падеж попадёт в колоду дважды. Результат кешируется в `word._declQuestions` — тем же приёмом, что `entry._examples`. Ответ перерисовывает только `#cardDeclension`, а не всю карточку: иначе анимация переворота проигрывалась бы на каждый вариант.
-- **The dictionary and the flashcards share one cache.** `buildAllVocabCache()` (`js/vocab.js`) collects the vocabulary of every lesson ≥ `VOCAB_FIRST_LESSON` (lesson 1 is the letter names, not words), de-duplicates it and serves both screens; `startAllFlashcards(type)` builds its deck from there, not from `LESSONS_DATA` directly. A card and a dictionary entry are therefore literally the same object — which is why `findUsageExamples()` caches the full set in `entry._examples` and slices it, instead of caching whatever count the first caller asked for. The example search is **course-agnostic**: it walks `lesson.translation` and the `translate_*` drills of whichever course is open, and matches the word through its own paradigm forms. The Greek-looking names of its helpers (`foldAccents`, `tokenizeGreek`, `GREEK_WORD_SOURCE`) are historical — they cut tokens at “letter + diacritic”, which is right for Hebrew too, and strip only Greek accents, so niqqud stays part of the compared word. Both courses' rows are expandable in place: `vocabEntryHasDetails()` gives the dictionary the same usage example the lesson's word list shows, and — behind a «Показать формы» button rather than shown with the example — the same paradigm table. That strip must stay a **direct child of `.word-details`**, because `.word-details > .md-table-scroll` is the rule that turns the table over with the script; `.vocab-forms` therefore rides on the strip itself, not on a wrapper. In Hebrew that is 16 of 163 words — the ones the chapters' own sentences happen to contain — and that is the point: examples are never written by hand, they are sentences the textbook prints.
-- **The lesson's word list and the dictionary are the same row.** `#vocabList` (`js/lesson.js`) and `#allVocabContent` (`js/vocab.js`) both emit `.word-item > .word-row > strong + span`, and one CSS rule sizes the headword for both — so the two screens cannot drift apart, and a change to `.word-item .word-row strong` shows up in the lesson's material tab as well as in Словарь. (That one rule is also why the fixed headword size of "Text size" applies to both lists at once.) The dictionary's rows are expandable in place (`.word-details` holds the usage example, and the paradigm behind a «Показать формы» toggle), the lesson's hold a paradigm table unfolded with the row.
+- **The dictionary and the flashcards share one cache.** `buildAllVocabCache()` (`js/vocab.js`) collects the vocabulary of every lesson ≥ `VOCAB_FIRST_LESSON` (lesson 1 is the letter names, not words), de-duplicates it and serves both screens; `startAllFlashcards(type)` builds its deck from there, not from `LESSONS_DATA` directly. A card and a dictionary entry are therefore literally the same object — which is why `findUsageExamples()` caches the full set in `entry._examples` and slices it, instead of caching whatever count the first caller asked for. The example search is **course-agnostic**: it walks `lesson.translation` and the `translate_*` drills of whichever course is open, and matches the word through its own paradigm forms. The Greek-looking names of its helpers (`foldAccents`, `tokenizeGreek`, `GREEK_WORD_SOURCE`) are historical — they cut tokens at “letter + diacritic”, which is right for Hebrew too, and strip only Greek accents, so niqqud stays part of the compared word. Both courses' rows are expandable in place: `vocabEntryHasDetails()` gives the dictionary the same usage example the lesson's word list shows, and — behind a «Показать формы» button rather than shown with the example — the same paradigm table. That strip must stay a **direct child of `.word-details`**, because `.word-details > .md-table-scroll` is the rule that turns the table over with the script; `.vocab-forms` therefore rides on the strip itself, not on a wrapper. In Hebrew that is 16 of 163 words — the ones the chapters' own sentences happen to contain — and that is the point: examples are never written by hand, they are sentences the textbook prints. **A flashcard shows the word's reading too** (`.flashcard-translit`, `flashcardBodyHtml()`), between the word and the translation, and it appears with the answer rather than before it: the card checks whether the word is remembered, and the reading is part of the answer, not a hint to the question. Its size is in `rem`, not through the script multipliers — it is Russian letters and Latin, a hint *about* the word.
+- **The lesson's word list and the dictionary are the same row.** `#vocabList` (`js/lesson.js`) and `#allVocabContent` (`js/vocab.js`) both emit `.word-item > .word-row > strong + span`, and one CSS rule sizes the headword for both — so the two screens cannot drift apart, and a change to `.word-item .word-row strong` shows up in the lesson's material tab as well as in Словарь. (That one rule is also why the fixed headword size of "Text size" applies to both lists at once.) Their `.word-details` block opens with the same two blocks — **the reading of the word under the word itself, then the meanings the row had no room for** — and only then diverge: the dictionary follows with the usage example and puts the paradigm behind a «Показать формы» toggle, the lesson holds its paradigm table unfolded with the row. Both blocks are built by `renderVocabEntryTopHtml()` (`js/vocab.js`) from the same data, so the two screens cannot show different readings either. That element is **not** `.script`: it is Russian letters and Latin transliteration, written left to right, and the studied-language multipliers do not apply to it — it is a hint *about* the word, not the word. One cascade trap lives in that row: the chevron of the dictionary is a `<span>` too (`<span class="msym vocab-chevron">`), so the translation's own rule — `.word-item .word-row > span` in `screens.css` — would style it as well; both selectors are (0,2,0) and `screens.css` loads after `components.css`, so the chevron silently took the translation's `margin-left: auto` and its font size, drifting away from the translation and drawing at 0.875rem instead of 20px. The translation selector therefore carries `:not(.vocab-chevron)`, and `tests/static.test.js` fails if that exclusion is dropped.
+- **How much translation a row shows is a course fact, not a course branch.** `vocabRowGloss()` splits the translation on commas *outside* brackets (`splitVocabGlosses()` — «имя (известность, слава), Сим» is two meanings, not three) and, only when the course sets `vocabShortGloss` in `data/courses.js`, keeps the first meaning plus the second if both are short (≤ 8 characters, no brackets). The rest are handed to `vocabExtraGlosses()` and shown in the opened entry as a «Ещё значения» list. Hebrew sets the flag because its translation is a bare list of synonyms; Greek does not, and the reason is worth keeping: its comma list also carries case government («в, во (куда; с Acc.)»), so shortening the row there would hide half the dictionary entry. `tests/vocab.test.js` holds that line for Greek, `tests/hebrew-content.test.js` for Hebrew.
 - **Part of speech is a filter, not just a heading.** `item.type` in `data/lessons.js` drives the dictionary's section headings, the `.filter-chip` row above both screens, and which words go into a flashcard deck. The permitted values are listed in `VOCAB_TYPE_ORDER` and `TYPE_LABELS` (`js/vocab.js`): `noun`, `verb`, `adjective`, `pronoun`, `adverb`, `preposition`, `conjunction`, `particle`, `article`, `other`. A new type must go into both lists, or its words fall into «Прочее» and get no chip.
 - Progress is `localStorage` only, and the keys are **per course**: `courseKey('stats')` and `courseKey('last_lesson')` resolve to `greek_stats` / `hebrew_last_lesson` and so on. Genuinely global settings take an `app_` prefix instead — `app_theme`, `app_course`, `app_default_course`. Never hard-code a course's key. See "Courses". All reads/writes must stay wrapped in `try/catch` — they throw in private-mode Safari.
 
@@ -364,6 +367,18 @@ occurs twice in chapter 6 as two different words.** The dictionary forbids dupli
 headwords, so the preposition sense is folded into a comment and only the object-marker
 entry ships. It is not a missing entry.
 
+**Every Hebrew word carries its own reading.** `translit` in
+`data/hebrew-lessons.js` holds it — Russian letters with a stress mark, then the
+textbook's transliteration in brackets: «давáр (dāḇār)». It is **authored, never
+derived**: which shva is vocal and which begadkefat letter is a stop cannot be read off
+the points with a rule, and a generator would be wrong in exactly the places a beginner
+cannot check. The Latin half must use the book's own signs: the spirant keeps its
+character (ḇ ḡ ḏ ḵ p̄ ṯ — never a Latin b/d/k/f, which is what the fricatives sound
+like, not what the book writes), and the shva is U+01DD (ǝ), not the look-alike U+0259
+from another font. Two tests in `tests/hebrew-content.test.js` hold that line — every
+entry has a reading in the «русскими (latin)» shape, and every Latin character in it
+occurs in the alphabet pool, so a substituted look-alike cannot slip in.
+
 **Usage examples for Hebrew are never authored — they are the book's own sentences.**
 The dictionary and the flashcards ask `findUsageExamples()` for a sentence a word
 appears in, and that search reads `lesson.translation`; so a Hebrew example exists
@@ -371,8 +386,9 @@ exactly where a chapter already prints a sentence containing the word (16 of 163
 today, and every one of them comes from a `translation` drill that was copied out of
 `reference/nbbs-hebrew/`). Two consequences: adding examples means adding the *book's*
 sentences to a chapter's `translation`, never writing Hebrew phrases by hand; and a word
-the book never uses in a sentence gets no example at all — the row simply is not
-expandable, and that is correct, not a gap. `tests/hebrew-content.test.js` holds the
+the book never uses in a sentence gets no example at all — the row still opens (for the
+reading and the remaining meanings), but it shows no example there, and that is correct,
+not a gap. `tests/hebrew-content.test.js` holds the
 line by requiring each shown example to occur **as a whole sentence** in the reference,
 which the token-by-token check cannot do: one valid niqqud sign substituted for another
 looks identical on screen.
@@ -546,6 +562,14 @@ the state and the switching.
   …"). Read that one through `courseLang()` and `drillLabel()`; a literal
   "греческий" in a shared string is a bug. Adding a course is a data entry plus its
   lesson file; it is not a code change.
+- **`vocabShortGloss` is a course fact about how a dictionary row reads**, not a branch
+  in the row's code: `vocabRowGloss()` (`js/vocab.js`) asks the course whether to keep
+  the first translation only, and `vocabExtraGlosses()` gives the opened entry the rest.
+  Hebrew sets it — its translation is a bare list of synonyms («слово, дело, вещь»),
+  and the row was becoming a paragraph. Greek does not, and that is a decision: its
+  comma list also carries case government («в, во (куда; с Acc.)»), so a shortened row
+  would hide part of the entry. `tests/vocab.test.js` pins the Greek side,
+  `tests/hebrew-content.test.js` the Hebrew one.
 - **Read lesson data through `courseLessons()`, never `LESSONS_DATA` directly.** The
   same goes for `coursePrayer()`. `LESSONS_DATA` is now *the Greek course's* lessons,
   not *the* lessons. `getLessonData()` and `lessonNumbers()` in `js/core.js` already
@@ -842,7 +866,12 @@ the smaller size before the scripts run.
 a multiplier: Greek words run longer and Hebrew needs the extra size so niqqud stay
 visible against the letters they sit in, so the pair is tuned by hand and may move
 apart again. Both keep `var(--md-ref-script-scale)`, so the
-language slider still governs them. The card's back face
+language slider still governs them. **Their `line-height` carries the same multiplier**
+(`calc(4.125rem * …)` / `calc(3rem * …)`), and that is not a formality: `line-height`
+written plain in `rem` does not follow the size step, so the line box came out *smaller
+than the glyphs* and the ink spilled below it — with niqqud sitting inside and under the
+letter, the card's reading was left 5px under the word instead of the intended ~15. The
+card's back face
 (`.card-declension__word`) is a separate, smaller size — it is the declension
 drill's caption, not a second headword — and is left as it is.
 

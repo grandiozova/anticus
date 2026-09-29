@@ -291,7 +291,14 @@ function flashcardBodyHtml(word, s, deck) {
         html += '<div class="card-declension" id="cardDeclension"></div>';
     } else {
         html += '<div class="flashcard-word">' + (word.article ? word.article + ' ' : '') + word.greek + '</div>';
-        if (s.revealed) html += '<div class="flashcard-translation">' + word.translation + '</div>';
+        if (s.revealed) {
+            // Чтение — между словом и переводом, как в раскрытой статье словаря
+            // (js/vocab.js): слово, его чтение, значение. Показывается оно
+            // вместе с переводом, а не до него: карточка проверяет, помнит ли
+            // ученик слово, и ответ на неё — и чтение, и значение сразу.
+            if (word.translit) html += '<div class="flashcard-translit">' + escHtml(word.translit) + '</div>';
+            html += '<div class="flashcard-translation">' + word.translation + '</div>';
+        }
     }
     if (hasDrill) {
         let hint = flipped ? 'Вернуться к слову' : 'Тренировать формы слова';

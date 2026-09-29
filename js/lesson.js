@@ -448,20 +448,30 @@ function openLesson(lesson) {
             let article = item.article ? item.article + ' ' : '';
             let div = document.createElement('div');
             div.className = 'word-item';
-            if (item.declension_forms) {
-                div.classList.add('clickable');
-                div.onclick = function(el) { return function() { toggleDeclension(el); }; }(div);
-            }
-            let detailsHtml = '';
-            // Строка, которая раскрывает парадигму, — кнопка и для клавиатуры:
+            // Верх статьи урока — тот же, что и в общем словаре (js/vocab.js):
+            // чтение слова под самим словом и значения, не поместившиеся в
+            // строку. У греческого этих данных нет, и статья по-прежнему
+            // состоит из одной парадигмы.
+            let top = renderVocabEntryTopHtml(item);
+            let table = item.declension_forms
+                ? '<div class="md-table-scroll">' + generateDeclensionTable(item.declension_forms, item.caseTranslations || null) + '</div>'
+                : '';
+            // Полоса таблицы должна остаться ПРЯМЫМ потомком .word-details: этим
+            // правилом (styles/screens.css) парадигма разворачивается вместе с
+            // письмом. Парадигма в словаре урока раскрыта вместе со строкой,
+            // а не спрятана за кнопку, как в общем словаре: в уроке она и есть
+            // материал, за ней ходят не «когда-нибудь», а прямо сейчас.
+            let detailsHtml = (top || table) ? '<div class="word-details">' + top + table + '</div>' : '';
+            // Строка, которая раскрывает статью, — кнопка и для клавиатуры:
             // role и tabindex, как у строки общего словаря (js/vocab.js). Enter и
             // пробел доводит до клика слушатель в boot.js (KEY_ACTIVATED).
             let rowAttrs = '';
-            if (item.declension_forms) {
-                detailsHtml = '<div class="word-details"><div class="md-table-scroll">' + generateDeclensionTable(item.declension_forms, item.caseTranslations || null) + '</div></div>';
+            if (detailsHtml) {
+                div.classList.add('clickable');
+                div.onclick = function(el) { return function() { toggleDeclension(el); }; }(div);
                 rowAttrs = ' role="button" tabindex="0" aria-expanded="false"';
             }
-            div.innerHTML = '<div class="word-row"' + rowAttrs + '><strong>' + article + item.greek + '</strong><span>' + item.translation + '</span></div>' + detailsHtml;
+            div.innerHTML = '<div class="word-row"' + rowAttrs + '><strong>' + article + item.greek + '</strong><span>' + vocabRowGloss(item) + '</span></div>' + detailsHtml;
             container.appendChild(div);
         });
     }

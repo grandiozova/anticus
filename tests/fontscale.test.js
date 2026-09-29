@@ -458,6 +458,36 @@ test('каждый кегль текста изучаемого языка не�
         'кегль без множителя размера:\n  ' + missing.join('\n  '));
 });
 
+test('коробка строки карточки иврита не меньше её кегля', () => {
+    // Кегль карточки растёт шагом письма (у иврита это 1.6), а высота строки
+    // была записана просто в rem и за шагом не шла. Коробка строки выходила
+    // меньше самих букв: чернила с огласовкой вылезали из неё вниз, и чтение
+    // под словом липло к буквам — запас между словом и чтением на карточке
+    // сходил с 8px до 5px. Оба правила иврита — базовое (styles/screens.css)
+    // и мобильное (styles/layout.css) — обязаны нести тот же множитель, что
+    // и кегль.
+    const rules = [];
+    for (const file of ['styles/screens.css', 'styles/layout.css']) {
+        const css = read(file);
+        for (const m of css.matchAll(/([^{}]+)\{([^}]*)\}/g)) {
+            const sel = m[1].trim().split('\n').pop().trim();
+            if (sel.indexOf('[data-script="hebrew"] .flashcard-word') === -1) continue;
+            rules.push({ file, sel, body: m[2] });
+        }
+    }
+    assert.strictEqual(rules.length, 2,
+        'правил кегля карточки иврита ожидается два — широкий экран и узкий, а нашлось ' + rules.length);
+    for (const r of rules) {
+        const size = r.body.match(/font-size:\s*([^;]+);/);
+        assert.ok(size && /var\(--md-ref-script-scale\)/.test(size[1]),
+            r.file + ' — ' + r.sel + ': кегль без множителя ползунка');
+        const lh = r.body.match(/line-height:\s*([^;]+);/);
+        assert.ok(lh, r.file + ' — ' + r.sel + ': нет высоты строки');
+        assert.ok(/var\(--md-ref-script-scale\)/.test(lh[1]),
+            r.file + ' — ' + r.sel + ': высота строки без множителя, коробка меньше букв: ' + lh[1]);
+    }
+});
+
 test('кегль словарной статьи закреплён, свой у каждого письма и не едет за ползунками', () => {
     // Словарь листают, а не читают: заголовок статьи — единственный текст
     // изучаемого языка, отвязанный от ползунков размера. Значение живёт

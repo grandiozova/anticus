@@ -156,6 +156,12 @@ invisible until someone hits the specific path (offline load, one specific theme
   from the reference — do not retype it to "fix" it.**
 - Hebrew course currently covers chapters 1–11 (nominal system) only. The verb
   (chapters 12–36) is out of scope — don't add it unless asked.
+- **Every Hebrew vocabulary entry carries a `translit`** — the reading of the word:
+  Russian letters with a stress mark, then the textbook's transliteration in brackets
+  («давáр (dāḇār)»). It is authored, not derived: shva and stop/fricative begadkefat
+  cannot be guessed from the points alone. Latin must use the book's signs — the
+  spirant gets its own character (ḇ ḡ ḏ ḵ p̄ ṯ), never a Latin b/d/k/f — and the shva is
+  U+01DD (ǝ), not the look-alike U+0259. `tests/hebrew-content.test.js` checks both.
 - **Hebrew usage examples are never written by hand.** The dictionary and the
   flashcards show a sentence from `lesson.translation` that contains the word
   (`findUsageExamples()`, `js/vocab.js` — course-agnostic). To add one, add the
@@ -326,6 +332,21 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   intro-only, dictionary start lesson, script + writing direction, and the language
   name for drill labels (via `courseLang()`/`drillLabel()` — never hardcode "греческий"
   in a shared string).
+- `vocabShortGloss` is set only on Hebrew. It means the dictionary row shows the first
+  translation and, if both are short, the second; the rest go into the opened entry, on
+  the right under the row's translation, with no caption. Greek has no such flag on
+  purpose: its comma list also carries case government («в, во (куда; с Acc.)»), and
+  shortening it would hide half the entry.
+  The row code itself is course-agnostic (`vocabRowGloss` / `vocabExtraGlosses`,
+  `js/vocab.js`) and is shared with the lesson's own word list (`js/lesson.js`).
+- Flashcards show the word's reading too (`flashcardBodyHtml()`, `js/flashcards.js`),
+  between the word and the translation, and only after «Показать перевод»: it is part of
+  the answer, not a hint to the question. The card's Hebrew `line-height` must carry
+  `var(--md-ref-script-scale)` like its `font-size` — a plain `rem` box is smaller than
+  the glyphs and the reading ends up glued to the niqqud.
+- The dictionary chevron is a `<span>`, so `.word-item .word-row > span` (the
+  translation's rule, `styles/screens.css`) must exclude it with `:not(.vocab-chevron)`;
+  both rules are the same specificity and `screens.css` wins by order.
 - Adding a course = a data entry + its lesson file. Not a code change.
 - The start-screen course card shows the alphabet glyph, the course name, the source
   textbook (`tagline`) and the lesson count chip — nothing else. A lesson description
