@@ -1252,14 +1252,16 @@ body.start-open .md-content { display: none; }
     margin-top: 16px;
 }
 
-/* Карточка курса — тот же выразительный контейнер, что .md-feature-card,
-   но с описанием в три строки, поэтому иконка выровнена по верху. */
+/* Карточка курса — тот же выразительный контейнер, что .md-feature-card.
+   На ней только опознавательные знаки курса: буква, название, источник и
+   объём. Описания уроков нет намеренно (см. AGENTS.md, «Courses»), поэтому
+   строк меньше и бейдж с шевроном выровнены по центру текста, а не по верху. */
 .course-card {
     position: relative;
     isolation: isolate;
     overflow: hidden;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 16px;
     width: 100%;
     padding: 20px;
@@ -1325,12 +1327,10 @@ body.start-open .md-content { display: none; }
 }
 .course-card__text { flex: 1; min-width: 0; }
 .course-card__title,
-.course-card__tagline,
-.course-card__blurb,
-.course-card__note { display: block; }
+.course-card__tagline { display: block; }
 .course-card__title {
-    font-size: 1.375rem;
-    line-height: 1.75rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
     font-weight: 400;
     letter-spacing: 0;
 }
@@ -1341,26 +1341,27 @@ body.start-open .md-content { display: none; }
     letter-spacing: 0.015625rem;
     color: var(--md-sys-color-on-surface-variant);
 }
-.course-card__blurb {
-    margin-top: 8px;
+/* Объём курса — метка, а не третья строка описания: та же справка «сколько
+   уроков», но плашкой, чтобы она не читалась как рассказ о содержании.
+   Кегль, высота и скругление — метрики чипа из components.css
+   (.filter-chip__body), а secondary-container / on-secondary-container — та же
+   тональная пара, которой чип отмечает выбранное состояние. */
+.course-card__note {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    margin-top: 12px;
+    padding: 0 12px;
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
     font-size: 0.875rem;
     line-height: 1.25rem;
-    letter-spacing: 0.015625rem;
-    color: var(--md-sys-color-on-surface-variant);
-}
-.course-card__note {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin-top: 12px;
-    font-size: 0.6875rem;
-    line-height: 1rem;
-    letter-spacing: 0.03125rem;
+    letter-spacing: 0.00625rem;
     font-weight: 500;
-    color: var(--md-sys-color-primary);
 }
+.course-card__note .msym { font-size: 18px; }
 .course-card__chevron {
     color: var(--md-sys-color-on-surface-variant);
-    /* выравниваем по первой строке заголовка, а не по центру всей карточки */
-    margin-top: 12px;
 }

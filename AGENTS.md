@@ -276,7 +276,7 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
 
 `settingsSection` is the fifth navigation destination and the home for anything that is not study content: theme, text size, data management, support, licenses.
 
-- **Course** is the first card: which course is open, a button back to the start screen, and `app_default_course` — whether the start screen asks on every load or drops straight into one course. The three-way `#defaultCourseSegmented` labels each course with its own letter — the same `glyph` / `glyphClass` from `data/courses.js` that the start screen badge uses, filled in by `syncCourseControls()` rather than typed into the markup, so the two cannot drift. That letter is an **icon-sized mark, not text to read** (`.course-glyph`, `18px` at wide widths and `20px` in the ≤420px block where the labels are hidden and the icons grow — the same sizes the `.msym` it replaced has): it keeps the button's label and must not ride the language sliders, exactly like `.course-card__glyph`. `fontscale.test.js` therefore exempts both and asserts every one of their rules stays bare `px`.
+- **Course** is the first card: which course is open, a button that switches straight to the other course, and `app_default_course` — whether the start screen asks on every load or drops straight into one course. `switchCourse()` applies the next course in `COURSE_ORDER` and opens its lesson list (`goToMain()`), rather than returning to the start screen. The three-way `#defaultCourseSegmented` labels each course with its own letter — the same `glyph` / `glyphClass` from `data/courses.js` that the start screen badge uses, filled in by `syncCourseControls()` rather than typed into the markup, so the two cannot drift. That letter is an **icon-sized mark, not text to read** (`.course-glyph`, `18px` at wide widths and `20px` in the ≤420px block where the labels are hidden and the icons grow — the same sizes the `.msym` it replaced has): it keeps the button's label and must not ride the language sliders, exactly like `.course-card__glyph`. `fontscale.test.js` therefore exempts both and asserts every one of their rules stays bare `px`.
 - **Theme** is a four-way choice — `system` / `light` / `dark` / `sepia` — stored in `app_theme` as the *mode*, never as the resolved colour. `sepia` is a warm light scheme built on the same M3 tone map as `:root`, not a filter over it. Storing the resolved value is what breaks "follow the system": the app would pin whatever the OS happened to be on first run. `system` stays live via a `matchMedia` listener. A value written by an older build (`light`/`dark`) is still read as a valid manual choice, and the pre-courses key `greek_theme` is read as a fallback and migrated forward once.
 - **Text size** is the interface slider, always visible with a live sample under it, and the two per-language sliders (Greek and Hebrew) folded into a collapsed «Расширенные настройки» disclosure — the same `.open` + `max-height` idiom as the dictionary's expandable entries (`toggleFontScaleAdvanced()` in `js/fontscale.js`). The interface slider starts at 100% and the two language sliders start at the top of their range, **160%**, so the studied language opens larger than the Russian around it. They are therefore *not* following the interface one by default, and the reset button is visible from the first visit; pressing it returns a language to the interface size, which on Hebrew means +20% rather than exactly it, for the niqqud. Each keeps a live sample in a tighter preview (`.font-scale--compact`); the sample's own size is not reduced, because 1.25rem is the floor at which niqqud stays readable. See "Text size".
 - **Support the project** is the first card on the screen. It is one optional external link (`target="_blank" rel="noopener noreferrer"`) to a donation page, framed as voluntary support for the developer's time and hosting costs. Nothing is gated, no functionality depends on it, and the text names no textbook or rights holder.
@@ -561,10 +561,20 @@ the state and the switching.
   in CSS. It was deliberately not made a sixth screen: the nav bar is already at the
   M3 maximum of five destinations, and a launcher is not a destination. The app behind
   it is fully booted on the active course, so dismissing it is just hiding it.
+- **The course card shows only what identifies the course**, and that is a decision,
+  not an accident of layout: the alphabet glyph on a `primary-container` badge, the
+  course name, the source textbook (`tagline`) under it, and the lesson count as a
+  `secondary-container` chip — `renderStartScreen()` in `js/course.js` builds exactly
+  those three spans and `tests/course.test.js` pins the list. A description of the
+  lessons stood there until 2026-09-29 (the registry's `blurb`, since removed): the
+  start screen picks a course, it does not describe one, so putting a content summary
+  back on the card is a regression rather than a polish.
 - **`app_default_course` decides whether the start screen appears at all.** `ask`
   (the default) shows it on every load; a course id skips straight into that course.
-  The setting lives on the settings screen next to the course switcher, which is the
-  only other way back to the start screen.
+  The setting lives on the settings screen next to the course switcher, but the
+  switcher (`switchCourse()`) does **not** reopen the start screen — it applies the
+  next course and opens that course's lesson list — so after launch the start screen
+  is reached only through `app_default_course` and a reload.
 - Switching a course goes through `applyCourse(id)`, which reloads stats, drops
   `allVocabCache`, resets the decks and re-renders. Anything you add that caches
   across screens must be reset there, or it will leak one course's words into the

@@ -150,6 +150,11 @@ function applyCourseChrome() {
 // держит пять точек, максимум для M3, а пусковой экран и не точка навигации.
 // Приложение под ним полностью загружено на текущем курсе, поэтому «выбрать» —
 // это просто убрать перекрытие.
+//
+// На карточке курса — только то, чем курс опознаётся: буква его алфавита,
+// название, источник (tagline) и объём. Описания уроков здесь нет намеренно:
+// стартовый экран выбирает курс, а не рассказывает о нём (см. AGENTS.md,
+// «Courses»).
 function renderStartScreen() {
     let box = document.getElementById('startCourseList');
     if (!box) return;
@@ -169,7 +174,6 @@ function renderStartScreen() {
                 '<span class="course-card__text">',
                     '<span class="course-card__title">', escHtml(c.name), '</span>',
                     '<span class="course-card__tagline">', escHtml(c.tagline), '</span>',
-                    '<span class="course-card__blurb">', escHtml(c.blurb), '</span>',
                     '<span class="course-card__note"><span class="msym sm">',
                         (count ? 'menu_book' : 'hourglass_top'), '</span>', escHtml(note), '</span>',
                 '</span>',
@@ -204,10 +208,19 @@ function startCourse(id) {
     goToMain();
 }
 
-// Кнопка «Сменить курс» в настройках.
-function openCoursePicker() {
-    showStartScreen();
-    scrollPageTop();
+// Кнопка «Сменить курс» в настройках: сразу открывает другой курс и его главный
+// экран — список уроков, не уводя на стартовый экран. Берём следующий курс по
+// реестру: при двух курсах это ровно «другой», а третий встанет в тот же порядок
+// без правок кода.
+function switchCourse() {
+    let order = COURSE_ORDER.filter(id => COURSES[id]);
+    if (order.length < 2) return;
+    let i = order.indexOf(currentCourseId);
+    let next = order[(i + 1) % order.length];
+    if (!next || next === currentCourseId) return;
+    applyCourse(next);
+    goToMain();
+    showToast('Открыт курс «' + COURSES[next].name + '»', 'swap_horiz');
 }
 
 // ------------------------------------------------------------ настройки: вид

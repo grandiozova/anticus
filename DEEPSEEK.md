@@ -327,6 +327,10 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   name for drill labels (via `courseLang()`/`drillLabel()` — never hardcode "греческий"
   in a shared string).
 - Adding a course = a data entry + its lesson file. Not a code change.
+- The start-screen course card shows the alphabet glyph, the course name, the source
+  textbook (`tagline`) and the lesson count chip — nothing else. A lesson description
+  (`blurb`) used to be there and was removed on 2026-09-29: the start screen chooses a
+  course, it does not describe one.
 - Switching a course calls `applyCourse(id)`, which resets stats, clears
   `allVocabCache`, and re-renders. Any new cross-screen cache must be reset there too.
 

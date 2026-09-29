@@ -202,7 +202,7 @@ function scrollAround(app) {
     w.openLesson(4);               // showSection → прокрутка страницы
     w.switchLessonPart('material'); // вкладка → прокрутка панели вкладок
     w.goBack();                    // раздел → меню урока
-    w.openCoursePicker();          // стартовый экран
+    w.navigateTo('settings');      // смена экрана → прокрутка страницы
 }
 
 test('при «меньше движения» прокрутка из скрипта не плавная', () => {

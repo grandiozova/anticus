@@ -37,6 +37,27 @@ test('стартовый экран предлагает оба курса в п
     app.close();
 });
 
+test('карточка курса не рассказывает об уроках', () => {
+    // Владелец попросил убрать описание содержания: стартовый экран выбирает
+    // курс, а не рассказывает о нём. Остаются только название, источник и
+    // объём — и добавленная сюда строка про уроки снова сделает экран
+    // «каталогом», а не выбором.
+    const app = loadApp();
+    const blocks = Array.from(app.document.querySelectorAll('#startCourseList .course-card__text'))
+        .map(t => Array.from(t.children).map(el => el.className));
+    assert.deepStrictEqual(blocks, [
+        ['course-card__title', 'course-card__tagline', 'course-card__note'],
+        ['course-card__title', 'course-card__tagline', 'course-card__note']
+    ], 'в карточке курса должны остаться только название, источник и объём');
+    const sources = Array.from(app.document.querySelectorAll('#startCourseList .course-card__tagline'))
+        .map(t => t.textContent);
+    assert.deepStrictEqual(sources, [
+        'Новый Завет по учебнику Мейчена',
+        'Пособие Новосибирской библейской семинарии'
+    ], 'источник курса (учебник) под названием остаётся');
+    app.close();
+});
+
 test('карточки курса показывают реальные буквы алфавита, а не Material Symbols', () => {
     const app = loadApp();
     const glyphs = Array.from(app.document.querySelectorAll('#startCourseList .course-card__glyph'));
@@ -74,12 +95,21 @@ test('курс по умолчанию пропускает стартовый �
     app.close();
 });
 
-test('«Сменить курс» в настройках возвращает стартовый экран', () => {
+test('«Сменить курс» в настройках открывает другой курс и его список уроков, не показывая стартовый экран', () => {
     const app = loadApp({ storage: { app_default_course: 'greek' } });
     app.window.showSettings();
-    assert.ok(!app.window.startScreenOpen());
-    app.window.openCoursePicker();
-    assert.ok(app.window.startScreenOpen());
+    assert.strictEqual(app.get('currentCourseId'), 'greek');
+
+    app.window.switchCourse();
+
+    assert.strictEqual(app.get('currentCourseId'), 'hebrew', 'должен открыться другой курс');
+    assert.ok(!app.window.startScreenOpen(), 'стартовый экран показывать не нужно');
+    assert.strictEqual(app.screen(), 'mainMenu', 'открывается главный экран нового курса');
+    assert.strictEqual(app.document.getElementById('appBarTitle').textContent, 'Древнееврейский');
+    assert.deepStrictEqual(app.errors, []);
+
+    app.window.switchCourse();
+    assert.strictEqual(app.get('currentCourseId'), 'greek', 'повторное нажатие возвращает назад');
     app.close();
 });
 
@@ -273,7 +303,7 @@ test('каждый курс реестра описан полностью', () 
     for (const id of order) {
         const c = app.get('COURSES')[id];
         assert.ok(c, 'нет курса ' + id + ' из COURSE_ORDER');
-        for (const field of ['id', 'name', 'tagline', 'blurb', 'icon', 'dir', 'script', 'lang', 'searchPlaceholder']) {
+        for (const field of ['id', 'name', 'tagline', 'icon', 'dir', 'script', 'lang', 'searchPlaceholder']) {
             assert.ok(c[field], id + ': не заполнено поле ' + field);
         }
         assert.strictEqual(c.id, id, 'id внутри записи должен совпадать с ключом');
