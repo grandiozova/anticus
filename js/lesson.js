@@ -445,7 +445,9 @@ function openLesson(lesson) {
     if (vocabCard) vocabCard.classList.toggle('hidden', !(data.vocabulary && data.vocabulary.length));
     if (data.vocabulary) {
         data.vocabulary.forEach(item => {
-            let article = item.article ? item.article + ' ' : '';
+            // Как и в общем словаре (js/vocab.js): артикль приклеен к слову
+            // неразрывным пробелом, иначе тесная строка рвёт его на строку.
+            let article = item.article ? item.article + '\u00A0' : '';
             let div = document.createElement('div');
             div.className = 'word-item';
             // Верх статьи урока — тот же, что и в общем словаре (js/vocab.js):

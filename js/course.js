@@ -131,7 +131,15 @@ function applyCourseChrome() {
     document.title = 'Anticus — ' + course.name;
 
     let input = document.getElementById('vocabSearchInput');
-    if (input) input.setAttribute('placeholder', course.searchPlaceholder || 'Поиск');
+    if (input) {
+        input.setAttribute('placeholder', course.searchPlaceholder || 'Поиск');
+        // Поле поиска — единственное место, где изучаемый язык набирают
+        // руками, поэтому его направление идёт за курсом: иврит набирается
+        // справа налево, греческий остаётся слева направо. Атрибут ставим
+        // здесь же, рядом с подсказкой, — иначе поле осталось бы в
+        // направлении прошлого курса.
+        input.setAttribute('dir', courseDir());
+    }
 
     // Карточка «Отче наш» — греческая; у курса без разбора молитвы её нет.
     let card = document.getElementById('prayerFeatureCard');
@@ -223,7 +231,9 @@ function switchCourse() {
     if (!next || next === currentCourseId) return;
     applyCourse(next);
     goToMain();
-    showToast('Открыт курс «' + COURSES[next].name + '»', 'swap_horiz');
+    // Короткое подтверждение: курс уже виден на экране, держать плашку
+    // четыре секунды незачем (просьба владельца).
+    showToast('Открыт курс «' + COURSES[next].name + '»', 'swap_horiz', 2000);
 }
 
 // ------------------------------------------------------------ настройки: вид

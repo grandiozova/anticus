@@ -63,6 +63,22 @@ test('courseDir отвечает за каждый курс реестра', () 
     app.close();
 });
 
+test('поле поиска по словарю разворачивается вместе с курсом', () => {
+    // Это единственное поле, куда изучаемый язык набирают руками; без
+    // направления курса иврит набирался бы слева направо.
+    const app = loadApp(GREEK);
+    const input = app.document.getElementById('vocabSearchInput');
+    assert.strictEqual(input.getAttribute('dir'), 'ltr');
+
+    app.window.applyCourse('hebrew');
+    assert.strictEqual(input.getAttribute('dir'), 'rtl', 'иврит набирается справа налево');
+
+    app.window.applyCourse('greek');
+    assert.strictEqual(input.getAttribute('dir'), 'ltr', 'возврат на греческий возвращает направление');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 // ------------------------------------------------------------ токены
 
 test('токены письма переключаются атрибутами, а не именем курса', () => {

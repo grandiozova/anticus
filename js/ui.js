@@ -35,13 +35,16 @@ document.addEventListener('pointerdown', function (e) {
 });
 
 let snackbarTimer = null;
-function showToast(message, icon) {
+// duration — необязательный: по умолчанию M3-снэкбар живёт 4 секунды, но
+// короткому подтверждению (например, переключению курса) столько не нужно, и
+// оно уходит раньше, не задерживая экран.
+function showToast(message, icon, duration) {
     let bar = document.getElementById('snackbar');
     if (!bar) return;
     bar.innerHTML = (icon ? '<span class="msym sm">' + icon + '</span>' : '') + '<span>' + message + '</span>';
     bar.classList.add('show');
     clearTimeout(snackbarTimer);
-    snackbarTimer = setTimeout(() => bar.classList.remove('show'), 4000);
+    snackbarTimer = setTimeout(() => bar.classList.remove('show'), duration || 4000);
 }
 
 let dialogResolve = null;

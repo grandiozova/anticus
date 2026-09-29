@@ -523,7 +523,10 @@ function renderVocabEntries(entries) {
         if (!byType[type] || byType[type].length === 0) return;
         parts.push('<div class="vocab-section"><h4>', TYPE_LABELS[type] || type, '</h4>');
         byType[type].forEach(e => {
-            let art = e.article ? e.article + ' ' : '';
+            // Артикль держится за слово неразрывным пробелом: обычный
+            // пробел — точка переноса, и в тесной строке артикль уезжал на
+            // свою строку («ἡ» / «ὁδός»). Слово должно читаться целиком.
+            let art = e.article ? e.article + '\u00A0' : '';
             let expandable = vocabEntryHasDetails(e);
             let rowAttrs = expandable ?
                 ' onclick="toggleVocabExamples(' + e.id + ')" role="button" tabindex="0" aria-expanded="false"' :

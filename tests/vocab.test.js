@@ -200,6 +200,28 @@ test('примеры не выдают словарную форму за упо
     app.close();
 });
 
+test('артикль не отрывается от слова в строке словаря', () => {
+    // Артикль и слово связаны неразрывным пробелом: обычный пробел — точка
+    // переноса, и в тесной строке артикль уезжал на отдельную строку
+    // («ἡ» / «ὁδός»). Проверяем на первой статье с артиклем.
+    const app = openVocab();
+    const result = app.get(`
+        (function () {
+            for (let e of getAllVocab()) {
+                if (!e.article) continue;
+                let s = document.querySelector('#allVocabContent .word-item[data-vocab-id="' + e.id + '"] .word-row strong');
+                if (!s) continue;
+                let glued = e.article + String.fromCharCode(160) + e.greek;
+                return s.textContent === glued ? 'ok' : s.textContent;
+            }
+            return 'нет статей с артиклем';
+        })()
+    `);
+    assert.strictEqual(result, 'ok', 'артикль в строке словаря отделён обычным пробелом: ' + result);
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 test('строка словаря отвечает на клавиатуру', () => {
     const app = openVocab();
     const row = app.document.querySelector('#allVocabContent .word-row');
