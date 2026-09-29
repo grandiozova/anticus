@@ -483,6 +483,15 @@ copies of the same table, and they would have drifted.
   the begadkefat rows, the gutturals sentence and the vowel table in chapter 2 — and fails
   if the data and the book disagree. Write the pool first, then reconcile it with the
   grammar text; do not type it twice from memory.
+- **The alphabet table is one component, shared by both courses, and its letter column is
+  the widest cell in the material.** The Greek lesson-1 table and the Hebrew chapter-1
+  table both carry `.md-table--alphabet`; the Greek one merges the two cases into a single
+  «Буква» cell (`<td lang="el"><span class="alphabet-glyph">Αα</span></td>`) and has no
+  extra columns, so the collapse rules simply find nothing to hide on it — that is why it
+  has no `Показать всё` button. Two numbers there are ceilings rather than taste: the glyph
+  is `1.75rem` because at `2rem` three columns stop fitting a 412px phone, and the letter
+  column keeps `white-space: nowrap` (via the `td:not(:first-child)` rule) because «Σσ» and
+  «בּ / ב» are single marks — letting them break inflates the row to 140px.
 - **A directional drill label reads «shown → chosen»**, as in «Фразы: {lang} → русский».
   `letter_case_lower` shows the capital, so it is «Прописная → строчная». The first
   version said «Строчная к прописной» and «Прописная к строчной». Russian «X к Y»
@@ -735,21 +744,26 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   decision by the owner: a list of hundreds of words is scanned, not read, so the
   dictionary must not move when the text-size sliders do. `.word-item .word-row
   strong` — one rule for the all-vocabulary screen *and* the lesson's word list —
-  is `font-size: var(--md-ref-script-headword-size)`: `26px` for Greek, `28px`
+  is `font-size: var(--md-ref-script-headword-size)`: `26px` for Greek, `40px`
   under `:root[data-script="hebrew"]`. `.vocab-example__script` — one rule for the
   example in an expanded entry *and* the "В словосочетании" line under a flashcard
   — is `var(--md-ref-script-example-size)`: `22px` / `24px`. Both tokens are in
   `px`, so *neither* slider reaches them (the general one lives in the root
-  `font-size`, and `px` does not resolve against that), and Hebrew's extra 2px are
+  `font-size`, and `px` does not resolve against that), and Hebrew's extra 14px are
   not decoration: niqqud sit inside and under the letter and read tighter at the
-  same size. The example sits one step below the headword (0.85×) so the word is
-  read first and the sentence second — before, the expanded entry took the size
-  step and put the example at 40.8px, larger than the word itself. Two knock-on
-  rights fall out of the fixed sizes: the row is back at its M3 56px minimum
-  (`28px × 1.3 + 16px` of padding is 52.4px) while the headword still dominates the
-  Russian gloss beside it (`0.875rem`), and the niqqud floor is no longer needed
-  on either token — 24px is above its 20px at every slider position, and the floor
-  is not a slider either. Both of those rules used to carry a floor-then-step
+  same size — at equal size the Hebrew row read *smaller* than the Greek one, and the
+  owner asked for the opposite. The example
+  sits one step below the headword so the word is read first and the sentence
+  second (0.85× in Greek; Hebrew's gap is wider, 24px against 40px) —
+  before, the expanded entry took the size step and put the example at 40.8px,
+  larger than the word itself. Two knock-on rights fall out of the fixed sizes: the
+  Greek row sits back at its M3 56px minimum (`26px × 1.3 + 16px` of padding is
+  49.8px; Hebrew's is well above it at ~68px, the owner's explicit request — the
+  height the slider-driven formula used to produce and that was rejected then no
+  longer applies, because the size is fixed now) while the headword still
+  dominates the Russian gloss beside it (`0.875rem`), and the niqqud floor is no
+  longer needed on either token — 24px is above its 20px at every slider position,
+  and the floor is not a slider either. Both of those rules used to carry a floor-then-step
   `calc()`; `fontscale.test.js` exempts them from the multiplier sweep instead and
   pins both values (Hebrew > Greek, example < headword, `line-height` a number so
   the fixed size is not dragged back by a `rem` line box), so the exemption cannot

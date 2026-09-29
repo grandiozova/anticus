@@ -102,32 +102,32 @@ const LESSONS_DATA = {
     1: {
         title: "Алфавит и произношение",
         grammar: `<b>Греческий алфавит (24 буквы):</b><br>
-        <table>
-        <tr><th>Προπисная</th><th>Строчная</th><th>Название</th><th>Произношение</th></tr>
-        <tr><td>Α</td><td>α</td><td>άλφα</td><td>[а]</td></tr>
-        <tr><td>Β</td><td>β</td><td>βῆτα</td><td>[в]</td></tr>
-        <tr><td>Γ</td><td>γ</td><td>γάμμα</td><td>[г] (перед γ, κ, ξ, χ – [н])</td></tr>
-        <tr><td>Δ</td><td>δ</td><td>δέλτα</td><td>[д]</td></tr>
-        <tr><td>Ε</td><td>ε</td><td>ἒ ψιλόν</td><td>[э]</td></tr>
-        <tr><td>Ζ</td><td>ζ</td><td>ζῆτα</td><td>[дз]</td></tr>
-        <tr><td>Η</td><td>η</td><td>ῆτα</td><td>[э] (долгий)</td></tr>
-        <tr><td>Θ</td><td>θ</td><td>θῆτα</td><td>[т] (придыхательный)</td></tr>
-        <tr><td>Ι</td><td>ι</td><td>ἰῶτα</td><td>[и]</td></tr>
-        <tr><td>Κ</td><td>κ</td><td>κάππα</td><td>[к]</td></tr>
-        <tr><td>Λ</td><td>λ</td><td>λάβδα</td><td>[л]</td></tr>
-        <tr><td>Μ</td><td>μ</td><td>μῦ</td><td>[м]</td></tr>
-        <tr><td>Ν</td><td>ν</td><td>νῦ</td><td>[н]</td></tr>
-        <tr><td>Ξ</td><td>ξ</td><td>ξεῖ</td><td>[кс]</td></tr>
-        <tr><td>Ο</td><td>ο</td><td>ὂ μικρόν</td><td>[о]</td></tr>
-        <tr><td>Π</td><td>π</td><td>πεῖ</td><td>[п]</td></tr>
-        <tr><td>Ρ</td><td>ρ</td><td>ρῶ</td><td>[р]</td></tr>
-        <tr><td>Σ</td><td>σ (ς)</td><td>σίγμα</td><td>[с] (в конце слова ς)</td></tr>
-        <tr><td>Τ</td><td>τ</td><td>ταῦ</td><td>[т]</td></tr>
-        <tr><td>Υ</td><td>υ</td><td>ὖ ψιλόν</td><td>[ю] (как нем. ü)</td></tr>
-        <tr><td>Φ</td><td>φ</td><td>φεῖ</td><td>[ф]</td></tr>
-        <tr><td>Χ</td><td>χ</td><td>χεῖ</td><td>[х]</td></tr>
-        <tr><td>Ψ</td><td>ψ</td><td>ψεῖ</td><td>[пс]</td></tr>
-        <tr><td>Ω</td><td>ω</td><td>ὦ μέγα</td><td>[о] (долгий)</td></tr>
+        <table class="md-table--alphabet">
+        <tr><th>Буква</th><th>Название</th><th>Произношение</th></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Αα</span></td><td>άλφα</td><td>[а]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ββ</span></td><td>βῆτα</td><td>[в]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Γγ</span></td><td>γάμμα</td><td>[г] (перед γ, κ, ξ, χ – [н])</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Δδ</span></td><td>δέλτα</td><td>[д]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Εε</span></td><td>ἒ ψιλόν</td><td>[э]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ζζ</span></td><td>ζῆτα</td><td>[дз]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ηη</span></td><td>ῆτα</td><td>[э] (долгий)</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Θθ</span></td><td>θῆτα</td><td>[т] (придыхательный)</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ιι</span></td><td>ἰῶτα</td><td>[и]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Κκ</span></td><td>κάππα</td><td>[к]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Λλ</span></td><td>λάβδα</td><td>[л]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Μμ</span></td><td>μῦ</td><td>[м]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Νν</span></td><td>νῦ</td><td>[н]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ξξ</span></td><td>ξεῖ</td><td>[кс]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Οο</span></td><td>ὂ μικρόν</td><td>[о]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ππ</span></td><td>πεῖ</td><td>[п]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ρρ</span></td><td>ρῶ</td><td>[р]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Σσ</span></td><td>σίγμα</td><td>[с] (в конце слова ς)</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ττ</span></td><td>ταῦ</td><td>[т]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Υυ</span></td><td>ὖ ψιλόν</td><td>[ю] (как нем. ü)</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Φφ</span></td><td>φεῖ</td><td>[ф]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Χχ</span></td><td>χεῖ</td><td>[х]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ψψ</span></td><td>ψεῖ</td><td>[пс]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ωω</span></td><td>ὦ μέγα</td><td>[о] (долгий)</td></tr>
         </table><br>
         <b>Дифтонги:</b> αι [ай], ει [эй], οι [ой], υι [юй], αυ [ав], ευ [эв], ου [у], ηυ [эв].<br>
         <b>Придыхание:</b> ῾ (густое – [х]), ᾿ (тонкое – не произносится).<br>

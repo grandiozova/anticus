@@ -234,16 +234,18 @@ test('таблица букв урока 1 совпадает с пулом гр
 
     list.forEach((row, i) => {
         const letter = pool[i];
-        assert.strictEqual(row[0], letter.upper, 'строка ' + i + ': прописная буква');
-        // В строке сигмы стоят обе формы, σ (ς): вопрос о строчной.
-        assert.strictEqual(row[1].split(' ')[0], letter.letter, 'строка ' + i + ': строчная буква');
-        if (row[2] !== letter.name) rawDiff.push(letter.letter);
-        assert.strictEqual(stripBreathings(row[2]), stripBreathings(letter.name),
+        // Прописная и строчная стоят в одной ячейке «Буква»: «Αα». В строке
+        // сигмы к строчной добавлена конечная форма, σ (ς), — но вопрос о
+        // строчной, поэтому проверяем вхождение, а не равенство.
+        assert.ok(row[0].startsWith(letter.upper), 'строка ' + i + ': прописная буква');
+        assert.ok(row[0].includes(letter.letter), 'строка ' + i + ': строчная буква');
+        if (row[1] !== letter.name) rawDiff.push(letter.letter);
+        assert.strictEqual(stripBreathings(row[1]), stripBreathings(letter.name),
             'строка ' + i + ': название буквы расходится не только придыханием');
         // Произношение украшено пояснением в скобках: «[о] (долгий)», «[с] (в
         // конце слова ς)». Сам звук — то, что стоит до пояснения.
-        assert.ok(row[3] === letter.sound || row[3].startsWith(letter.sound + ' '),
-            'строка ' + i + ': произношение «' + row[3] + '» против «' + letter.sound + '»');
+        assert.ok(row[2] === letter.sound || row[2].startsWith(letter.sound + ' '),
+            'строка ' + i + ': произношение «' + row[2] + '» против «' + letter.sound + '»');
     });
 
     assert.strictEqual(rawDiff.join(','), 'α',
@@ -251,7 +253,7 @@ test('таблица букв урока 1 совпадает с пулом гр
 
     // И это расхождение — ровно придыхание: в таблице ἄλφα напечатано без него.
     assert.ok(hasBreathing(pool[0].name), 'в пуле у альфы нет придыхания');
-    assert.ok(!hasBreathing(list[0][2]), 'в таблице у альфы придыхание всё-таки стоит');
+    assert.ok(!hasBreathing(list[0][1]), 'в таблице у альфы придыхание всё-таки стоит');
 });
 
 // Придыхание, снятое в пособии при наборе таблицы: тонкое (0313) или густое (0314).

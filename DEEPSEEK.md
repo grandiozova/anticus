@@ -135,7 +135,7 @@ invisible until someone hits the specific path (offline load, one specific theme
 | a screen | markup in `index.html` **+** `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` in `js/shell.js` |
 | an exercise kind | `EXERCISE_TYPES` (`js/exercises.js`) **+** `LESSON_DRILL_GROUPS` (`js/lesson.js`) and/or `TEST_TYPES` (`js/test.js`) |
 | a color role | `:root`, `[data-theme="dark"]`, **and** `[data-theme="sepia"]` in `tokens.css` |
-| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` — except the dictionary headword (`.word-item .word-row strong` → `var(--md-ref-script-headword-size)`, 26px Greek / 28px Hebrew) and the usage example (`.vocab-example__script` → `var(--md-ref-script-example-size)`, 22px / 24px), which are deliberately fixed so the dictionary does not move with the sliders |
+| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` — except the dictionary headword (`.word-item .word-row strong` → `var(--md-ref-script-headword-size)`, 26px Greek / 40px Hebrew) and the usage example (`.vocab-example__script` → `var(--md-ref-script-example-size)`, 22px / 24px), which are deliberately fixed so the dictionary does not move with the sliders |
 | a part-of-speech `type` value | `VOCAB_TYPE_ORDER` **+** `TYPE_LABELS` in `js/vocab.js` |
 | a cache that spans screens | a reset for it inside `applyCourse()` in `js/course.js` |
 | a new dependency/font/asset | an entry in `data/licenses.js` |
