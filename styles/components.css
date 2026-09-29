@@ -718,13 +718,38 @@
 }
 .word-item.open .vocab-chevron { transform: rotate(180deg); }
 
-/* --- выезжающий блок примеров --- */
+/* --- выезжающий блок статьи словаря: примеры сразу, формы — по желанию --- */
 .word-item .word-details {
     max-height: 0;
     overflow: hidden;
     transition: max-height var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
 }
 .word-item .word-details.open { max-height: 600px; }
+/* Раскрытая таблица форм выше блока примеров: поднимаем потолок тела, иначе
+   готовая парадигма обрезалась бы по высоте примеров. */
+.word-item .word-details.open.forms-open { max-height: 1600px; }
+
+/* Кнопка «Показать формы» — второстепенное действие текстовой кнопкой M3,
+   под примерами. */
+.word-item .vocab-forms-toggle { margin: 0 0 4px; }
+/* Таблица форм свёрнута до нажатия — тем же приёмом, что и весь блок:
+   max-height: 0 → .open. Класс стоит на самой полосе прокрутки, а не на
+   обёртке, чтобы .word-details > .md-table-scroll (разворот таблицы вместе с
+   письмом, styles/screens.css) оставался её прямым родителем. */
+.word-item .md-table-scroll.vocab-forms {
+    max-height: 0;
+    margin: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-emphasized),
+                opacity var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+.word-item .md-table-scroll.vocab-forms.open {
+    max-height: 1200px;
+    margin: 4px 0 0;
+    overflow-x: auto;
+    opacity: 1;
+}
 
 .vocab-examples {
     display: flex;

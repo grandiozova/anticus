@@ -136,7 +136,7 @@ test('примеры в еврейском словаре взяты из пос
             return {
                 id: e.id, word: e.greek, has: vocabEntryHasDetails(e),
                 forms: !!e.declension_forms,
-                table: renderVocabExamplesHtml(e).indexOf('class="md-table-scroll"') !== -1,
+                table: renderVocabDetailsHtml(e).indexOf('md-table-scroll') !== -1,
                 ex: ex.length ? ex[0].greek : null
             };
         }))
@@ -170,14 +170,20 @@ test('примеры в еврейском словаре взяты из пос
     assert.strictEqual(shown.textContent, sample.ex, 'на экране не тот пример');
     assert.ok(!/undefined|NaN|\[object Object\]/.test(details.innerHTML), 'служебное значение в примере');
 
-    // Полоса прокрутки обязана быть прямым потомком блока подробностей:
-    // правило разворота — дочернее (.word-details > .md-table-scroll).
+    // Таблица форм спрятана за кнопкой: примеры показываются сразу, парадигма —
+    // по нажатию «Показать формы». Полоса прокрутки обязана остаться прямым
+    // потомком блока подробностей: правило разворота — дочернее
+    // (.word-details > .md-table-scroll).
     w.toggleVocabExamples(withForms[0].id);
     const formDetails = app.document.querySelector(
         '#allVocabContent .word-item[data-vocab-id="' + withForms[0].id + '"] .word-details');
-    const strip = formDetails.children[0];
-    assert.ok(strip && strip.classList.contains('md-table-scroll') && strip.querySelector('table'),
-        'парадигма отрисована без полосы прокрутки: ' + formDetails.innerHTML.slice(0, 120));
+    assert.ok(formDetails.querySelector('.vocab-forms-toggle'),
+        'нет кнопки «Показать формы»: ' + formDetails.innerHTML.slice(0, 120));
+    const strip = formDetails.querySelector('.md-table-scroll');
+    assert.ok(strip && strip.parentElement === formDetails && strip.querySelector('table'),
+        'парадигма отрисована без полосы прокрутки в .word-details: ' + formDetails.innerHTML.slice(0, 120));
+    w.toggleVocabForms(withForms[0].id);
+    assert.ok(strip.classList.contains('open'), 'кнопка не раскрыла таблицу форм');
 
     // Пробелы в справочнике переносятся по строкам, а знаков конца
     // предложения в нём нет вовсе: их дописывает asSentence()/endPunctFrom().

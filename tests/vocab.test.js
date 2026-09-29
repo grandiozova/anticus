@@ -138,13 +138,47 @@ test('у каждого слова есть примеры, автопример
         (function () {
             let bad = [];
             for (let e of getAllVocab()) {
-                let html = renderVocabExamplesHtml(e);
+                let html = renderVocabDetailsHtml(e);
                 if (!html || !html.trim()) bad.push(e.greek);
             }
             return bad.join(', ');
         })()
     `);
     assert.strictEqual(empty, '', 'слова без всякого блока примеров: ' + empty);
+    app.close();
+});
+
+test('слово раскрывается примером, а таблица форм — по желанию', () => {
+    const app = openVocab();
+    const target = app.get(`
+        (function () {
+            for (let e of getAllVocab()) {
+                if (e.declension_forms && findUsageExamples(e, 1).length) return e.id;
+            }
+            return -1;
+        })()
+    `);
+    assert.ok(target >= 0, 'в словаре нет слова и с примером, и с парадигмой');
+
+    app.window.toggleVocabExamples(target);
+    const details = app.document.querySelector(
+        '#allVocabContent .word-item[data-vocab-id="' + target + '"] .word-details');
+    // Пример идёт первым: он и есть ответ на нажатие.
+    assert.ok(details.firstElementChild.classList.contains('vocab-examples'),
+        'примеры должны идти первыми: ' + details.innerHTML.slice(0, 160));
+    assert.ok(details.querySelector('.vocab-example__script'), 'пример не показан сразу');
+
+    const strip = details.querySelector('.md-table-scroll');
+    const toggle = details.querySelector('.vocab-forms-toggle');
+    assert.ok(strip && toggle, 'нет кнопки форм или самой таблицы');
+    assert.ok(!strip.classList.contains('open'), 'таблица раскрыта до нажатия');
+    assert.strictEqual(toggle.getAttribute('aria-expanded'), 'false');
+
+    app.window.toggleVocabForms(target);
+    assert.ok(strip.classList.contains('open'), 'кнопка не раскрыла таблицу форм');
+    assert.ok(details.classList.contains('forms-open'), 'тело статьи не подняло потолок высоты');
+    assert.strictEqual(toggle.getAttribute('aria-expanded'), 'true');
+    assert.deepStrictEqual(app.errors, []);
     app.close();
 });
 

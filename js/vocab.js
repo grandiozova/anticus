@@ -320,59 +320,66 @@ function generateFallbackExample(entry) {
 // одно для обоих. Раньше у иврита стоял ранний выход «примеров нет»: их и
 // не искали, потому что еврейские главы писались позже греческих. Но они
 // есть и берутся из тех же переводов главы (lesson.translation), что и
-// греческие, — гейт снят, и словарь иврита показывает их вместе с
-// парадигмой. Формы слова при этом всё равно остаются из данных: пример —
-// это строка пособия, а не слово, собранное нами.
+// греческие, — гейт снят. Пример — первое, что видит читатель при нажатии на
+// слово, а таблица форм ушла под кнопку «Показать формы» (renderVocabFormsHtml).
+// Формы слова при этом всё равно остаются из данных: пример — это строка
+// пособия, а не слово, собранное нами.
 function vocabEntryHasDetails(entry) {
     if (!entry) return false;
     if (entry.declension_forms) return true;
     return !!findUsageExamples(entry, 1).length;
 }
 
+// Тело раскрытой словарной статьи: сначала примеры употребления, а таблица форм
+// (парадигма) — по желанию, за кнопкой. Раньше таблица шла первой и
+// раскрывалась вместе со строкой: читатель видел парадигму раньше примера.
+function renderVocabDetailsHtml(entry) {
+    return renderVocabExamplesHtml(entry) + renderVocabFormsHtml(entry);
+}
+
+// Пример употребления — или автопример, когда подлинного нет и парадигмы тоже
+// нет: у слова с формами «что показать» уже есть, и раньше таблица стояла
+// вместо примера.
 function renderVocabExamplesHtml(entry) {
     if (!entry) return '';
 
-    let parts = [];
-    if (entry.declension_forms) {
-        // Таблица идёт на экран в той же полосе прокрутки, что и в словаре
-        // урока (js/lesson.js): слишком широкая парадигма уезжает вбок, а не
-        // сжимает колонки, и — что важнее — именно полоса разворачивает её
-        // при письме справа налево (.word-details > .md-table-scroll,
-        // styles/screens.css). Без полосы еврейская парадигма встала бы
-        // первой колонкой влево, хотя в уроке та же таблица правая.
-        let table = generateDeclensionTable(entry.declension_forms, null);
-        if (table) parts.push('<div class="md-table-scroll">' + table + '</div>');
-    }
-
     let examples = findUsageExamples(entry, 1).slice(0, 1);
-    if (examples.length === 0) {
-        if (!parts.length) {
-            let fallback = generateFallbackExample(entry);
-            if (fallback) {
-                return '<div class="vocab-examples">' +
-                    '<div class="vocab-example vocab-example--generated">' +
-                        '<div class="vocab-example__script">' + highlightWord(fallback.greek, entry) + '</div>' +
-                        '<div class="vocab-example__ru">' + fallback.russian + '</div>' +
-                        '<div class="vocab-example__note">пример составлен автоматически</div>' +
-                    '</div>' +
-                '</div>';
-            }
-            return '';
-        }
-        return parts.join('');
+    if (examples.length) {
+        return '<div class="vocab-examples">' + examples.map(ex =>
+            '<div class="vocab-example">' +
+                '<div class="vocab-example__script">' + highlightWord(ex.greek, entry) + '</div>' +
+                '<div class="vocab-example__ru">' + ex.russian + '</div>' +
+            '</div>').join('') + '</div>';
     }
+    if (entry.declension_forms) return '';
 
-    parts.push('<div class="vocab-examples">');
-    examples.forEach(ex => {
-        parts.push(
-            '<div class="vocab-example">',
-                '<div class="vocab-example__script">', highlightWord(ex.greek, entry), '</div>',
-                '<div class="vocab-example__ru">', ex.russian, '</div>',
-            '</div>'
-        );
-    });
-    parts.push('</div>');
-    return parts.join('');
+    let fallback = generateFallbackExample(entry);
+    if (!fallback) return '';
+    return '<div class="vocab-examples">' +
+        '<div class="vocab-example vocab-example--generated">' +
+            '<div class="vocab-example__script">' + highlightWord(fallback.greek, entry) + '</div>' +
+            '<div class="vocab-example__ru">' + fallback.russian + '</div>' +
+            '<div class="vocab-example__note">пример составлен автоматически</div>' +
+        '</div>' +
+    '</div>';
+}
+
+// Кнопка «Показать формы» и таблица парадигмы под ней. Таблица свёрнута, пока
+// её не спросят (max-height: 0 → .open, styles/components.css).
+// Полоса прокрутки остаётся ПРЯМЫМ потомком .word-details — как и в словаре
+// урока (js/lesson.js): только она разворачивает таблицу вместе с письмом
+// (.word-details > .md-table-scroll, styles/screens.css). Класс .vocab-forms
+// висит на самой полосе, а не на обёртке, ровно чтобы то правило продолжало
+// работать; он добавляет лишь свёртку и отступ.
+function renderVocabFormsHtml(entry) {
+    if (!entry || !entry.declension_forms) return '';
+    let table = generateDeclensionTable(entry.declension_forms, null);
+    if (!table) return '';
+    return '<button type="button" class="menu-btn text vocab-forms-toggle" aria-expanded="false"' +
+        ' onclick="toggleVocabForms(' + entry.id + ')">' +
+        '<span class="msym">table_chart</span>' +
+        '<span class="vocab-forms-label">Показать формы</span></button>' +
+        '<div class="md-table-scroll vocab-forms">' + table + '</div>';
 }
 
 // Разворачивает/сворачивает блок примеров под словом; примеры считаются один раз и кешируются в entry._examples.
@@ -386,12 +393,30 @@ function toggleVocabExamples(id) {
     if (!details) return;
     let opening = !details.classList.contains('open');
     if (opening && !details.dataset.loaded) {
-        details.innerHTML = renderVocabExamplesHtml(entry);
+        details.innerHTML = renderVocabDetailsHtml(entry);
         details.dataset.loaded = '1';
     }
     details.classList.toggle('open', opening);
     row.classList.toggle('open', opening);
     if (header) header.setAttribute('aria-expanded', opening ? 'true' : 'false');
+}
+
+// Раскрывает/сворачивает таблицу форм внутри уже раскрытой статьи слова.
+// Потолок тела статьи поднимается вместе с ней (.forms-open): иначе готовая
+// таблица обрезалась бы по высоте блока примеров.
+function toggleVocabForms(id) {
+    let row = document.querySelector('.word-item[data-vocab-id="' + id + '"]');
+    if (!row) return;
+    let forms = row.querySelector('.vocab-forms');
+    let btn = row.querySelector('.vocab-forms-toggle');
+    if (!forms || !btn) return;
+    let opening = !forms.classList.contains('open');
+    forms.classList.toggle('open', opening);
+    let details = row.querySelector('.word-details');
+    if (details) details.classList.toggle('forms-open', opening);
+    btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    let label = btn.querySelector('.vocab-forms-label');
+    if (label) label.textContent = opening ? 'Скрыть формы' : 'Показать формы';
 }
 
 function renderVocabEntries(entries) {
