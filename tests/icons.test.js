@@ -29,6 +29,12 @@ function collectIcons() {
         grab();
     }
 
+    // Экранная клавиатура словаря рисуется только по нажатию кнопки, и иконки
+    // у неё свои («стереть»), а у кнопки — «клавиатура».
+    w.navigateTo('vocab');
+    w.toggleVocabKeyboard(); grab();
+    w.toggleVocabKeyboard(); grab();
+
     w.showPrayer(); grab();
     w.startPrayerFill(); grab();
     w.startPrayerTranslate(); grab();

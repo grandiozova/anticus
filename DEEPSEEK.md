@@ -63,7 +63,7 @@ Published on GitHub Pages: https://grandiozova.github.io/anticus/
 | `translation.js` | Sentence-building drills |
 | `stats.js` | Progress stats, error list, reset |
 | `prayer.js` | "Отче наш" breakdown |
-| `vocab.js` | Full dictionary: search, filters, card rendering |
+| `vocab.js` | Full dictionary: search, filters, on-screen keyboard, card rendering |
 | `settings.js` | Settings screen |
 | `boot.js` | Runs at load time — must stay the last script |
 
@@ -232,6 +232,32 @@ full-screen overlay, not a nav item).
 - Hebrew niqqud have a minimum readable size (`--md-ref-script-min-size: 1.25rem`).
   Any small `font-size` on studied-language text must use
   `calc(max(<size>, var(--md-ref-script-min-size)) * var(--md-ref-script-scale))`.
+
+## Экранная клавиатура словаря
+
+Кнопка в строке поиска (`.keyboard-toggle` в `index.html`, иконка `keyboard`)
+открывает клавиатуру изучаемого языка: греческую или еврейскую раскладку ещё
+надо поставить, а на телефоне — найти в списке языков.
+
+- Буквы берутся из пула курса (`courseAlphabet()`, `js/vocab.js`) — того же,
+  что у упражнений уроков 1–2. Поэтому клавиатура сама идёт за курсом,
+  веток по курсу нет, и конечные начертания иврита (`finals`) входят в набор
+  наравне с основными: без `ץ` слово с конечной буквой не набрать.
+- Огласовки и знаков ударения на клавишах нет: поиск их не учитывает
+  (`foldForSearch` снимает всю диакритику), а клавиш потребовалось бы втрое
+  больше. `tests/vocab.test.js` падает, если на клавише появится комбинирующий
+  знак.
+- `foldForSearch` сводит к основной форме и конечные начертания
+  (`FINAL_LETTER_FORMS`: `ς` и пять конечных иврита) — так же, как снимает
+  диакритику. Слово, набранное по буквам, обязано находиться, даже если
+  конечная набрана основной. Таблица набрана в коде и потому проверяется по
+  пулу курса.
+- Вставка идёт в каретку и **без** `input.focus()`: на телефоне фокус поднял бы
+  системную клавиатуру поверх своей. Разметку клавиш собирает
+  `renderVocabKeyboard()` при каждом открытии (курс мог смениться);
+  `resetVocabKeyboard()` убирает клавиатуру на новом заходе в словарь
+  (`showAllVocab`) и в `applyCourse()` — иначе в словаре остались бы буквы
+  прошлого курса.
 
 ## Paradigm / declension tables
 

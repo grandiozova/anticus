@@ -258,3 +258,206 @@ test('у греческого строка словаря остаётся це�
     assert.deepStrictEqual(app.errors, []);
     app.close();
 });
+
+// ------------------------------------------------------------ клавиатура
+// Экранная клавиатура нужна потому, что греческую и еврейскую раскладку ещё
+// надо поставить, а на телефоне — найти в списке языков. Буквы она берёт из
+// пула курса, поэтому текст изучаемого языка здесь не набирается руками:
+// слово вынимается из самого словаря, сворачивается ровно так, как сворачивает
+// поиск, и набирается клавишами. Так одной проверкой закрываются и состав
+// клавиатуры, и вставка, и свёртка диакритики.
+
+const HEBREW_COURSE = { storage: { app_default_course: 'hebrew' } };
+
+function openKeyboard(app) {
+    app.document.getElementById('vocabKeyboardToggle').click();
+    return app.document.getElementById('vocabKeyboardGrid');
+}
+
+// Клавиши-буквы: последняя клавиша набора — «стереть», и текст у неё не буква,
+// а иконка, поэтому узнаём её по .msym.
+function letterKeys(app) {
+    return [...app.document.querySelectorAll('#vocabKeyboardGrid .vocab-key')]
+        .filter(b => !b.querySelector('.msym'));
+}
+
+function keyboardLetters(app) {
+    return letterKeys(app).map(b => b.textContent);
+}
+
+function typeWord(app, text) {
+    for (const ch of text) {
+        const key = letterKeys(app).find(b => b.textContent === ch);
+        assert.ok(key, 'на клавиатуре нет клавиши «' + ch + '»');
+        key.click();
+    }
+}
+
+test('клавиатура словаря закрыта до нажатия и открывается той же кнопкой', () => {
+    const app = openVocab();
+    const box = app.document.getElementById('vocabKeyboard');
+    const toggle = app.document.getElementById('vocabKeyboardToggle');
+
+    assert.ok(box.classList.contains('hidden'), 'клавиатура открыта до нажатия');
+    assert.strictEqual(toggle.getAttribute('aria-pressed'), 'false');
+
+    toggle.click();
+    assert.ok(!box.classList.contains('hidden'), 'кнопка не открыла клавиатуру');
+    assert.strictEqual(toggle.getAttribute('aria-pressed'), 'true');
+    assert.ok(letterKeys(app).length > 20, 'клавиш подозрительно мало: ' + letterKeys(app).length);
+
+    toggle.click();
+    assert.ok(box.classList.contains('hidden'), 'кнопка не убрала клавиатуру');
+    assert.strictEqual(toggle.getAttribute('aria-pressed'), 'false');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('буквы клавиатуры — пул курса, конечные начертания входят в набор', () => {
+    for (const opts of [{ storage: { app_default_course: 'greek' } }, HEBREW_COURSE]) {
+        const app = loadApp(opts);
+        app.window.showAllVocab();
+        openKeyboard(app);
+
+        // Ни одной буквы в тесте: набор сверяется с пулом курса, из которого
+        // клавиатура и собрана.
+        const expected = app.get(`
+            (function () {
+                let pool = courseAlphabet();
+                return (pool.letters || []).map(l => l.letter)
+                    .concat((pool.finals || []).map(f => f.final)).join('');
+            })()`);
+        assert.strictEqual(keyboardLetters(app).join(''), expected, 'набор клавиш разошёлся с пулом курса');
+
+        // Диакритика на клавиатуре не нужна ни одной клавише: поиск её снимает.
+        // Заодно это значит, что каждая клавиша — ровно один знак.
+        for (const label of keyboardLetters(app)) {
+            assert.strictEqual([...label].length, 1, 'клавиша не из одного знака: ' + label);
+            assert.ok(!/\p{M}/u.test(label), 'на клавиатуре знак диакритики: ' + label);
+        }
+        assert.deepStrictEqual(app.errors, []);
+        app.close();
+    }
+});
+
+test('таблица конечных начертаний сходится с пулом курса', () => {
+    // Свёртку конечных (FINAL_LETTER_FORMS в js/vocab.js) набрать по-другому
+    // нечем — она в коде, и потому проверяется по данным: пары «буква —
+    // конечная» лежат в пуле иврита, и каждая конечная обязана сводиться
+    // ровно к своей букве. Набранная руками пара выглядит верно и ею не
+    // является — тот же случай, что с огласовкой в данных уроков.
+    const app = loadApp(HEBREW_COURSE);
+    const pairs = app.get('(courseAlphabet().finals || []).map(f => f.letter + f.final).join(",")');
+    assert.ok(pairs.length, 'в пуле иврита нет конечных начертаний');
+    for (const pair of pairs.split(',')) {
+        const chars = [...pair];
+        assert.strictEqual(chars.length, 2, 'пара не из двух знаков: ' + pair);
+        assert.strictEqual(app.window.foldForSearch(chars[1]), app.window.foldForSearch(chars[0]),
+            'конечная ' + chars[1] + ' не сводится к ' + chars[0]);
+    }
+    // У греческого конечная сигма отдельной буквой в пуле не лежит — её сводит
+    // сама свёртка. Знаки записаны кодами: конечная и обычная сигма выглядят
+    // по-разному, но различить их при правке глазами нечем.
+    assert.strictEqual(app.window.foldForSearch('\u03C2'), app.window.foldForSearch('\u03C3'));
+    // И обратное: то, что конечным не является, свёртка не трогает.
+    assert.strictEqual(app.window.foldForSearch('\u03C3'), '\u03C3');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('слово, набранное клавишами по буквам, находится в словаре', () => {
+    // Свёртка — половина дела: клавиатура даёт только буквы, а в словаре слово
+    // стоит с ударением и огласовкой. Берём первое слово, у которого они есть,
+    // сворачиваем его как поиск и набираем то, что осталось.
+    for (const opts of [{ storage: { app_default_course: 'greek' } }, HEBREW_COURSE]) {
+        const app = loadApp(opts);
+        app.window.showAllVocab();
+
+        const picked = app.get(`
+            (function () {
+                let pool = courseAlphabet();
+                let keys = (pool.letters || []).map(l => l.letter)
+                    .concat((pool.finals || []).map(f => f.final)).join('');
+                for (let e of getAllVocab()) {
+                    let folded = foldForSearch(e.greek);
+                    if (folded.length < 3 || folded === e.greek) continue;
+                    if (![...folded].every(ch => keys.indexOf(ch) !== -1)) continue;
+                    // Конечное начертание в слове обязательно: клавиатура даёт
+                    // основную букву (в пуле курса лежит она), и найти слово
+                    // с конечной буквой можно только свёрткой.
+                    let bare = e.greek.normalize('NFD').replace(/\\p{M}+/gu, '').normalize('NFC');
+                    if (bare !== folded) return e.id + '|' + e.greek + '|' + folded;
+                }
+                return '';
+            })()`);
+        assert.ok(picked, 'в словаре нет слова с конечной буквой, набираемого клавишами');
+        const [id, word, folded] = picked.split('|');
+        assert.notStrictEqual(folded, word, 'слово без диакритики — проверять нечего');
+
+        openKeyboard(app);
+        typeWord(app, folded);
+
+        assert.strictEqual(app.document.getElementById('vocabSearchInput').value, folded, 'набор не дошёл до строки поиска');
+        assert.ok(app.document.querySelector('#allVocabContent .word-item[data-vocab-id="' + id + '"]'),
+            'набранное по буквам ' + folded + ' не нашло ' + word);
+        assert.deepStrictEqual(app.errors, []);
+        app.close();
+    }
+});
+
+test('«стереть» убирает последнюю букву и не ломается на пустой строке', () => {
+    const app = openVocab();
+    openKeyboard(app);
+    const input = app.document.getElementById('vocabSearchInput');
+    const backspace = [...app.document.querySelectorAll('#vocabKeyboardGrid .vocab-key')]
+        .find(b => b.querySelector('.msym'));
+    assert.ok(backspace, 'клавиши «стереть» нет');
+
+    const [first, second] = keyboardLetters(app);
+    typeWord(app, first + second);
+    assert.ok(input.value.length === 2, 'две клавиши не дали двух знаков: ' + input.value);
+
+    backspace.click();
+    assert.strictEqual(input.value, first);
+    backspace.click();
+    assert.strictEqual(input.value, '');
+    backspace.click();
+    assert.strictEqual(input.value, '', 'стирание пустой строки что-то испортило');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('клавиатура следует за курсом и у нового захода в словарь убрана', () => {
+    const app = loadApp({ storage: { app_default_course: 'greek' } });
+    app.window.showAllVocab();
+    openKeyboard(app);
+    const greek = keyboardLetters(app).join('');
+    assert.ok(greek.length > 20);
+
+    app.window.applyCourse('hebrew');
+    // Смена курса забывает буквы прошлого: держать их незачем, а показать
+    // их в еврейском словаре — ошибка.
+    assert.ok(app.document.getElementById('vocabKeyboard').classList.contains('hidden'),
+        'смена курса оставила клавиатуру открытой');
+    assert.strictEqual(app.document.getElementById('vocabKeyboardGrid').textContent, '');
+
+    app.window.showAllVocab();
+    openKeyboard(app);
+    const hebrew = keyboardLetters(app).join('');
+    const expected = app.get(`
+        (function () {
+            let pool = courseAlphabet();
+            return (pool.letters || []).map(l => l.letter)
+                .concat((pool.finals || []).map(f => f.final)).join('');
+        })()`);
+    assert.strictEqual(hebrew, expected, 'еврейская клавиатура набрана не пулом курса');
+    assert.notStrictEqual(hebrew, greek, 'клавиатура осталась греческой');
+
+    // Новый заход в словарь — клавиатура снова убрана: это состояние экрана,
+    // а не настройка, которую надо помнить.
+    app.window.showAllVocab();
+    assert.ok(app.document.getElementById('vocabKeyboard').classList.contains('hidden'),
+        'клавиатура осталась открытой после нового захода в словарь');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});

@@ -96,6 +96,9 @@ function applyCourse(id) {
 
     allVocabCache = null;
     vocabTypeFilter = 'all';
+    // Клавиатура словаря набрана буквами курса: без сброса на экране словаря
+    // остались бы буквы прошлого курса.
+    resetVocabKeyboard();
     allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all' };
     flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
     testState = { questions: [], index: 0, correct: 0, total: 10, answered: false };

@@ -138,8 +138,17 @@ const GREEK_WORD_SOURCE = "[\\p{L}\\p{M}'\u2019]+";
 // Для поиска по словарю сносим всю диакритику, а не только ударение: учащийся
 // набирает «αγαθ», а в словаре стоит ἀγαθός — с придыханием и острым. При
 // сравнении форм (foldAccents) придыхание, наоборот, значимо и остаётся.
+//
+// Конечное начертание — та же буква в другой позиции, поэтому сводим его
+// к основной форме так же, как снимаем огласовку: набранное клавишами словаря
+// «λογος» должно находить λόγος, а «ארצ» — אֶרֶץ. Клавиатура (см. ниже)
+// показывает конечные наравне с остальными, но слово, набранное с обычного
+// телефона без греческой или еврейской раскладки, приходить сюда может
+// в любом начертании.
+const FINAL_LETTER_FORMS = { 'ς': 'σ', 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ' };
 function foldForSearch(s) {
-    return String(s).toLowerCase().normalize('NFD').replace(/\p{M}+/gu, '').normalize('NFC');
+    return String(s).toLowerCase().normalize('NFD').replace(/\p{M}+/gu, '').normalize('NFC')
+        .replace(/[ςךםןףץ]/g, ch => FINAL_LETTER_FORMS[ch]);
 }
 function tokenizeGreek(text) {
     return (String(text).match(new RegExp(GREEK_WORD_SOURCE, 'gu')) || []).map(foldAccents);
@@ -543,6 +552,8 @@ function showAllVocab() {
     let clearBtn = document.getElementById('vocabSearchClear');
     if (clearBtn) clearBtn.classList.remove('show');
     vocabTypeFilter = 'all';
+    // Экран открывают заново — клавиатура снова убрана.
+    resetVocabKeyboard();
     renderTypeChips('vocabTypeChips', vocabTypeFilter, 'setVocabType');
     renderVocabEntries(allVocabCache);
 }
@@ -580,3 +591,104 @@ function clearVocabSearch() {
     if (clearBtn) clearBtn.classList.remove('show');
     renderVocabEntries(filterVocabByType(getAllVocab(), vocabTypeFilter));
 }
+
+// ------------------------------------------------------------
+// Клавиатура изучаемого языка в поиске по словарю
+// ------------------------------------------------------------
+// Набрать греческое или еврейское слово с системной раскладки нельзя: её надо
+// сначала поставить, а на телефоне — ещё и найти в списке языков. Поэтому
+// клавиатура живёт в самом словаре и открывается кнопкой в строке поиска
+// (разметка — в index.html, там же .search-box).
+//
+// Буквы берутся из пула курса — того же courseAlphabet(), из которого собраны
+// упражнения уроков 1–2. Отсюда следствие: клавиатура сама идёт за курсом,
+// веток по курсу здесь нет, а конечные начертания иврита
+// (HEBREW_ALPHABET.finals) попадают на неё вместе с основными буквами — без ץ
+// слово אֶרֶץ клавишами не набрать.
+//
+// Огласовки и знаков ударения на клавиатуре нет намеренно: поиск их не
+// учитывает (foldForSearch снимает всю диакритику), а клавиш на них
+// потребовалось бы втрое больше — их место в уроке, а не в поиске.
+function vocabKeyboardLetters() {
+    let pool = courseAlphabet();
+    let letters = (pool.letters || []).map(l => l.letter).filter(Boolean);
+    (pool.finals || []).forEach(f => { if (f.final) letters.push(f.final); });
+    return letters;
+}
+
+function renderVocabKeyboard() {
+    let grid = document.getElementById('vocabKeyboardGrid');
+    if (!grid) return;
+    let keys = vocabKeyboardLetters().map(ch =>
+        '<button type="button" class="vocab-key" onclick="vocabKeyboardType(\'' + escArg(ch) + '\')">' + escHtml(ch) + '</button>'
+    );
+    // Стереть — не буква, и гарнитуру ему даёт .msym, а не письмо курса.
+    keys.push('<button type="button" class="vocab-key" onclick="vocabKeyboardBackspace()" aria-label="Стереть">' +
+        '<span class="msym sm">backspace</span></button>');
+    grid.innerHTML = keys.join('');
+}
+
+function closeVocabKeyboard() {
+    let box = document.getElementById('vocabKeyboard');
+    if (box) box.classList.add('hidden');
+    let btn = document.getElementById('vocabKeyboardToggle');
+    if (btn) btn.setAttribute('aria-pressed', 'false');
+}
+
+function toggleVocabKeyboard() {
+    let box = document.getElementById('vocabKeyboard');
+    if (!box) return;
+    let open = box.classList.contains('hidden');
+    // Разметку собираем при каждом открытии: пока клавиатура была закрыта,
+    // курс мог смениться, а буквы у курсов разные.
+    if (open) renderVocabKeyboard();
+    box.classList.toggle('hidden', !open);
+    let btn = document.getElementById('vocabKeyboardToggle');
+    if (btn) btn.setAttribute('aria-pressed', open ? 'true' : 'false');
+}
+
+// Новый заход в словарь — клавиатура убрана и её буквы забыты: открытая
+// клавиатура и буквы прошлого курса — это состояние экрана, а не настройка.
+function resetVocabKeyboard() {
+    closeVocabKeyboard();
+    let grid = document.getElementById('vocabKeyboardGrid');
+    if (grid) grid.innerHTML = '';
+}
+
+// Каретка в поле поиска. Фокуса клавиатура не ставит намеренно: на телефоне
+// он поднял бы системную клавиатуру поверх нашей и закрыл бы половину экрана.
+// Браузеры при этом сохраняют позицию каретки и у поля без фокуса, поэтому
+// вставка идёт туда, куда пользователь щёлкал, а если он ещё не щёлкал —
+// в конец строки.
+function vocabSearchCaret(input) {
+    let value = input.value;
+    let start = typeof input.selectionStart === 'number' ? input.selectionStart : value.length;
+    let end = typeof input.selectionEnd === 'number' ? input.selectionEnd : value.length;
+    start = Math.max(0, Math.min(start, value.length));
+    end = Math.max(start, Math.min(end, value.length));
+    return { start: start, end: end };
+}
+
+// Вставка буквы и стирание — одно действие с разным текстом: пустая строка
+// со сдвинутым на знак началом и есть «стереть слева».
+function vocabKeyboardApply(text, backspace) {
+    let input = document.getElementById('vocabSearchInput');
+    if (!input) return;
+    let caret = vocabSearchCaret(input);
+    let start = caret.start;
+    let end = caret.end;
+    if (backspace) {
+        if (start === end) {
+            if (start === 0) return;
+            start--;
+        }
+        text = '';
+    }
+    input.value = input.value.slice(0, start) + text + input.value.slice(end);
+    let next = start + text.length;
+    try { input.setSelectionRange(next, next); } catch (e) {}
+    applyVocabFilter();
+}
+
+function vocabKeyboardType(ch) { vocabKeyboardApply(ch, false); }
+function vocabKeyboardBackspace() { vocabKeyboardApply('', true); }

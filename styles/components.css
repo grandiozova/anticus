@@ -416,6 +416,89 @@
     line-height: 1.25rem;
 }
 
+/* Клавиатура изучаемого языка — вторая концевая кнопка строки поиска, одной
+   меры с крестиком: 40×40, иконка 20px и у того же правого края (отрицательный
+   отступ съедает 8px из 16px отступа самой строки). Класс — .md-icon-button:
+   слои состояния и всплеск у него уже есть, и в RIPPLE_TARGETS он вписан;
+   свои мера и цвет — у .keyboard-toggle. Нажатое состояние тональное:
+   клавиатура на экране, и это видно не только по самой клавиатуре. */
+.keyboard-toggle { width: 40px; height: 40px; margin-right: -8px; }
+.keyboard-toggle[aria-pressed="true"] {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+
+/* Клавиатура — отдельная поверхность над списком слов, а не часть строки
+   поиска: у неё своя плашка, скругление и отступ до списка. */
+.vocab-keyboard {
+    margin-bottom: 16px;
+    padding: 12px;
+    border-radius: var(--md-sys-shape-corner-large);
+    background: var(--md-sys-color-surface-container);
+}
+/* Столбцов столько, сколько влезет: 24 греческие буквы и 27 еврейских
+   (22 плюс 5 конечных из HEBREW_ALPHABET.finals) в одну строку не встают ни
+   на телефоне, ни на широком экране. Направление сетки — письмо курса тем же
+   токеном, что у текста: в еврейском курсе א стоит справа, как в таблице
+   алфавита пособия, а «стереть» уезжает на левый край, где ей и место. */
+.vocab-keyboard__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+    gap: 4px;
+    direction: var(--md-ref-script-direction);
+}
+/* Клавиша. Гарнитура — письмо курса: в Noto Sans нет иврита вовсе, и буквы
+   вышли бы пустыми клетками. Кегль — обязательно с множителем ползунка,
+   иначе размер текста клавиатуру не трогал бы. Шага кегля
+   (--md-ref-script-size) здесь нет намеренно: клавиша — знак, а не текст для
+   чтения, и на шаге буква вылезала бы из клавиши.
+
+   Тон клавиши — surface-container-lowest, а не соседний с плашкой
+   «на ступень выше»: клавиша обязана читаться как клавиша, и разница тонов
+   здесь важнее привычной лестницы. Со ступенью surface-container-highest
+   разница выходила 1.09:1 в светлой теме и 1.08:1 в сепии — клавиши
+   сливались с плашкой. Через низший тон пара даёт 1.16 и 1.14, а в тёмной
+   теме клавиши уходят ниже плашки, как и положено ей в тёмной схеме. */
+.vocab-key {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: var(--md-sys-shape-corner-small);
+    background: var(--md-sys-color-surface-container-lowest);
+    color: var(--md-sys-color-on-surface);
+    font-family: var(--md-ref-typeface-script);
+    font-size: calc(1.25rem * var(--md-ref-script-scale));
+    line-height: 1;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+.vocab-key::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    z-index: -1;
+}
+.vocab-key:hover::before { opacity: var(--md-sys-state-hover-opacity); }
+.vocab-key:focus-visible::before { opacity: var(--md-sys-state-focus-opacity); }
+.vocab-key:active::before { opacity: var(--md-sys-state-pressed-opacity); }
+/* Кольцо фокуса — как у чипов: слоя состояния при обходе с клавиатуры мало,
+   а между клавишами всего 4px, поэтому кольцо нарисовано внутри клавиши. */
+.vocab-key:focus-visible {
+    outline: 3px solid var(--md-sys-color-secondary);
+    outline-offset: -3px;
+}
+.vocab-key .msym { color: var(--md-sys-color-on-surface-variant); }
+
 /* ============================================================
    TEXT FIELD (outlined)
    ============================================================ */

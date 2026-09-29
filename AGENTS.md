@@ -119,11 +119,11 @@ online test. When you add:
 ## Project layout
 
 ```
-index.html           391  <head>, разметка, порядок загрузки
+index.html           422  <head>, разметка, порядок загрузки
 styles/
   tokens.css           307  :root, [data-theme=dark], [data-theme=sepia] и [data-script] — все переменные
   base.css             385  сброс, типографика, метки языка (.script/.greek/.hebrew), каркас, app bar, icon button, nav bar, FAB, ripple
-  components.css       776  кнопки, list item урока, карточки, табы, search bar, text field, chips
+  components.css       953  кнопки, list item урока, карточки, табы, search bar, text field, chips
   screens.css          862  вопрос/варианты, обратная связь, списки слов, таблицы и их прокрутка, ритм материала, flashcards и их оборот, статистика, «Отче наш», стартовый экран выбора курса
   dialogs.css           88  snackbar, dialog
   layout.css            68  переходы экранов, утилиты, адаптивность (nav rail)
@@ -150,7 +150,7 @@ js/
   translation.js       230  перевод
   stats.js             107  статистика, ошибки, сброс прогресса
   prayer.js            237  «Отче наш»: разбор и упражнения
-  vocab.js             434  общий словарь, поиск, фильтр по частям речи
+  vocab.js             693  общий словарь, поиск, фильтр по частям речи, клавиатура изучаемого языка
   settings.js           29  showSettings, renderLicenses
   boot.js               79  normalizeTranslationData, init*, глобальные слушатели
 ```
@@ -688,6 +688,37 @@ A few consequences worth knowing before you touch the rendering:
 over `HEBREW_LESSONS_DATA[3]`. The fixture exercises every RTL feature in one chapter
 and keeps the test independent of the authored content, so editing a real chapter cannot
 quietly change what the rendering is asserted against.
+
+## The dictionary keyboard
+
+The studied languages cannot be typed on an ordinary keyboard — the layout has to be
+installed first, and on a phone found in the language list — so the dictionary carries
+its own on-screen keyboard. A button in the search bar (`#vocabKeyboardToggle`,
+`.keyboard-toggle`, icon `keyboard`) opens a panel of letter keys under it, and a
+second button on the panel erases the last letter.
+
+- **The letters come from the course's alphabet pool** — `courseAlphabet()`, the same
+  pool the lesson 1–2 drills are built from — so the keyboard follows the course with
+  no branch on the course anywhere, and Hebrew's final forms
+  (`HEBREW_ALPHABET.finals`) are keys like any other: without `ץ` a word ending in
+  tsadi cannot be typed at all.
+- **Neither niqqud nor accent marks are on it.** Search ignores them anyway
+  (`foldForSearch` strips every combining mark), and keys for them would treble the
+  panel. `tests/vocab.test.js` fails if a combining mark ever reaches a key.
+- **`foldForSearch` folds final forms to the base letter too** — `FINAL_LETTER_FORMS`
+  (`js/vocab.js`) holds Greek's final sigma and the five Hebrew finals. The keyboard
+  offers base letters, so a word typed letter by letter must be found even when its
+  last letter is spelled with the final form, and the same goes for a word pasted from
+  elsewhere. That table is typed in code and therefore checked against the pool rather
+  than trusted.
+- **Insertion goes to the caret and deliberately does not call `input.focus()`** — on a
+  phone, focus would raise the system keyboard on top of ours and cover half the
+  screen; browsers keep the caret of an unfocused field, so the letters still land
+  where the user last tapped.
+- `renderVocabKeyboard()` builds the keys on **every** open, because the course may
+  have changed while the panel was closed. `resetVocabKeyboard()` hides it on a fresh
+  entry to the dictionary (`showAllVocab`) and forgets its letters in `applyCourse()`,
+  so the dictionary can never show the letters of the course you left.
 
 ## Text size
 
