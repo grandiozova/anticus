@@ -49,6 +49,18 @@
 .letter-write-choice .lesson-item__headline .script {
     font-size: calc(max(1.5rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
 }
+/* Буква и слово «Печатные» / «Курсив» — одна строка, и слово стоит по центру
+   буквы, а не по её базовой линии. Буква набрана кеглем 1.5rem и выше, строка
+   названия — 1rem, поэтому на общей базовой линии слово уезжало под букву.
+   Flex-строка это чинит: оба элемента — flex-элементы (слово становится
+   анонимным), и align-items: center центрует их по вертикали. gap заменяет
+   пробел из разметки: в flex-контейнере пробельный текстовый узел не рисуется
+   отдельным элементом, поэтому расстояние задаёт только gap. */
+.letter-write-choice .lesson-item__headline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
 .writing-practice {
     display: flex;
     flex-direction: column;

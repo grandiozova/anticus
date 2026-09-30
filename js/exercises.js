@@ -470,9 +470,16 @@ const LETTER_WRITE_SAMPLE = '\u05D0';
 // упражнения, а не перекрытием, как выбор курса: так остаются и заголовок
 // «Написание буквы» в app bar, и кнопка «назад», то есть из выбора можно выйти,
 // не начав упражнение.
+//
+// Заголовок карточки на этом шаге — приглашение выбрать начертание, а не
+// название упражнения: в app bar уже стоит «Написание буквы», и та же строка
+// над списком читалась бы как дубль. К прогону вопросов заголовок возвращает
+// startLetterWrite().
 function showLetterWriteChoice() {
     const box = document.getElementById('exerciseQuestion');
     if (!box) return;
+    const stageTitle = document.getElementById('drillStageTitle');
+    if (stageTitle) stageTitle.textContent = 'Выберите стиль написания';
     const rows = LETTER_WRITE_STYLES.map(o =>
         '<button class="lesson-item lesson-item--single" onclick="startLetterWrite(\'' + o.style + '\')">' +
             '<span class="lesson-item__text"><span class="lesson-item__headline">' +
@@ -487,8 +494,13 @@ function showLetterWriteChoice() {
 }
 
 // Выбор сделан — дальше обычный прогон вопросов в выбранном начертании.
+// Заголовок карточки возвращается к названию упражнения: его сменил
+// showLetterWriteChoice(), и без этого «Выберите стиль написания» осталось бы
+// висеть над первой буквой.
 function startLetterWrite(style) {
     if (!LETTER_WRITE_STYLES.some(o => o.style === style)) style = 'print';
+    const stageTitle = document.getElementById('drillStageTitle');
+    if (stageTitle && currentDrill) stageTitle.textContent = drillLabel(currentDrill);
     beginExercise(exerciseState && exerciseState.type ? exerciseState.type : 'letter_write', style);
 }
 

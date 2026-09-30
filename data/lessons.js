@@ -34,7 +34,7 @@ const GREEK_ALPHABET = {
         {letter:"β", upper:"Β", name:"βῆτα", sound:"[в]"},
         {letter:"γ", upper:"Γ", name:"γάμμα", sound:"[г]"},
         {letter:"δ", upper:"Δ", name:"δέλτα", sound:"[д]"},
-        {letter:"ε", upper:"Ε", name:"ἒ ψιλόν", sound:"[э]"},
+        {letter:"ε", upper:"Ε", name:"ἒψιλόν", sound:"[э]"},
         {letter:"ζ", upper:"Ζ", name:"ζῆτα", sound:"[дз]"},
         {letter:"η", upper:"Η", name:"ῆτα", sound:"[э] (долгий)"},
         {letter:"θ", upper:"Θ", name:"θῆτα", sound:"[т] (придыхательный)"},
@@ -44,16 +44,16 @@ const GREEK_ALPHABET = {
         {letter:"μ", upper:"Μ", name:"μῦ", sound:"[м]"},
         {letter:"ν", upper:"Ν", name:"νῦ", sound:"[н]"},
         {letter:"ξ", upper:"Ξ", name:"ξεῖ", sound:"[кс]"},
-        {letter:"ο", upper:"Ο", name:"ὂ μικρόν", sound:"[о]"},
+        {letter:"ο", upper:"Ο", name:"ὂμικρόν", sound:"[о]"},
         {letter:"π", upper:"Π", name:"πεῖ", sound:"[п]"},
         {letter:"ρ", upper:"Ρ", name:"ρῶ", sound:"[р]"},
         {letter:"σ", upper:"Σ", name:"σίγμα", sound:"[с]"},
         {letter:"τ", upper:"Τ", name:"ταῦ", sound:"[т]"},
-        {letter:"υ", upper:"Υ", name:"ὖ ψιλόν", sound:"[ю] (как нем. ü)"},
+        {letter:"υ", upper:"Υ", name:"ὖψιλόν", sound:"[ю] (как нем. ü)"},
         {letter:"φ", upper:"Φ", name:"φεῖ", sound:"[ф]"},
         {letter:"χ", upper:"Χ", name:"χεῖ", sound:"[х]"},
         {letter:"ψ", upper:"Ψ", name:"ψεῖ", sound:"[пс]"},
-        {letter:"ω", upper:"Ω", name:"ὦ μέγα", sound:"[о] (долгий)"}
+        {letter:"ω", upper:"Ω", name:"ὦμέγα", sound:"[о] (долгий)"}
     ],
 
     // Дифтонги — строка «Дифтонги:» из грамматики урока 1, целиком.
@@ -108,7 +108,7 @@ const LESSONS_DATA = {
         <tr><td lang="el"><span class="alphabet-glyph">Ββ</span></td><td>βῆτα</td><td>[в]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Γγ</span></td><td>γάμμα</td><td>[г] (перед γ, κ, ξ, χ – [н])</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Δδ</span></td><td>δέλτα</td><td>[д]</td></tr>
-        <tr><td lang="el"><span class="alphabet-glyph">Εε</span></td><td>ἒ ψιλόν</td><td>[э]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Εε</span></td><td>ἒψιλόν</td><td>[э]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Ζζ</span></td><td>ζῆτα</td><td>[дз]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Ηη</span></td><td>ῆτα</td><td>[э] (долгий)</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Θθ</span></td><td>θῆτα</td><td>[т] (придыхательный)</td></tr>
@@ -118,16 +118,16 @@ const LESSONS_DATA = {
         <tr><td lang="el"><span class="alphabet-glyph">Μμ</span></td><td>μῦ</td><td>[м]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Νν</span></td><td>νῦ</td><td>[н]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Ξξ</span></td><td>ξεῖ</td><td>[кс]</td></tr>
-        <tr><td lang="el"><span class="alphabet-glyph">Οο</span></td><td>ὂ μικρόν</td><td>[о]</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Οο</span></td><td>ὂμικρόν</td><td>[о]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Ππ</span></td><td>πεῖ</td><td>[п]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Ρρ</span></td><td>ρῶ</td><td>[р]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Σσ</span></td><td>σίγμα</td><td>[с] (в конце слова ς)</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Ττ</span></td><td>ταῦ</td><td>[т]</td></tr>
-        <tr><td lang="el"><span class="alphabet-glyph">Υυ</span></td><td>ὖ ψιλόν</td><td>[ю] (как нем. ü)</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Υυ</span></td><td>ὖψιλόν</td><td>[ю] (как нем. ü)</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Φφ</span></td><td>φεῖ</td><td>[ф]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Χχ</span></td><td>χεῖ</td><td>[х]</td></tr>
         <tr><td lang="el"><span class="alphabet-glyph">Ψψ</span></td><td>ψεῖ</td><td>[пс]</td></tr>
-        <tr><td lang="el"><span class="alphabet-glyph">Ωω</span></td><td>ὦ μέγα</td><td>[о] (долгий)</td></tr>
+        <tr><td lang="el"><span class="alphabet-glyph">Ωω</span></td><td>ὦμέγα</td><td>[о] (долгий)</td></tr>
         </table><br>
         <b>Дифтонги:</b> αι [ай], ει [эй], οι [ой], υι [юй], αυ [ав], ευ [эв], ου [у], ηυ [эв].<br>
         <b>Придыхание:</b> ῾ (густое – [х]), ᾿ (тонкое – не произносится).<br>
@@ -137,7 +137,7 @@ const LESSONS_DATA = {
             {greek:"βῆτα", translation:"бета (Β β)", type:"other"},
             {greek:"γάμμα", translation:"гамма (Γ γ)", type:"other"},
             {greek:"δέλτα", translation:"дельта (Δ δ)", type:"other"},
-            {greek:"ἒ ψιλόν", translation:"эпсилон (Ε ε)", type:"other"},
+            {greek:"ἒψιλόν", translation:"эпсилон (Ε ε)", type:"other"},
             {greek:"ζῆτα", translation:"дзета (Ζ ζ)", type:"other"},
             {greek:"ῆτα", translation:"эта (Η η)", type:"other"},
             {greek:"θῆτα", translation:"тета (Θ θ)", type:"other"},
@@ -147,16 +147,16 @@ const LESSONS_DATA = {
             {greek:"μῦ", translation:"мю (Μ μ)", type:"other"},
             {greek:"νῦ", translation:"ню (Ν ν)", type:"other"},
             {greek:"ξεῖ", translation:"кси (Ξ ξ)", type:"other"},
-            {greek:"ὂ μικρόν", translation:"омикрон (Ο ο)", type:"other"},
+            {greek:"ὂμικρόν", translation:"омикрон (Ο ο)", type:"other"},
             {greek:"πεῖ", translation:"пи (Π π)", type:"other"},
             {greek:"ρῶ", translation:"ро (Ρ ρ)", type:"other"},
             {greek:"σίγμα", translation:"сигма (Σ σ/ς)", type:"other"},
             {greek:"ταῦ", translation:"тау (Τ τ)", type:"other"},
-            {greek:"ὖ ψιλόν", translation:"ипсилон (Υ υ)", type:"other"},
+            {greek:"ὖψιλόν", translation:"ипсилон (Υ υ)", type:"other"},
             {greek:"φεῖ", translation:"фи (Φ φ)", type:"other"},
             {greek:"χεῖ", translation:"хи (Χ χ)", type:"other"},
             {greek:"ψεῖ", translation:"пси (Ψ ψ)", type:"other"},
-            {greek:"ὦ μέγα", translation:"омега (Ω ω)", type:"other"}
+            {greek:"ὦμέγα", translation:"омега (Ω ω)", type:"other"}
         ],
         // Урок 1 — алфавит и придыхание. Вопросы не переписаны, а собраны из
         // GREEK_ALPHABET (см. начало файла): и вопросы, и неверные варианты
