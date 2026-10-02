@@ -380,3 +380,80 @@ function answerCardDeclension(sel, corr, deck) {
     d.index++;
     scheduleAdvance(function () { renderCardDeclension(deck); }, 1200);
 }
+
+// ============================================================
+// КАРТОЧКИ ОГЛАСОВОК (еврейский курс)
+// ============================================================
+// Знак огласовки — комбинирующий символ: без согласного он не отображается
+// вовсе, поэтому на лицевой стороне стоит знак вместе с носителем (בַּ), как
+// он и лежит в пуле курса (HEBREW_ALPHABET.vowels). Оборот называет знак и
+// звук, который он обозначает: сначала «патах», под ним «[а]». Ход тот же,
+// что и у карточек слов, — «Показать ответ», затем «Знаю / Не знаю»: карточка
+// проверяет, помнит ли ученик знак, и ответ на неё — название и звук сразу.
+//
+// Колода берётся из пула курса, а не из словаря урока: огласовка — не слово,
+// у неё нет ни перевода, ни парадигмы, и её карточка живёт на своём экране
+// (kind 'vowel_flashcards'), общий с карточками слов только контейнер.
+function startVowelFlashcards() {
+    let container = document.getElementById('flashcardContainer');
+    if (!container) return;
+    let vowels = (courseAlphabet().vowels || []).slice();
+    if (vowels.length === 0) {
+        container.innerHTML = emptyState('label', 'Огласовок пока нет');
+        return;
+    }
+    vowelFlashcardState = {
+        words: shuffle(vowels), index: 0, revealed: false, correct: 0, total: vowels.length
+    };
+    showVowelFlashcard();
+}
+
+function showVowelFlashcard() {
+    let s = vowelFlashcardState;
+    let container = document.getElementById('flashcardContainer');
+    if (!container) return;
+    if (s.index >= s.total) {
+        container.innerHTML = resultBlock(s.correct, s.total, 'Карточки завершены') +
+            '<div class="md-button-row">' +
+            '<button class="menu-btn primary" onclick="startVowelFlashcards()"><span class="msym">restart_alt</span>Повторить</button>' +
+            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
+        return;
+    }
+    let v = s.words[s.index];
+    let html = progressHead('Карточка ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    html += '<div class="flashcard-flip"><div class="md-flashcard">';
+    html += '<div class="flashcard-word">' + v.sign + '</div>';
+    if (s.revealed) {
+        html += '<div class="flashcard-vowel-name">' + escHtml(v.name) + '</div>';
+        html += '<div class="flashcard-vowel-sound">' + escHtml(v.sound) + '</div>';
+    }
+    html += '</div></div>';
+    if (s.revealed) {
+        html += '<div class="flashcard-buttons"><button class="know" onclick="vowelFlashcardAnswer(true)"><span class="msym">check</span>Знаю</button>' +
+            '<button class="dontknow" onclick="vowelFlashcardAnswer(false)"><span class="msym">close</span>Не знаю</button></div>';
+    } else {
+        html += '<div class="flashcard-buttons"><button class="show" onclick="vowelFlashcardReveal()"><span class="msym">visibility</span>Показать ответ</button></div>';
+    }
+    container.innerHTML = html;
+}
+
+function vowelFlashcardReveal() {
+    vowelFlashcardState.revealed = true;
+    showVowelFlashcard();
+}
+
+function vowelFlashcardAnswer(know) {
+    let s = vowelFlashcardState;
+    let v = s.words[s.index];
+    if (know) {
+        s.correct++;
+        stats.totalCorrect++;
+    } else {
+        stats.totalWrong++;
+        recordError(currentLesson, { word: v.sign, correct: v.name, your: 'не знал' });
+    }
+    saveStats();
+    s.index++;
+    s.revealed = false;
+    showVowelFlashcard();
+}

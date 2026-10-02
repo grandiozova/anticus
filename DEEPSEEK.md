@@ -283,6 +283,16 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   is a new table entry, not a new `if`/`switch` branch.
 - A kind must be registered in **three** places or it's unreachable: `EXERCISE_TYPES`,
   `LESSON_DRILL_GROUPS` (`js/lesson.js`), and/or `TEST_TYPES` (`js/test.js`).
+- A drill kind that is not an `EXERCISE_TYPES` entry (`flashcards`, and the new
+  `vowel_flashcards`) additionally needs a container in `DRILL_BOXES` and a branch in
+  `startLessonDrill()`. Two kinds may share a container (`#flashcardContainer`), in
+  which case the others are hidden **by container id**, not by kind.
+- **Огласовки заучиваются карточками** (`vowel_flashcards`): лицо — знак с носителем
+  (`בַּ`), оборот — название знака и звук (`патах`, `[а]`). Колода —
+  `courseAlphabet().vowels`, доступность — по данным урока (`heb_vowel_*`), а не по
+  пулу курса. Виды `heb_vowel_name` и `heb_vowel_sound` остались в данных и в
+  `TEST_TYPES`, но пунктами меню больше не показываются; тесты, которые водили их
+  через `startLessonDrill()`, ходят в них через `startExercise()`.
 - Kind names shared by both courses have no prefix (`agreement`, `translate_*`).
   Kinds that only exist for Hebrew are prefixed `heb_` (`heb_construct`,
   `heb_gender_number`, etc.) — this is a naming convention only, no code parses it.

@@ -40,8 +40,12 @@ const LESSON_DRILL_GROUPS = [
         // греческий урок этого раздела не увидит.
         label: 'Огласовка и чтение',
         drills: [
-            { kind: 'exercise', key: 'heb_vowel_name', label: 'Названия огласовок', icon: 'label' },
-            { kind: 'exercise', key: 'heb_vowel_sound', label: 'Звук огласовки', icon: 'contrast' },
+            // Огласовки заучивают карточками: на лице знак с носителем, на
+            // обороте название знака и звук. Прежние варианты выбора
+            // («Названия огласовок», «Звук огласовки») остались в данных и в
+            // тесте, но отдельными упражнениями больше не показываются —
+            // карточка спрашивает то же, только с ответом на обороте.
+            { kind: 'vowel_flashcards', key: 'vowels', label: 'Карточки огласовок', icon: 'style' },
             { kind: 'exercise', key: 'heb_vowel_fill', label: 'Пропущенная огласовка', icon: 'text_fields' },
             { kind: 'exercise', key: 'heb_shva', label: 'Шва: немое или произносимое', icon: 'hearing' },
             { kind: 'exercise', key: 'heb_dagesh', label: 'Дагеш: слабый или сильный', icon: 'scatter_plot' },
@@ -91,7 +95,9 @@ function drillLabel(drill) {
 }
 
 // Контейнер на «сцене» под выбранное упражнение — по одному на вид.
-const DRILL_BOXES = { exercise: 'exerciseQuestion', translation: 'translationQuestion', flashcards: 'flashcardContainer' };
+// Карточки слов и карточки огласовок живут в одном контейнере, поэтому
+// startLessonDrill скрывает остальные контейнеры по id, а не по виду.
+const DRILL_BOXES = { exercise: 'exerciseQuestion', translation: 'translationQuestion', flashcards: 'flashcardContainer', vowel_flashcards: 'flashcardContainer' };
 
 let currentDrill = null;
 
@@ -99,6 +105,13 @@ function lessonDrillAvailable(data, drill) {
     if (drill.kind === 'exercise') return !!(data.exercises && data.exercises[drill.key] && data.exercises[drill.key].length);
     if (drill.kind === 'translation') return !!(data.translation && data.translation[drill.key] && data.translation[drill.key].length);
     if (drill.kind === 'flashcards') return !!(data.vocabulary && data.vocabulary.length);
+    // Карточки огласовок — не по словарю урока, а по пулу знаков курса, и
+    // показываются там, где огласовка изучается: в главах, где есть вопросы
+    // о ней. Пул курса один на весь курс, поэтому его одного мало.
+    if (drill.kind === 'vowel_flashcards') {
+        let ex = data.exercises || {};
+        return !!(ex.heb_vowel_name || ex.heb_vowel_sound || ex.heb_vowel_fill);
+    }
     return false;
 }
 
@@ -185,6 +198,7 @@ function resetLessonDrill() {
         if (el) { el.innerHTML = ''; el.classList.add('hidden'); }
     });
     flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
+    vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
 }
 
 // Упражнение — отдельный экран: список выбора остаётся нетронутым позади,
@@ -200,11 +214,15 @@ function startLessonDrill(kind, key) {
     let title = document.getElementById('drillStageTitle');
     if (title) title.textContent = drillLabel(drill);
 
+    // Скрываем всё, кроме контейнера выбранного вида. Сравниваем именно id
+    // контейнера, а не вид: карточки слов и карточки огласовок делят один
+    // #flashcardContainer, и по виду второй проход спрятал бы его у первого.
+    let targetId = DRILL_BOXES[kind];
     Object.keys(DRILL_BOXES).forEach(k => {
         let el = document.getElementById(DRILL_BOXES[k]);
         if (!el) return;
         el.innerHTML = '';
-        el.classList.toggle('hidden', k !== kind);
+        el.classList.toggle('hidden', DRILL_BOXES[k] !== targetId);
     });
 
     showSection('drillSection');
@@ -212,6 +230,7 @@ function startLessonDrill(kind, key) {
     if (kind === 'exercise') startExercise(key);
     else if (kind === 'translation') startTranslation(key);
     else if (kind === 'flashcards') startFlashcards();
+    else if (kind === 'vowel_flashcards') startVowelFlashcards();
 }
 
 // ============================================================

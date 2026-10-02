@@ -92,7 +92,15 @@ test('каждый еврейский вид упражнения рисуетс
     const w = withHebrewChapter(app);
 
     for (const key of Object.keys(HEBREW_CHAPTER.exercises)) {
-        w.startLessonDrill('exercise', key);
+        // Вид без пункта меню (об огласовке спрашивают карточками) рисуется
+        // напрямую — так же, как его спрашивает «Тест».
+        if (w.findLessonDrill('exercise', key)) {
+            w.startLessonDrill('exercise', key);
+        } else {
+            w.resetLessonDrill();
+            w.showSection('drillSection');
+            w.startExercise(key);
+        }
         const box = app.document.querySelector('#drillSection');
         assert.ok(!/не поддерживается|Нет вопросов/.test(box.textContent),
             key + ' — упражнение не отрисовалось: ' + box.textContent.slice(0, 120));
@@ -102,6 +110,14 @@ test('каждый еврейский вид упражнения рисуетс
         const result = playThrough(app, '#drillSection');
         assert.ok(result.finished, key + ' — упражнение не дошло до экрана результата');
     }
+
+    // Карточки огласовок — отдельный вид со своим экраном, проходится теми же
+    // кнопками, что и карточки слов.
+    w.startLessonDrill('vowel_flashcards', 'vowels');
+    const cardBox = app.document.querySelector('#drillSection');
+    assert.ok(!/undefined|NaN|\[object Object\]/.test(cardBox.innerHTML),
+        'карточки огласовок — служебное значение в разметке');
+    assert.ok(playThrough(app, '#drillSection').finished, 'карточки огласовок не дошли до результата');
 
     assert.deepStrictEqual(app.errors, [], 'ошибки во время прохождения:\n' + app.errors.join('\n'));
     app.close();
@@ -151,7 +167,7 @@ test('варианты-огласовки помечены как текст и�
     assert.match(html(), /options--script/, 'варианты на иврите не помечены');
 
     // Ответ — русское название знака: разворачивать его нельзя.
-    w.startLessonDrill('exercise', 'heb_vowel_name');
+    w.startExercise('heb_vowel_name');
     assert.ok(!/options--script/.test(html()),
         'варианты «патах / сегол» русские, метку языка им ставить нельзя');
     app.close();
@@ -253,3 +269,71 @@ test('упражнение и тест задают вопрос одними и
     assert.strictEqual(fromTest, fromDrill);
     app.close();
 });
+
+// ------------------------------------------------------------ карточки огласовок
+
+test('огласовки заучиваются карточками: на лице знак, на обороте название и звук', () => {
+    const app = loadApp(GREEK);
+    const w = withHebrewChapter(app);
+    w.startLessonDrill('vowel_flashcards', 'vowels');
+
+    const box = app.document.querySelector('#drillSection');
+    assert.ok(!/Нет упражнений|не поддерживается/.test(box.textContent),
+        'карточки огласовок не отрисовались: ' + box.textContent.slice(0, 120));
+
+    // Лицо — знак с носителем, ответ до нажатия кнопки не виден.
+    const sign = app.get('vowelFlashcardState.words[vowelFlashcardState.index].sign');
+    assert.strictEqual(app.document.querySelector('#drillSection .flashcard-word').textContent, sign,
+        'на лице карточки не знак огласовки');
+    assert.ok(!app.document.querySelector('#drillSection .flashcard-vowel-name'),
+        'название знака видно до ответа');
+
+    // Оборот — название знака и звук, который он обозначает.
+    app.document.querySelector('#drillSection .flashcard-buttons .show').click();
+    const name = app.get('vowelFlashcardState.words[vowelFlashcardState.index].name');
+    const sound = app.get('vowelFlashcardState.words[vowelFlashcardState.index].sound');
+    assert.strictEqual(app.document.querySelector('#drillSection .flashcard-vowel-name').textContent, name,
+        'на обороте нет названия знака');
+    assert.strictEqual(app.document.querySelector('#drillSection .flashcard-vowel-sound').textContent, sound,
+        'на обороте нет звука огласовки');
+
+    app.document.querySelector('#drillSection .flashcard-buttons .know').click();
+    assert.strictEqual(app.get('vowelFlashcardState.correct'), 1, 'правильный ответ не засчитан');
+    assert.strictEqual(app.get('vowelFlashcardState.revealed'), false, 'следующая карточка открыта ответом');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('колода карточек огласовок — это пул знаков курса', () => {
+    const app = loadApp(GREEK);
+    const w = withHebrewChapter(app);
+
+    assert.ok(w.lessonDrillAvailable(w.getLessonData(3), w.findLessonDrill('vowel_flashcards', 'vowels')),
+        'в еврейской главе, где есть вопросы об огласовке, карточки недоступны');
+
+    w.startLessonDrill('vowel_flashcards', 'vowels');
+    const total = app.get('vowelFlashcardState.total');
+    const pool = JSON.parse(app.get('JSON.stringify(HEBREW_ALPHABET.vowels)')).length;
+    assert.strictEqual(total, pool, 'колода огласовок не совпала с пулом курса');
+
+    // Карточки проходятся до конца теми же кнопками, что и карточки слов.
+    const result = playThrough(app, '#drillSection');
+    assert.ok(result.finished, 'карточки огласовок не дошли до экрана результата');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('карточки огласовок не появляются в греческом курсе', () => {
+    const app = loadApp(GREEK);
+    const w = app.window;
+    w.openLesson(1);
+
+    assert.ok(!w.lessonDrillAvailable(w.getLessonData(1), w.findLessonDrill('vowel_flashcards', 'vowels')),
+        'у греческого урока появились карточки огласовок');
+    w.switchLessonPart('exercise');
+    const box = app.document.getElementById('drillGroups');
+    assert.ok(!/Карточки огласовок/.test(box.textContent),
+        'карточки огласовок просочились в меню греческого урока');
+    app.close();
+});
+

@@ -778,13 +778,16 @@ test('алфавитные упражнения не считаются ввод
     const w = app.window;
 
     const plan = [
-        ['greek', GREEK_KEYS, 1],
-        ['greek', ['accent_type'], 2],
-        ['hebrew', HEBREW_KEYS.slice(0, 5), 1],
-        ['hebrew', HEBREW_KEYS.slice(5), 2]
+        ['greek', 'exercise', GREEK_KEYS, 1],
+        ['greek', 'exercise', ['accent_type'], 2],
+        ['hebrew', 'exercise', HEBREW_KEYS.slice(0, 5), 1],
+        // Огласовка заучивается карточками, а не выбором варианта: прежние
+        // «Названия огласовок» и «Звук огласовки» остались в данных и в тесте,
+        // но отдельным пунктом меню больше не показываются.
+        ['hebrew', 'vowel_flashcards', ['vowels'], 2]
     ];
 
-    for (const [course, keys, lesson] of plan) {
+    for (const [course, kind, keys, lesson] of plan) {
         w.applyCourse(course);
         w.openLesson(lesson);
         const data = w.getLessonData(lesson);
@@ -797,12 +800,14 @@ test('алфавитные упражнения не считаются ввод
         for (const key of keys) {
             // Вид обязан быть в меню: ключ данных без записи в LESSON_DRILL_GROUPS
             // ученику не виден, и вопроса как будто нет.
-            const drill = w.findLessonDrill('exercise', key);
+            const drill = w.findLessonDrill(kind, key);
             assert.ok(drill, course + ': вид ' + key + ' не значится в меню упражнений');
             assert.ok(w.lessonDrillAvailable(data, drill),
                 course + ' ' + lesson + ': вид ' + key + ' недоступен');
-            assert.ok(w.getExercises(lesson, key).length > 0,
-                course + ' ' + lesson + ': у вида ' + key + ' нет ни одного вопроса');
+            if (kind === 'exercise') {
+                assert.ok(w.getExercises(lesson, key).length > 0,
+                    course + ' ' + lesson + ': у вида ' + key + ' нет ни одного вопроса');
+            }
         }
     }
 
@@ -881,7 +886,9 @@ test('под вопросом о букве стоит сама буква, а �
     assert.ok(box.querySelector('.options--script'), 'варианты-буквы иврита — без .options--script');
 
     hw.openLesson(2);
-    hw.startLessonDrill('exercise', 'heb_vowel_name');
+    // Вопросы об огласовке остались видом, но отдельного пункта меню у них
+    // больше нет — рисуем вид напрямую, как это делает «Тест».
+    hw.startExercise('heb_vowel_name');
     box = hebrew.document.querySelector('#exerciseQuestion');
     assert.ok(box.querySelector('.md-prompt-strong'), 'знак огласовки подписан не тем шрифтом');
     assert.ok(!box.querySelector('.options--script'), 'названия огласовок — по-русски, не серифом');

@@ -465,6 +465,24 @@ own answer handler. A new kind is an entry in that table, not a branch.
   cases, so `heb_gender_number` is its own kind rather than a reuse of Greek's
   `case_number`, which is labelled «Падеж и число». The prefix is a convention for
   readers; no code parses it.
+- **A kind can keep its data and its place in the test without a place in the menu.**
+  `heb_vowel_name` and `heb_vowel_sound` are no longer drills: огласовки заучивают
+  карточками (`vowel_flashcards`, see "Alphabet and reading"). Their data and their
+  `TEST_TYPES` entries stay, so «Тест» still asks them and `tests/alphabet.test.js`
+  still renders them through `startExercise()` — the same arrangement `declension_fill`
+  has. Removing a drill from `LESSON_DRILL_GROUPS` therefore does **not** orphan its
+  kind, but it does mean a test that drove it through `startLessonDrill()` must switch
+  to `startExercise()`.
+- **A drill kind that is not an `EXERCISE_TYPES` entry needs four places, not three.**
+  `flashcards` and `vowel_flashcards` are `kind` values dispatched by
+  `startLessonDrill()`: their entry in `LESSON_DRILL_GROUPS`, their container in
+  `DRILL_BOXES`, an availability rule in `lessonDrillAvailable()` when it is not
+  `data.vocabulary`, and a branch in `startLessonDrill()`. Two kinds may share a
+  container (`flashcards` and `vowel_flashcards` both draw into `#flashcardContainer`),
+  but then `startLessonDrill()` must hide the rest **by container id**, not by kind —
+  comparing kind would have the second one hide the first's container. `vowel_flashcards`
+  is available where the lesson actually drills the vowels (`heb_vowel_*` in its data),
+  because `courseAlphabet().vowels` alone is true for every Hebrew lesson.
 - **A group with nothing available is not drawn.** That is what keeps the phonology
   group («Огласовка и чтение») off Greek lesson screens without any branching on course.
 - **Do not put the answer in the question.** `heb_construct` and `heb_suffix_type` carry
@@ -477,6 +495,14 @@ The first lesson of each course has no words in it: Greek lesson 1 and Hebrew ch
 are the letters, and the lesson after them is the reading rules (Greek: diphthongs,
 breathings, accents; Hebrew: the vowel points). Those two units per course are now
 drilled like any other material — thirteen kinds exist for them.
+
+**The Hebrew vowel points are learnt from flashcards, not from a choice of options.**
+The drill `vowel_flashcards` (речь о нём в разделе «Exercise types») shows the sign with
+its carrier on the front (`בַּ`) and the name and sound on the back (`патах`, `[а]`), in
+one card that both former multiple-choice kinds — `heb_vowel_name` and
+`heb_vowel_sound` — used to ask. It is a drill *kind* like `flashcards`, not an
+`EXERCISE_TYPES` entry: it has no question and no options, and its deck is
+`courseAlphabet().vowels`, not a lesson's vocabulary. See "Exercise types".
 
 **The letters live in a pool per course, not in the questions.** `GREEK_ALPHABET`
 (`data/lessons.js`) and `HEBREW_ALPHABET` (`data/hebrew-lessons.js`) hold the letters
