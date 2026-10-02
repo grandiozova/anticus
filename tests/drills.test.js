@@ -244,6 +244,15 @@ test('холст письма подгоняется под свою ширин�
     assert.strictEqual(canvas2.width, 250, 'window.resize не сузил буфер под новую рамку');
     assert.strictEqual(canvas2.height, 400, 'window.resize не растянул буфер под новую высоту окна');
 
+    // Жест, начатый на холсте, не должен тянуть страницу. На iOS Safari одного
+    // touch-action: none не хватает: прокрутка доходит до документа, и поле
+    // уезжает вниз прямо под рукой. Ловим сам предохранитель — touchmove
+    // обязан быть погашен.
+    const touchMove = new w.Event('touchmove', { bubbles: true, cancelable: true });
+    canvas2.dispatchEvent(touchMove);
+    assert.ok(touchMove.defaultPrevented,
+        'touchmove на холсте не погашен — на iOS поле уедет вниз под рукой');
+
     assert.deepStrictEqual(app.errors, []);
     app.close();
 });

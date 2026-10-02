@@ -358,6 +358,17 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   наблюдатель, и штрихи не текут между вопросами. Гасить наблюдатель по клику
   нельзя: первая версия отключала его на первом же тапе, и после первого штриха
   поле переставало тянуться.
+  **Жест по полю не должен тянуть страницу.** iOS Safari «пружинит» документ от
+  жеста, начатого на холсте, даже при `touch-action: none` на нём: весь интерфейс
+  — вместе с fixed app bar и nav bar — уезжает вниз под пальцем («окошко тянется
+  вниз»), а штрих смазывается. Держат это три предохранителя: `touch-action: none`
+  плюс `user-select: none` / `-webkit-touch-callout: none` на `.writing-canvas-card`
+  (не только на холсте); **не-passive** `touchmove` с `preventDefault()` на холсте
+  (голого `touch-action` на iOS не хватило, а passive-слушатель бы его проигнорировал);
+  и `overscroll-behavior: none` у корня страницы в `base.css`, который гасит упругий
+  откат и pull-to-refresh, не трогая обычную прокрутку. Рисование остаётся на
+  pointer-событиях и не страдает. `tests/drills.test.js` шлёт на холст отменяемый
+  `touchmove` и требует, чтобы его погасили.
   **Высоту поле берёт от окна по флекс-цепочке.** `#drillSection` —
   `min-height: calc(100dvh - app-bar - safe-top - nav-bar - safe-bottom - 88px)`
   (последнее — собственный нижний padding `.md-content` в `base.css`; `dvh`, а не

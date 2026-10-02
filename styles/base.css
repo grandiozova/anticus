@@ -14,6 +14,11 @@
 html {
     -webkit-text-size-adjust: 100%;
     font-size: calc(100% * var(--app-font-scale));
+    /* Страница не «пружинит» на iOS: упругий откат сдвигает вниз весь интерфейс
+       вместе с fixed-элементами (app bar, nav bar), и на упражнении «Написание
+       буквы» поле уезжает вниз прямо под рукой. none у корня гасит откат и
+       pull-to-refresh, обычную прокрутку не трогая. */
+    overscroll-behavior: none;
 }
 
 body {

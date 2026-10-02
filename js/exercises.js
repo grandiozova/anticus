@@ -704,6 +704,17 @@ function initLetterWriteCanvas() {
     canvas.addEventListener('pointerleave', finishStroke);
     canvas.addEventListener('pointercancel', finishStroke);
 
+    // iOS Safari тянет страницу за палец, которым рисуют, даже с touch-action:
+    // none: жест доходит до прокрутки документа, и поле уезжает вниз прямо под
+    // рукой — «окошко тянется вниз», — а штрих смазывается. preventDefault на
+    // touchmove гасит именно прокрутку от жеста, начатого на холсте; рисование
+    // идёт на pointer-событиях, которые это не затрагивает. Слушатель не
+    // passive: иначе preventDefault на iOS игнорируется. Отключать его по
+    // тапу, как и наблюдатель размера, нельзя — поле перестанет держаться.
+    canvas.addEventListener('touchmove', function (event) {
+        event.preventDefault();
+    }, { passive: false });
+
     resize();
     // Подгоняем холст по обеим осям двумя путями, потому что одного мало.
     //
