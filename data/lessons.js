@@ -29,31 +29,37 @@
 //            Оговорки о самом звуке («[э] (долгий)») оставлены — без них η и ε
 //            не различить
 const GREEK_ALPHABET = {
+    // ru — русское прочтение названия, то же, что стоит первым словом в
+    // переводе словаря урока 1 («альфа (Α α)»). Нужно упражнению письма: там
+    // ученик рисует букву по названию, и греческое ἄλφα в начале курса ещё не
+    // читается, поэтому под вопросом ставится русское имя (см.
+    // letterWritePracticeState в js/exercises.js). В остальных видах название
+    // остаётся греческим: letter_name спрашивает именно о нём.
     letters: [
-        {letter:"α", upper:"Α", name:"ἄλφα", sound:"[а]"},
-        {letter:"β", upper:"Β", name:"βῆτα", sound:"[в]"},
-        {letter:"γ", upper:"Γ", name:"γάμμα", sound:"[г]"},
-        {letter:"δ", upper:"Δ", name:"δέλτα", sound:"[д]"},
-        {letter:"ε", upper:"Ε", name:"ἒψιλόν", sound:"[э]"},
-        {letter:"ζ", upper:"Ζ", name:"ζῆτα", sound:"[дз]"},
-        {letter:"η", upper:"Η", name:"ῆτα", sound:"[э] (долгий)"},
-        {letter:"θ", upper:"Θ", name:"θῆτα", sound:"[т] (придыхательный)"},
-        {letter:"ι", upper:"Ι", name:"ἰῶτα", sound:"[и]"},
-        {letter:"κ", upper:"Κ", name:"κάππα", sound:"[к]"},
-        {letter:"λ", upper:"Λ", name:"λάβδα", sound:"[л]"},
-        {letter:"μ", upper:"Μ", name:"μῦ", sound:"[м]"},
-        {letter:"ν", upper:"Ν", name:"νῦ", sound:"[н]"},
-        {letter:"ξ", upper:"Ξ", name:"ξεῖ", sound:"[кс]"},
-        {letter:"ο", upper:"Ο", name:"ὂμικρόν", sound:"[о]"},
-        {letter:"π", upper:"Π", name:"πεῖ", sound:"[п]"},
-        {letter:"ρ", upper:"Ρ", name:"ρῶ", sound:"[р]"},
-        {letter:"σ", upper:"Σ", name:"σίγμα", sound:"[с]"},
-        {letter:"τ", upper:"Τ", name:"ταῦ", sound:"[т]"},
-        {letter:"υ", upper:"Υ", name:"ὖψιλόν", sound:"[ю] (как нем. ü)"},
-        {letter:"φ", upper:"Φ", name:"φεῖ", sound:"[ф]"},
-        {letter:"χ", upper:"Χ", name:"χεῖ", sound:"[х]"},
-        {letter:"ψ", upper:"Ψ", name:"ψεῖ", sound:"[пс]"},
-        {letter:"ω", upper:"Ω", name:"ὦμέγα", sound:"[о] (долгий)"}
+        {letter:"α", upper:"Α", name:"ἄλφα", ru:"альфа", sound:"[а]"},
+        {letter:"β", upper:"Β", name:"βῆτα", ru:"бета", sound:"[в]"},
+        {letter:"γ", upper:"Γ", name:"γάμμα", ru:"гамма", sound:"[г]"},
+        {letter:"δ", upper:"Δ", name:"δέλτα", ru:"дельта", sound:"[д]"},
+        {letter:"ε", upper:"Ε", name:"ἒψιλόν", ru:"эпсилон", sound:"[э]"},
+        {letter:"ζ", upper:"Ζ", name:"ζῆτα", ru:"дзета", sound:"[дз]"},
+        {letter:"η", upper:"Η", name:"ῆτα", ru:"эта", sound:"[э] (долгий)"},
+        {letter:"θ", upper:"Θ", name:"θῆτα", ru:"тета", sound:"[т] (придыхательный)"},
+        {letter:"ι", upper:"Ι", name:"ἰῶτα", ru:"йота", sound:"[и]"},
+        {letter:"κ", upper:"Κ", name:"κάππα", ru:"каппа", sound:"[к]"},
+        {letter:"λ", upper:"Λ", name:"λάβδα", ru:"лямбда", sound:"[л]"},
+        {letter:"μ", upper:"Μ", name:"μῦ", ru:"мю", sound:"[м]"},
+        {letter:"ν", upper:"Ν", name:"νῦ", ru:"ню", sound:"[н]"},
+        {letter:"ξ", upper:"Ξ", name:"ξεῖ", ru:"кси", sound:"[кс]"},
+        {letter:"ο", upper:"Ο", name:"ὂμικρόν", ru:"омикрон", sound:"[о]"},
+        {letter:"π", upper:"Π", name:"πεῖ", ru:"пи", sound:"[п]"},
+        {letter:"ρ", upper:"Ρ", name:"ρῶ", ru:"ро", sound:"[р]"},
+        {letter:"σ", upper:"Σ", name:"σίγμα", ru:"сигма", sound:"[с]"},
+        {letter:"τ", upper:"Τ", name:"ταῦ", ru:"тау", sound:"[т]"},
+        {letter:"υ", upper:"Υ", name:"ὖψιλόν", ru:"ипсилон", sound:"[ю] (как нем. ü)"},
+        {letter:"φ", upper:"Φ", name:"φεῖ", ru:"фи", sound:"[ф]"},
+        {letter:"χ", upper:"Χ", name:"χεῖ", ru:"хи", sound:"[х]"},
+        {letter:"ψ", upper:"Ψ", name:"ψεῖ", ru:"пси", sound:"[пс]"},
+        {letter:"ω", upper:"Ω", name:"ὦμέγα", ru:"омега", sound:"[о] (долгий)"}
     ],
 
     // Дифтонги — строка «Дифтонги:» из грамматики урока 1, целиком.

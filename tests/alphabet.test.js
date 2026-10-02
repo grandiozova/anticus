@@ -173,7 +173,7 @@ test('пул букв каждого курса — полный алфавит 
     // Пул — источник вариантов ответа: пустое поле здесь значит пустую кнопку,
     // а повтор — две верные кнопки сразу.
     const rules = [
-        ['греческий', greek, ['letter', 'upper', 'name', 'sound']],
+        ['греческий', greek, ['letter', 'upper', 'name', 'ru', 'sound']],
         ['еврейский', hebrew, ['letter', 'name', 'translit', 'sound']]
     ];
     for (const [course, pool, fields] of rules) {
@@ -186,7 +186,7 @@ test('пул букв каждого курса — полный алфавит 
         // Звук в проверку повторов не входит намеренно: одинаково звучащих букв
         // в алфавите хоть отбавляй (ה и ח — обе [х]). Повторы разбирает
         // otherValues(), поэтому здесь важно обратное — что повторы есть.
-        for (const f of ['letter', 'upper', 'name', 'translit']) {
+        for (const f of ['letter', 'upper', 'name', 'ru', 'translit']) {
             const vals = pool.letters.map(l => l[f]).filter(v => v !== undefined);
             assert.strictEqual(new Set(vals).size, vals.length,
                 course + ': повтор в поле ' + f + ' — это два одинаковых варианта ответа');

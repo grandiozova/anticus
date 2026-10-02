@@ -33,7 +33,7 @@ const DRILLS = [
     ['flashcards', 'flashcards']
 ];
 
-test('letter_write показывает имя буквы, а не её начертание', () => {
+test('letter_write показывает русское имя буквы, а не её начертание', () => {
     const app = loadApp();
     const w = app.window;
 
@@ -43,7 +43,11 @@ test('letter_write показывает имя буквы, а не её наче
     const q = app.get('exerciseState').questions[0];
     const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru');
     assert.ok(prompt, 'строка вопроса не отрисовалась');
-    assert.strictEqual(prompt.textContent.trim(), q.name, 'под вопросом должно быть имя буквы, а не её начертание');
+    // Рисуют по читаемому имени: греческое ἄλφα в начале курса ещё не читается,
+    // поэтому под вопросом стоит русское прочтение названия из пула (q.ru).
+    assert.strictEqual(prompt.textContent.trim(), q.ru, 'под вопросом должно быть русское имя буквы');
+    assert.ok(prompt.classList.contains('md-prompt-ru'), 'русское имя набрано как изучаемый текст');
+    assert.notStrictEqual(prompt.textContent.trim(), q.name, 'под вопросом осталось греческое название');
     assert.notStrictEqual(prompt.textContent.trim(), q.letter, 'под вопросом не должно быть начертания буквы');
     app.close();
 });
@@ -299,10 +303,16 @@ test('письмо начинается с выбора начертания н�
 
     w.completeLetterWritingPractice();
     const forms = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
+    const glyph = forms.querySelector('.script');
     const q = app.get('exerciseState.questions[0]');
     assert.strictEqual(forms.textContent.trim(), q.letter, 'показано не то начертание');
-    assert.ok(forms.classList.contains('script'), 'показ не помечен .script');
-    assert.ok(forms.classList.contains('script--cursive'), 'курсив не получил .script--cursive');
+    // Буква помечена .script внутри коробки, как у греческого, а не самой
+    // коробкой: та же разметка даёт и общий с греком кегль (см. ниже), и
+    // центрирование. Пометка на коробке оставила бы иврит на одном множителе —
+    // вдвое мельче греческого показа.
+    assert.ok(glyph, 'буква не помечена .script');
+    assert.strictEqual(forms.children.length, 1, 'в показе больше одной формы');
+    assert.ok(glyph.classList.contains('script--cursive'), 'курсив не получил .script--cursive');
     // Карточка показа — только начертание: имени буквы на ней нет, «Готово» тоже
     // (кнопку с этим словом уже нажали, и после показа её сменила «Далее»).
     assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__name').length, 0,
@@ -322,7 +332,7 @@ test('письмо начинается с выбора начертания н�
         next.click();
         assert.ok(app.document.querySelector('#exerciseQuestion canvas'), 'вопрос без холста');
         w.completeLetterWritingPractice();
-        assert.ok(app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms.script--cursive'),
+        assert.ok(app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms .script--cursive'),
             'начертание слетело на ' + (i + 2) + '-м вопросе');
     }
 
@@ -341,7 +351,7 @@ test('письмо начинается с выбора начертания н�
     rowsIn()[0].click();
     assert.ok(app.document.querySelector('#exerciseQuestion canvas'), 'печатный заход не начался с холста');
     w.completeLetterWritingPractice();
-    assert.ok(!app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms.script--cursive'),
+    assert.ok(!app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms .script--cursive'),
         'печатный заход показан курсивом');
 
     // И повторное открытие упражнения из списка тоже спрашивает заново.
@@ -406,7 +416,8 @@ test('письмо помечает конечные формы и различ�
         assert.strictEqual(forms.textContent.trim(), letter, 'показ ' + name + ' — не та строка');
         assert.strictEqual(points(forms.textContent.trim()), points(letter),
             'показ ' + name + ' потерял точку');
-        assert.ok(!forms.classList.contains('script--cursive'), 'печатный показ ' + name + ' курсивом');
+        assert.ok(!forms.querySelector('.script').classList.contains('script--cursive'),
+            'печатный показ ' + name + ' курсивом');
         assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__name').length, 0,
             'на карточке показа ' + name + ' есть имя буквы');
     }
@@ -419,7 +430,8 @@ test('письмо помечает конечные формы и различ�
         const forms = app.document.querySelector('.letter-write-reveal__forms');
         assert.strictEqual(points(forms.textContent.trim()), points(letter),
             'курсивный показ ' + name + ' потерял точку');
-        assert.ok(forms.classList.contains('script--cursive'), 'показ ' + name + ' не курсивом');
+        assert.ok(forms.querySelector('.script').classList.contains('script--cursive'),
+            'показ ' + name + ' не курсивом');
     }
 
     assert.deepStrictEqual(app.errors, []);

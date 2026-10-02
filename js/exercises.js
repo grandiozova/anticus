@@ -515,7 +515,10 @@ function letterWritePracticeState() {
         // буквы, поэтому к названию добавляется пометка: иначе «каф» просило бы
         // и обычную כ, и конечную ך, а ученик не знал бы, какую рисовать.
         // Пометку ставит данные (finalForm), а не разметка по коду символа.
-        prompt: q.name + (q.finalForm ? ' (конечная)' : ''),
+        // Русское имя, если оно есть (греческий пул), иначе — само название
+        // (иврит уже назван по-русски): рисовать букву надо по читаемому имени,
+        // а не по греческому ἄλφα, которое в начале курса ещё не прочтёшь.
+        prompt: (q.ru || q.name) + (q.finalForm ? ' (конечная)' : ''),
         cardClass: isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew',
         canvasClass: isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew'
     };
@@ -564,14 +567,20 @@ function completeLetterWritingPractice() {
     const writingCardClass = 'md-flashcard md-flashcard--writing' +
         (isGreek ? ' md-flashcard--writing-greek' : '') +
         ' md-flashcard--back md-flashcard--has-flip md-flashcard--flip';
-    const reveal = isGreek ?
+    // Показ устроен одинаково в обоих курсах: одна .letter-write-reveal__forms,
+    // внутри — .script. Так обе карточки и центрируют букву одним и тем же
+    // флексом, и берут один кегль. Кегль здесь складывается из двух множителей
+    // нарочно: 3.5rem × ползунок на коробке даёт .script в 1em, а его
+    // собственный множитель умножает ещё раз, — именно так выглядит греческий
+    // показ, и иврит обязан совпасть с ним по крупности, а не остаться на
+    // одном множителе (был вдвое мельче, см. tests/drills.test.js).
+    // У греческого форм две (прописная и строчная), у иврита — одна.
+    const revealForms = isGreek
+        ? letterWriteForms(q).map(f => '<span class="script">' + f + '</span>').join('')
+        : '<span class="script' + (cursive ? ' script--cursive' : '') + '">' + q.letter + '</span>';
+    const reveal =
         '<div class="letter-write-reveal">' +
-        '<div class="letter-write-reveal__forms">' +
-        letterWriteForms(q).map(f => '<span class="script">' + f + '</span>').join('') +
-        '</div>' +
-        '</div>' :
-        '<div class="letter-write-reveal">' +
-        '<div class="letter-write-reveal__forms script' + (cursive ? ' script--cursive' : '') + '">' + q.letter + '</div>' +
+        '<div class="letter-write-reveal__forms">' + revealForms + '</div>' +
         '</div>';
 
     // Назад к холсту: «Готово» можно нажать, не дорисовав или не написав букву,
