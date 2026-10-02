@@ -201,16 +201,25 @@ function initFontScale() {
     syncFontScaleControls();
 }
 
-// «Расширенные настройки»: языковые ползунки убраны под раскрывающийся
-// заголовок, чтобы карточка по умолчанию была короткой. Приём тот же, что у
-// примеров в словаре (toggleVocabExamples в js/vocab.js): класс .open на теле
-// плюс max-height из styles/settings.css. Состояние не сохраняется — свёрнуто
-// по умолчанию при каждой загрузке, как и написано в разметке.
-function toggleFontScaleAdvanced() {
-    let toggle = document.getElementById('fontScaleAdvancedToggle');
-    let body = document.getElementById('fontScaleAdvancedBody');
-    if (!toggle || !body) return;
+// «Расширенные настройки»: содержимое убрано под раскрывающийся заголовок,
+// чтобы карточка по умолчанию была короткой. Приём тот же, что у примеров в
+// словаре (toggleVocabExamples в js/vocab.js): класс .open на теле плюс
+// max-height из styles/settings.css. Состояние не сохраняется — свёрнуто по
+// умолчанию при каждой загрузке, как и написано в разметке.
+//
+// Обработчик общий: заголовок передаёт себя, а тело находит по своему
+// aria-controls. Так один и тот же код годится и для языковых ползунков, и
+// для списка шрифтов, и для любого следующего блока — заводить функцию на
+// каждый не нужно.
+function toggleSettingsDisclosure(head) {
+    if (!head) return;
+    let body = document.getElementById(head.getAttribute('aria-controls'));
+    if (!body) return;
     let opening = !body.classList.contains('open');
     body.classList.toggle('open', opening);
-    toggle.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    head.setAttribute('aria-expanded', opening ? 'true' : 'false');
+}
+
+function toggleFontScaleAdvanced() {
+    toggleSettingsDisclosure(document.getElementById('fontScaleAdvancedToggle'));
 }

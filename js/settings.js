@@ -24,6 +24,7 @@ function showSettings() {
     syncCourseControls();
     syncThemeControls();
     syncFontScaleControls();
+    renderFontList();
     renderLicenses();
 }
 

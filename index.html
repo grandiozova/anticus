@@ -283,6 +283,22 @@
     </div>
 
     <div class="card">
+        <h3><span class="msym">text_fields</span>Шрифт</h3>
+        <p class="md-body-medium settings-hint">Шрифт интерфейса и русского текста. Греческий и еврейский остаются не меняются.</p>
+        <div class="settings-disclosure">
+            <button type="button" class="settings-disclosure__head" id="fontPickerToggle"
+                    aria-expanded="false" aria-controls="fontPickerBody"
+                    onclick="toggleSettingsDisclosure(this)">
+                <span class="settings-disclosure__label">Выбрать шрифт</span>
+                <span class="msym settings-disclosure__chevron">expand_more</span>
+            </button>
+            <div class="settings-disclosure__body" id="fontPickerBody">
+                <div class="font-list" id="fontList" role="radiogroup" aria-label="Шрифт"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
         <h3><span class="msym">settings_backup_restore</span>Управление данными</h3>
         <p class="md-body-medium">Прогресс хранится только в этом браузере и никуда не отправляется.
             Сброс удалит статистику ответов и список ошибок. Отменить это действие нельзя.</p>
@@ -407,6 +423,7 @@
 <script src="js/shell.js"></script>
 <script src="js/theme.js"></script>
 <script src="js/fontscale.js"></script>
+<script src="js/fontpicker.js"></script>
 <script src="js/lesson.js"></script>
 <script src="js/declension.js"></script>
 <script src="js/exercises.js"></script>

@@ -1,7 +1,7 @@
 // ============================================================
 // M3: ripple, snackbar, dialog, progress
 // ============================================================
-const RIPPLE_TARGETS = '.menu-btn, .md-button, .option-btn, .md-icon-button, .lesson-item, .md-fab, .md-feature-card, .course-card, .tab-bar button, .flashcard-buttons button, .flashcard-flip-btn, .word-bank .chip, .filter-chip, .prayer-word, .clear-btn, .input-group button, .md-nav-item, .vocab-key';
+const RIPPLE_TARGETS = '.menu-btn, .md-button, .option-btn, .md-icon-button, .lesson-item, .md-fab, .md-feature-card, .course-card, .tab-bar button, .flashcard-buttons button, .flashcard-flip-btn, .word-bank .chip, .filter-chip, .prayer-word, .clear-btn, .input-group button, .md-nav-item, .vocab-key, .font-option';
 
 // Общий блок prefers-reduced-motion в styles/settings.css гасит анимации и
 // CSS-свойство scroll-behavior, но не прокрутку, которую скрипт явно просит

@@ -13,7 +13,7 @@
  * ВАЖНО: подняв CACHE_VERSION, вы гарантированно раздаёте новую версию —
  * старые кэши удаляются в activate.
  */
-const CACHE_VERSION = 'anticus-v19';
+const CACHE_VERSION = 'anticus-v20';
 const CORE_CACHE = CACHE_VERSION + '-core';
 const FONT_CACHE = CACHE_VERSION + '-fonts';
 
@@ -33,6 +33,25 @@ const CORE_ASSETS = [
     './styles/dialogs.css',
     './styles/layout.css',
     './styles/settings.css',
+    // Свои шрифты интерфейса (fonts/): лежат у нас ради офлайна, поэтому
+    // должны быть в предзагрузке — иначе холодный старт без сети покажет
+    // интерфейс системной гарнитурой, пока файла нет.
+    './fonts/pt-sans-cyrillic-400.woff2',
+    './fonts/pt-sans-cyrillic-700.woff2',
+    './fonts/pt-sans-latin-400.woff2',
+    './fonts/pt-sans-latin-700.woff2',
+    './fonts/noto-sans-cyrillic.woff2',
+    './fonts/noto-sans-latin.woff2',
+    './fonts/inter-cyrillic.woff2',
+    './fonts/inter-latin.woff2',
+    './fonts/pt-serif-cyrillic-400.woff2',
+    './fonts/pt-serif-cyrillic-700.woff2',
+    './fonts/pt-serif-latin-400.woff2',
+    './fonts/pt-serif-latin-700.woff2',
+    './fonts/literata-cyrillic.woff2',
+    './fonts/literata-latin.woff2',
+    './fonts/source-serif-4-cyrillic.woff2',
+    './fonts/source-serif-4-latin.woff2',
     './data/lessons.js',
     './data/hebrew-lessons.js',
     './data/prayer.js',
@@ -44,6 +63,7 @@ const CORE_ASSETS = [
     './js/shell.js',
     './js/theme.js',
     './js/fontscale.js',
+    './js/fontpicker.js',
     './js/lesson.js',
     './js/declension.js',
     './js/exercises.js',

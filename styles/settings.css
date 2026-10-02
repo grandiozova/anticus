@@ -339,6 +339,90 @@
 }
 .license-item a:hover { text-decoration: underline; }
 .license-item a .msym { font-size: 16px; }
+
+/* ============================================================
+   ШРИФТ ИНТЕРФЕЙСА И РУССКОГО ТЕКСТА
+   ============================================================
+   Список — та же форма, что у списка лицензий: строки-кнопки, разделённые
+   линией. Своя гарнитура ставится не на строку, а на её подпись
+   (.font-option__name), и это важно: строка задала бы шрифт и галочке
+   .msym — при равной специфичности и более позднем файле она перебила бы
+   саму 'Material Symbols Rounded', и вместо знака на экране оказалось бы
+   слово «check». Поэтому семейства касаются только подписи. */
+.font-list {
+    margin-top: 12px;
+    border: 1px solid var(--md-sys-color-outline-variant);
+    border-radius: var(--md-sys-shape-corner-large);
+    overflow: hidden;
+}
+.font-option {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    /* M3-минимум строки списка: подпись в ней одна. */
+    min-height: 48px;
+    padding: 8px 16px;
+    border: 0;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    background: transparent;
+    color: var(--md-sys-color-on-surface);
+    text-align: start;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.font-option:first-child { border-top: 0; }
+.font-option::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: currentColor;
+    opacity: 0;
+    z-index: -1;
+    transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+}
+.font-option:hover::before { opacity: var(--md-sys-state-hover-opacity); }
+.font-option:focus-visible::before { opacity: var(--md-sys-state-focus-opacity); }
+.font-option:active::before { opacity: var(--md-sys-state-pressed-opacity); }
+.font-option:focus-visible { outline: none; }
+.font-option[aria-checked="true"] {
+    background: var(--md-sys-color-secondary-container);
+    color: var(--md-sys-color-on-secondary-container);
+}
+.font-option__name {
+    font-size: 1rem;
+    line-height: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.009375rem;
+}
+/* Отметка выбранного: появляется только у него, как у чипа-фильтра. */
+.font-option__check {
+    margin-left: auto;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard),
+                transform var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-emphasized);
+}
+.font-option[aria-checked="true"] .font-option__check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Каждый вариант подписан собственной гарнитурой, включая «системный»: по
+   этой подписи и видно, чем один отличается от другого, а остальное на
+   экране меняется сразу после нажатия. Имена семейств стоят в
+   styles/tokens.css рядом с @font-face, здесь только токены. */
+.font-option[data-font="system"] .font-option__name { font-family: var(--font-ru-system); }
+.font-option[data-font="pt-sans"] .font-option__name { font-family: var(--font-ru-pt-sans); }
+.font-option[data-font="noto-sans"] .font-option__name { font-family: var(--font-ru-noto-sans); }
+.font-option[data-font="inter"] .font-option__name { font-family: var(--font-ru-inter); }
+.font-option[data-font="pt-serif"] .font-option__name { font-family: var(--font-ru-pt-serif); }
+.font-option[data-font="literata"] .font-option__name { font-family: var(--font-ru-literata); }
+.font-option[data-font="source-serif-4"] .font-option__name { font-family: var(--font-ru-source-serif-4); }
+
 /* Мобильные экраны: 4 пункта (Системная/Светлая/Тёмная/Сепия) не
    помещаются с подписями — прячем текст, оставляем только иконки.
    Текст остаётся в разметке и слышен скринридерам — font-size: 0

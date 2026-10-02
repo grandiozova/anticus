@@ -384,6 +384,26 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
 - Switching a course calls `applyCourse(id)`, which resets stats, clears
   `allVocabCache`, and re-renders. Any new cross-screen cache must be reset there too.
 
+## Шрифт интерфейса и русского текста
+
+- Настройка «Шрифт» (`js/fontpicker.js`) хранится под общим ключом `app_font` и
+  кладёт один токен `--font-ru` на `<html>`; восстанавливается в `js/boot.js`
+  сразу после `initFontScale()`, чтобы шрифт встал до первой отрисовки.
+- Варианты — `FONT_CHOICES`: `system` (прежний стек) и шесть самодельных
+  гарнитур из `fonts/`. Id варианта — суффикс токена `--font-ru-<id>`; стеки и
+  `@font-face` лежат в `styles/tokens.css`, в JS имён семейств нет.
+- Список спрятан под раскрывающимся заголовком «Выбрать шрифт» — общий
+  `toggleSettingsDisclosure(head)` (`js/fontscale.js`) находит тело по
+  `aria-controls`. У варианта только имя, набранное его же гарнитурой: образец
+  строки убран, потому что экран меняется сразу после нажатия.
+- `--font-ru` берут `body` и правила интерфейса (`.filter-chip__body`,
+  `.word-bank .chip`, `.build-area .token`). Текст изучаемого языка — нет:
+  `.script`/`.greek`/`.hebrew` остаются на `--md-ref-typeface-script`.
+- Новый шрифт: файлы в `fonts/` → `@font-face` и токен в `styles/tokens.css` →
+  запись в `FONT_CHOICES` → `CORE_ASSETS` и `CACHE_VERSION` в `sw.js` → запись
+  в `data/licenses.js`. Имя семейства — с суффиксом `… Anticus`, чтобы не
+  спорить с загруженным из Google `'Noto Sans'`.
+
 ## Offline (`sw.js`)
 
 - Precaches everything in `CORE_ASSETS`: every file in `styles/`, `data/`, `js/`, plus

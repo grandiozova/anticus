@@ -207,7 +207,9 @@ test('карточка поддержки стоит первой в настр�
     const iData = heads.findIndex(t => t.includes('Управление данными'));
     const iSupport = heads.findIndex(t => t.includes('Поддержать проект'));
     const iLicenses = heads.findIndex(t => t.includes('Лицензии'));
-    assert.ok(iSupport === 0 && iData === iSupport + 4 && iLicenses === iData + 1,
+    // Порядок, а не число карточек: «Шрифт» встал между размером текста и
+    // данными, и жёсткий счёт пришлось бы править каждой такой правке.
+    assert.ok(iSupport === 0 && iLicenses === heads.length - 1 && iData === iLicenses - 1,
         'порядок карточек настроек: ' + heads.join(' | '));
     app.close();
 });

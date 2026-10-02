@@ -33,6 +33,36 @@ const LICENSES = [
         url: 'https://m3.material.io/'
     },
     {
+        name: 'PT Sans',
+        terms: 'SIL Open Font License 1.1 © ParaType',
+        url: 'https://openfontlicense.org/'
+    },
+    {
+        name: 'PT Serif',
+        terms: 'SIL Open Font License 1.1 © ParaType',
+        url: 'https://openfontlicense.org/'
+    },
+    {
+        name: 'Noto Sans (шрифт интерфейса)',
+        terms: 'SIL Open Font License 1.1 © Google / The Noto Project',
+        url: 'https://openfontlicense.org/'
+    },
+    {
+        name: 'Inter',
+        terms: 'SIL Open Font License 1.1 © Rasmus Andersson',
+        url: 'https://openfontlicense.org/'
+    },
+    {
+        name: 'Literata',
+        terms: 'SIL Open Font License 1.1 © TypeTogether',
+        url: 'https://openfontlicense.org/'
+    },
+    {
+        name: 'Source Serif 4',
+        terms: 'SIL Open Font License 1.1 © Adobe',
+        url: 'https://openfontlicense.org/'
+    },
+    {
         name: 'Учебные материалы: греческий',
         terms: 'Дж. Грешем Мейчен. Учебник греческого языка Нового Завета. ' +
                'Перевод А. А. Руденко, научный редактор Е. Б. Смагина. ' +
