@@ -20,7 +20,10 @@ const DRILLS = [
     ['exercise', 'accent_type'],
     ['exercise', 'heb_letter_final'],
     ['exercise', 'heb_begadkefat'],
+    ['exercise', 'heb_vowel_name'],
+    ['exercise', 'heb_vowel_sound'],
     ['vowel_flashcards', 'vowels'],
+    ['vowel_write', 'vowels'],
     ['exercise', 'case_number'],
     ['exercise', 'agreement'],
     ['exercise', 'attribute_vs_predicate'],
@@ -188,7 +191,7 @@ test('холст письма подгоняется под свою ширин�
             return { width: 300, height: 200, left: 0, top: 0, right: 300, bottom: 200 };
         };
         // Заглушка 2d-контекста: приложению нужны только эти вызовы, и все они
-        // должны пройти, иначе initLetterWriteCanvas вернётся до подгонки.
+        // должны пройти, иначе initWritingCanvas вернётся до подгонки.
         const noop = function () {};
         const fakeCtx = {
             setTransform: noop, clearRect: noop, beginPath: noop, moveTo: noop,

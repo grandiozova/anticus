@@ -221,7 +221,11 @@
 .exercise-next-actions {
     justify-content: flex-end;
 }
-#letterWriteCanvas {
+/* Холст один на письмо буквы и на написание огласовки, поэтому и правило одно:
+   селектор по общему классу, а не по id, — иначе второй холст оставался бы
+   нестилизованным и брал бы свою внутреннюю ширину (300×150), растягивая
+   экран. */
+.writing-canvas {
     /* Холст занимает всю коробку карточки (её height), а не задаёт её сам:
        так высота зависит от окна, а буфер подгоняется под неё в js. Карточка
        держит padding 12px, и холст лежит в её padding-box вычтенным на эти
@@ -266,6 +270,55 @@
     font-size: calc(3.5rem * var(--md-ref-script-scale));
     line-height: calc(4.25rem * var(--md-ref-script-scale));
     color: var(--md-sys-color-on-surface);
+}
+/* Знак огласовки: и образец под холстом, и показ ответа берут один кегль —
+   тогда дорисованное сравнивают с верным знаком один в один. Кегль тот же, что
+   у знака на карточке огласовки (.flashcard-word): это тот же знак в том же
+   размере, и множитель ползунка на месте. */
+.vowel-write-form {
+    font-family: var(--md-ref-typeface-script);
+    direction: var(--md-ref-script-direction);
+    unicode-bidi: isolate;
+    font-size: calc(3.5rem * var(--md-ref-script-scale));
+    line-height: calc(4.125rem * var(--md-ref-script-scale));
+    color: var(--md-sys-color-on-surface);
+}
+/* Носитель под холстом: бледный образец буквы, к которой дописывают знак. По
+   нему видно, куда ставить точку или чёрточку. Цвет — контур, а не on-surface:
+   штрих ученика рисуется primary (js/exercises.js), и образец не должен с ним
+   спорить. Холст прозрачен и лежит поверх (он позже в разметке), поэтому
+   образец виден сквозь него; pointer-events: none — чтобы не перехватывать
+   штрих за пределами холста (карточка держит padding 12px). */
+.vowel-write-guide {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--md-sys-color-outline);
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+}
+/* Подсказка перед рисованием — название знака и его звук. Обе строки русские,
+   поэтому множителей изучаемого языка у них нет: это подсказка о знаке, а не
+   сам знак, — как и на обороте карточки огласовки. */
+.vowel-write-prompt {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 8px;
+    margin: 0 0 16px;
+}
+.vowel-write-prompt__name {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+    color: var(--md-sys-color-on-surface);
+}
+.vowel-write-prompt__sound {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+    color: var(--md-sys-color-on-surface-variant);
 }
 .options {
     display: grid;
@@ -662,9 +715,16 @@
     font-weight: 400;
 }
 
+/* Знак огласовки — предмет главы 2 иврита, а не подпись к ней, поэтому кегль
+   у него свой, крупнее табличного. Он закреплён в px по просьбе владельца:
+   алфавит и огласовку листают и узнают знаки, а не читают подряд, и они не
+   должны ехать за ползунками размера. Значение — тот кегль, что формула
+   давала при ползунке 160% (1.375rem × 1.6): на экране по умолчанию ничего
+   не изменилось. Предел огласовки (--md-ref-script-min-size) здесь не нужен:
+   35.2px выше его 20px при любом положении ползунков, а сам он не ползунок. */
 .md-table--pool .md-table-pool__glyph {
     display: block;
-    font-size: calc(max(1.375rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    font-size: 35.2px;
     line-height: 1.25;
     color: var(--md-sys-color-on-surface);
     font-weight: 500;
@@ -770,9 +830,14 @@
    строчной стоят в одной ячейке («Αα») — то есть это ещё и самая широкая
    ячейка таблицы. 1.75rem — предел, при котором три колонки ещё помещаются
    в полосу прокрутки телефона (412px) вместе с произношением; выше таблица
-   начинает ехать вбок. */
+   начинает ехать вбок.
+   Кегль закреплён в px по просьбе владельца: алфавит листают и узнают буквы,
+   а не читают подряд, и он не должен ехать за ползунками размера. Значение —
+   тот кегль, что формула давала при ползунке 160% (1.75rem × 1.6): на экране
+   по умолчанию ничего не изменилось. Предел огласовки здесь не нужен —
+   44.8px выше его 20px при любом положении ползунков. */
 .md-table--alphabet .alphabet-glyph {
-    font-size: calc(max(1.75rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    font-size: 44.8px;
     line-height: 1.2;
 }
 /* Рукописное начертание — та же гарнитура Gveret Levin, что и в упражнении
@@ -804,16 +869,18 @@
    .grammar-text table td:lang(he) из base.css: там он равен 1em языкового
    ползунка, а букве здесь нужен ещё и собственный размер. Гарнитуру,
    направление и языковой множитель ячейка по-прежнему берёт у lang="he" в
-   данных — здесь только размер. Формула та же, что у буквы в таблице
-   алфавита, вместе с пределом огласовки: у иврита буква — это не только
-   контур, но и точка внутри него. */
+   данных — здесь только размер. Кегль закреплён в px, как у буквы в таблице
+   алфавита и у знака огласовки: буквы алфавита листают и узнают, а не читают
+   подряд, и они не должны ехать за ползунками размера. Значение — тот кегль,
+   что формула давала при ползунке 160% (1.5rem × 1.6): на экране по умолчанию
+   ничего не изменилось. Предел огласовки не нужен — 38.4px выше его 20px. */
 .grammar-text .md-table--begadkefat th {
     font-size: 0.6875rem;
     letter-spacing: 0;
     text-transform: none;
 }
 .grammar-text .md-table--begadkefat td[lang="he"] {
-    font-size: calc(max(1.5rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    font-size: 38.4px;
 }
 .word-details tr:last-child td, .grammar-text tr:last-child td { border-bottom: 0; }
 

@@ -135,7 +135,7 @@ invisible until someone hits the specific path (offline load, one specific theme
 | a screen | markup in `index.html` **+** `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` in `js/shell.js` |
 | an exercise kind | `EXERCISE_TYPES` (`js/exercises.js`) **+** `LESSON_DRILL_GROUPS` (`js/lesson.js`) and/or `TEST_TYPES` (`js/test.js`) |
 | a color role | `:root`, `[data-theme="dark"]`, **and** `[data-theme="sepia"]` in `tokens.css` |
-| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` — except the dictionary headword (`.word-item .word-row strong` → `var(--md-ref-script-headword-size)`, 24px Greek / 40px Hebrew) and the usage example (`.vocab-example__script` → `var(--md-ref-script-example-size)`, 22px / 24px), which are deliberately fixed so the dictionary does not move with the sliders |
+| a `font-size` on Greek/Hebrew text | multiply it: `calc(<size> * var(--md-ref-script-scale))` — except the dictionary headword (`.word-item .word-row strong` → `var(--md-ref-script-headword-size)`, 24px Greek / 40px Hebrew), the usage example (`.vocab-example__script` → `var(--md-ref-script-example-size)`, 22px / 24px), and the alphabet's letters and signs (`.md-table--alphabet .alphabet-glyph` 44.8px, `.md-table--pool .md-table-pool__glyph` 35.2px, `.grammar-text .md-table--begadkefat td[lang="he"]` 38.4px), all deliberately fixed in bare `px` so they do not move with the sliders |
 | a part-of-speech `type` value | `VOCAB_TYPE_ORDER` **+** `TYPE_LABELS` in `js/vocab.js` |
 | a cache that spans screens | a reset for it inside `applyCourse()` in `js/course.js` |
 | a new dependency/font/asset | an entry in `data/licenses.js` |
@@ -287,12 +287,23 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   `vowel_flashcards`) additionally needs a container in `DRILL_BOXES` and a branch in
   `startLessonDrill()`. Two kinds may share a container (`#flashcardContainer`), in
   which case the others are hidden **by container id**, not by kind.
-- **Огласовки заучиваются карточками** (`vowel_flashcards`): лицо — знак с носителем
-  (`בַּ`), оборот — название знака и звук (`патах`, `[а]`). Колода —
-  `courseAlphabet().vowels`, доступность — по данным урока (`heb_vowel_*`), а не по
-  пулу курса. Виды `heb_vowel_name` и `heb_vowel_sound` остались в данных и в
-  `TEST_TYPES`, но пунктами меню больше не показываются; тесты, которые водили их
-  через `startLessonDrill()`, ходят в них через `startExercise()`.
+- **Огласовку спрашивают тремя упражнениями вокруг одного пула.** Карточка
+  (`vowel_flashcards`) показывает знак с носителем на лице (`בַּ`), а на обороте —
+  название знака и звук (`патах`, `[а]`); те же два вопроса задают выбором варианта
+  `heb_vowel_name` («Как называется этот знак?») и `heb_vowel_sound` («Какой звук
+  обозначает этот знак?»). Колода карточки — `courseAlphabet().vowels`, доступность —
+  по данным урока (`heb_vowel_*`), а не по пулу курса. Вид без пункта меню (как
+  `declension_fill`) — это нормально: его данные и `TEST_TYPES` остаются, а тесты
+  ходят в него через `startExercise()`.
+- **Тот же пул знаков ещё и дорисовывают** (`vowel_write`): дано название знака и
+  звук (`патах`, `[а]`), а знак рисуют на холсте к бледному носителю
+  (`.vowel-write-guide`). Ход как у письма буквы: «Готово» засчитывает и показывает
+  верный знак с названием и звуком, «Назад» снимает ответ. Вид без записи в
+  `EXERCISE_TYPES` — четыре места, как у `flashcards`: пункт в `LESSON_DRILL_GROUPS`,
+  контейнер в `DRILL_BOXES` (`#exerciseQuestion`, как у `letter_write`),
+  доступность по данным урока (`heb_vowel_*`) и ветка в `startLessonDrill()`;
+  состояние своё — `vowelWriteState`, `showVowelWrite()`. Рисунок не оценивается:
+  это самопроверка, а не проверка.
 - Kind names shared by both courses have no prefix (`agreement`, `translate_*`).
   Kinds that only exist for Hebrew are prefixed `heb_` (`heb_construct`,
   `heb_gender_number`, etc.) — this is a naming convention only, no code parses it.
@@ -332,7 +343,7 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   поэтому рядом с «Далее» есть «Назад» (`backToLetterWriteCanvas()`): он снимает
   засчитанный ответ (и с `stats.totalCorrect`, и с `exerciseState.correct`) и
   зовёт `showExercise()` на том же индексе — вопрос отрисуется заново вместе с
-  холстом, а обработчики навесит тот же `initLetterWriteCanvas()`. Обе строки
+  холстом, а обработчики навесит тот же `initWritingCanvas('letterWriteCanvas')`. Обе строки
   кнопок письма разведены по краям (`justify-content: space-between`): на холсте
   «Очистить | Готово», на показе «Назад | Далее», поэтому «Назад» стоит там же,
   где «Очистить», а «Далее» — где «Готово». Холст перед новым вопросом очищает
@@ -346,7 +357,12 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   («син») стоят в списке письма вместо одной буквы ש из пула — в остальных видах
   ש остаётся одной буквой с двумя чтениями, и трогать пул нельзя (на нём стоит
   таблица алфавита и остальные виды).
-  **Холст подгоняется под свою рамку, а не растягивается.** `initLetterWriteCanvas()`
+  **Холст один на письмо буквы и на написание огласовки, и стилизуется классом,
+  а не id.** Оба холста — `.writing-canvas` (`#letterWriteCanvas`,
+  `#vowelWriteCanvas`), и правило размера в `styles/screens.css` берёт класс:
+  селектор по одному id оставлял второй холст с внутренними 300×150 и растягивал
+  страницу. Очистка тоже общая — `clearWritingCanvas(id)`.
+  **Холст подгоняется под свою рамку, а не растягивается.** `initWritingCanvas(id)`
   ставит `canvas.width/height` по `getBoundingClientRect()` — буфер обязан
   совпадать с отрисованной коробкой, иначе штрихи уезжают из-под пальца, а линии
   мылятся (рисуем мы в CSS-пикселях через `setTransform(ratio, …)`). Следит он за

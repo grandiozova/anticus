@@ -12,6 +12,10 @@ let flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 
 // Колода карточек огласовок (еврейский курс). Отдельно от flashcardState: там
 // слова урока, здесь — знаки из пула курса, и смешивать их нельзя.
 let vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
+// Написание огласовки (еврейский курс): ту же колоду знаков дорисовывают к
+// носителю на холсте. Ход другой, чем у карточек, поэтому и состояние своё, а
+// не общее с vowelFlashcardState.
+let vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
 let exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0 };
 // Начертание показа в упражнении письма: 'print' или 'cursive'. Лежит рядом
 // с состоянием упражнения, но не внутри: начертание — это только то, как

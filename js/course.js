@@ -102,6 +102,7 @@ function applyCourse(id) {
     allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all' };
     flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
     vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
+    vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
     testState = { questions: [], index: 0, correct: 0, total: 10, answered: false };
     exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0 };
     translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };

@@ -520,12 +520,14 @@ function letterWritePracticeState() {
         // а не по греческому ἄλφα, которое в начале курса ещё не прочтёшь.
         prompt: (q.ru || q.name) + (q.finalForm ? ' (конечная)' : ''),
         cardClass: isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew',
-        canvasClass: isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew'
+        canvasClass: 'writing-canvas'
     };
 }
 
-function clearLetterWriteCanvas() {
-    const canvas = document.getElementById('letterWriteCanvas');
+// Холст — общий у письма буквы и у написания огласовки, отличается только id,
+// поэтому и очистка одна на оба: id приходит из разметки.
+function clearWritingCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     let ctx;
     try {
@@ -610,8 +612,10 @@ function backToLetterWriteCanvas() {
     showExercise();
 }
 
-function initLetterWriteCanvas() {
-    const canvas = document.getElementById('letterWriteCanvas');
+// Холст один на письмо буквы и на написание огласовки; id приходит из разметки,
+// потому что на экране он всегда ровно один из двух.
+function initWritingCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     let ctx;
     try {
@@ -768,10 +772,10 @@ function showExercise() {
         html += '<div class="' + promptClass + '">' + promptText + '</div>' +
             '<div class="writing-practice">' +
                 '<div class="writing-canvas-card ' + (isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew') + '">' +
-                    '<canvas id="letterWriteCanvas" class="' + (isGreek ? 'letter-write-canvas--greek' : 'letter-write-canvas--hebrew') + '" aria-label="Поле для письма буквы"></canvas>' +
+                    '<canvas id="letterWriteCanvas" class="writing-canvas" aria-label="Поле для письма буквы"></canvas>' +
                 '</div>' +
                 '<div class="md-button-row">' +
-                    '<button type="button" class="menu-btn outlined" onclick="clearLetterWriteCanvas()"><span class="msym">delete</span>Очистить</button>' +
+                    '<button type="button" class="menu-btn outlined" onclick="clearWritingCanvas(\'letterWriteCanvas\')"><span class="msym">delete</span>Очистить</button>' +
                     '<button type="button" class="menu-btn primary" onclick="completeLetterWritingPractice()"><span class="msym">check</span>Готово</button>' +
                 '</div>' +
             '</div>';
@@ -780,7 +784,121 @@ function showExercise() {
     }
     container.innerHTML = html;
 
-    if (exerciseWritingStyle(s.type)) initLetterWriteCanvas();
+    if (exerciseWritingStyle(s.type)) initWritingCanvas('letterWriteCanvas');
+}
+
+// ============================================================
+// НАПИСАНИЕ ОГЛАСОВКИ (еврейский курс)
+// ============================================================
+// Огласовка — комбинирующий знак: сам по себе он не отображается, а живёт при
+// букве. Поэтому учить его начертание надо там же, где он стоит, и задание
+// обратное карточке огласовок: карточка показывает знак и спрашивает название,
+// здесь называют знак (и называют звук) и просят дорисовать его к носителю.
+// Ход тот же, что у письма буквы: холст, «Готово» с показом верного знака и
+// «Назад», снимающая засчитанный ответ, — но выбора начертания нет, оно одно.
+//
+// Носитель лежит под холстом бледным образцом (.vowel-write-guide), чтобы знак
+// ставили на место, а не наугад. Колода — пул знаков курса
+// (courseAlphabet().vowels), а не словарь урока: огласовка не слово. Пустой
+// пул — не ошибка, а греческий курс, где таких знаков нет.
+//
+// Носитель — буква бет с дагешем: пул дописывает к ней все знаки (так же
+// считает и tests/alphabet.test.js). Значения кодами: буква и дагеш — два
+// разных знака, и глазами в редакторе их не различить.
+const VOWEL_CARRIER = '\u05D1\u05BC';
+
+function startVowelWrite() {
+    const vowels = (courseAlphabet().vowels || []).slice();
+    if (vowels.length === 0) {
+        document.getElementById('exerciseQuestion').innerHTML = '<p>Нет огласовок.</p>';
+        return;
+    }
+    vowelWriteState = {
+        words: shuffle(vowels), index: 0, revealed: false, correct: 0, total: vowels.length
+    };
+    showVowelWrite();
+}
+
+function showVowelWrite() {
+    const s = vowelWriteState;
+    const box = document.getElementById('exerciseQuestion');
+    if (!box) return;
+    if (s.index >= s.total) {
+        box.innerHTML = resultBlock(s.correct, s.total, 'Огласовки завершены') +
+            '<div class="md-button-row">' +
+            '<button class="menu-btn primary" onclick="startVowelWrite()"><span class="msym">restart_alt</span>Ещё раз</button>' +
+            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
+        return;
+    }
+    const v = s.words[s.index];
+    let html = progressHead('Огласовка ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    if (s.revealed) {
+        // Показ — тот же знак с носителем, что на обороте карточки, и те же
+        // название и звук: ученик проверяет себя и заодно доучивает знак.
+        html += '<div class="flashcard-flip"><div class="md-flashcard md-flashcard--writing md-flashcard--back md-flashcard--has-flip md-flashcard--flip">' +
+            '<div class="letter-write-reveal">' +
+                '<div class="vowel-write-form">' + v.sign + '</div>' +
+                '<div class="flashcard-vowel-name">' + escHtml(v.name) + '</div>' +
+                '<div class="flashcard-vowel-sound">' + escHtml(v.sound) + '</div>' +
+            '</div>' +
+            '</div></div>' +
+            '<div class="md-button-row exercise-actions">' +
+                '<button type="button" class="menu-btn outlined" onclick="backToVowelWriteCanvas()"><span class="msym">edit</span>Назад</button>' +
+                '<button type="button" class="menu-btn primary" onclick="nextVowelWrite()"><span class="msym">arrow_forward</span>Далее</button>' +
+            '</div>';
+    } else {
+        html += '<div class="question">Нарисуйте знак огласовки</div>' +
+            '<div class="vowel-write-prompt">' +
+                '<span class="vowel-write-prompt__name">' + escHtml(v.name) + '</span>' +
+                '<span class="vowel-write-prompt__sound">' + escHtml(v.sound) + '</span>' +
+            '</div>' +
+            '<div class="writing-practice">' +
+                '<div class="writing-canvas-card writing-canvas-card--hebrew">' +
+                    // Образец носителя — не текст для чтения, а подложка под
+                    // штрих: от скринридера его прячем, вопрос и так назвал знак.
+                    '<span class="vowel-write-form vowel-write-guide" aria-hidden="true">' + VOWEL_CARRIER + '</span>' +
+                    '<canvas id="vowelWriteCanvas" class="writing-canvas" aria-label="Поле для знака огласовки"></canvas>' +
+                '</div>' +
+                '<div class="md-button-row">' +
+                    '<button type="button" class="menu-btn outlined" onclick="clearWritingCanvas(\'vowelWriteCanvas\')"><span class="msym">delete</span>Очистить</button>' +
+                    '<button type="button" class="menu-btn primary" onclick="completeVowelWritingPractice()"><span class="msym">check</span>Готово</button>' +
+                '</div>' +
+            '</div>';
+    }
+    box.innerHTML = html;
+    if (!s.revealed) initWritingCanvas('vowelWriteCanvas');
+}
+
+// Ответ засчитан уже на «Готово»: рисунок приложению не проверить, и это не
+// проверка, а самопроверка. Ответ уходит в статистику тем же способом, что и
+// у письма буквы, — чтобы в общем счёте он был виден.
+function completeVowelWritingPractice() {
+    const s = vowelWriteState;
+    if (!s.total || s.revealed) return;
+    stats.totalCorrect++;
+    s.correct++;
+    saveStats();
+    s.revealed = true;
+    showVowelWrite();
+}
+
+// Возврат к холсту: «Готово» жмут и не дорисовав знак. Как и у письма буквы,
+// ответ снимается с обоих счётчиков, и тот же вопрос рисуется заново вместе с
+// пустым холстом.
+function backToVowelWriteCanvas() {
+    const s = vowelWriteState;
+    if (!s.total || !s.revealed) return;
+    if (stats.totalCorrect > 0) stats.totalCorrect--;
+    if (s.correct > 0) s.correct--;
+    saveStats();
+    s.revealed = false;
+    showVowelWrite();
+}
+
+function nextVowelWrite() {
+    vowelWriteState.index++;
+    vowelWriteState.revealed = false;
+    showVowelWrite();
 }
 
 function answerOpt(sel, corr) {

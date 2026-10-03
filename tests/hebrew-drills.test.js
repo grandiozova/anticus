@@ -92,7 +92,7 @@ test('каждый еврейский вид упражнения рисуетс
     const w = withHebrewChapter(app);
 
     for (const key of Object.keys(HEBREW_CHAPTER.exercises)) {
-        // Вид без пункта меню (об огласовке спрашивают карточками) рисуется
+        // Вид без пункта меню (например, огласовку тренируют карточкой) рисуется
         // напрямую — так же, как его спрашивает «Тест».
         if (w.findLessonDrill('exercise', key)) {
             w.startLessonDrill('exercise', key);
@@ -337,3 +337,89 @@ test('карточки огласовок не появляются в греч�
     app.close();
 });
 
+
+// ------------------------------------------------------------ написание огласовки
+
+test('огласовку дописывают по названию: под холстом носитель, на ответе знак', () => {
+    const app = loadApp(GREEK);
+    const w = withHebrewChapter(app);
+    w.startLessonDrill('vowel_write', 'vowels');
+
+    const box = app.document.querySelector('#drillSection');
+    assert.ok(!/Нет упражнений|не поддерживается/.test(box.textContent),
+        'написание огласовки не отрисовалось: ' + box.textContent.slice(0, 120));
+
+    // Вопрос называет знак и его звук, а сам знак — ответ, и его на лице нет:
+    // под холстом стоит только носитель, к которому знак дописывают.
+    const v = app.get('vowelWriteState.words[vowelWriteState.index]');
+    const carrier = app.get('VOWEL_CARRIER');
+    assert.strictEqual(app.document.querySelector('#drillSection .vowel-write-prompt__name').textContent, v.name,
+        'под холстом нет названия знака');
+    assert.strictEqual(app.document.querySelector('#drillSection .vowel-write-prompt__sound').textContent, v.sound,
+        'под холстом нет звука знака');
+    const guide = app.document.querySelector('#drillSection .vowel-write-guide');
+    assert.ok(guide, 'под холстом нет носителя');
+    assert.strictEqual(guide.textContent, carrier, 'образец под холстом — не носитель знака');
+    assert.ok(v.sign.startsWith(carrier), 'знак пула не дописан к носителю: ' + v.sign);
+    assert.strictEqual(app.document.querySelector('#drillSection .vowel-write-form').textContent, carrier,
+        'на лице виден сам знак, а не только носитель');
+    assert.ok(app.document.querySelector('#drillSection #vowelWriteCanvas'), 'холст не нарисовался');
+    assert.ok(!app.document.querySelector('#drillSection .flashcard-vowel-name'),
+        'название знака на лице — оно и так стоит в вопросе');
+
+    // «Готово» засчитывает ответ и показывает верный знак, его название и звук.
+    w.completeVowelWritingPractice();
+    assert.strictEqual(app.get('vowelWriteState.correct'), 1, 'ответ не засчитан');
+    assert.strictEqual(app.get('stats.totalCorrect'), 1, 'ответ не попал в общий счёт');
+    assert.ok(!app.document.querySelector('#drillSection #vowelWriteCanvas'),
+        'холст остался после показа знака');
+    assert.strictEqual(app.document.querySelector('#drillSection .vowel-write-form').textContent, v.sign,
+        'на показе не верный знак');
+    assert.strictEqual(app.document.querySelector('#drillSection .flashcard-vowel-name').textContent, v.name,
+        'на показе нет названия знака');
+    assert.strictEqual(app.document.querySelector('#drillSection .flashcard-vowel-sound').textContent, v.sound,
+        'на показе нет звука знака');
+
+    // «Назад» возвращает холст и снимает засчитанный ответ — как у письма буквы.
+    w.backToVowelWriteCanvas();
+    assert.strictEqual(app.get('vowelWriteState.correct'), 0, '«Назад» не сняла ответ');
+    assert.strictEqual(app.get('stats.totalCorrect'), 0, '«Назад» не вернула общий счётчик');
+    assert.ok(app.document.querySelector('#drillSection #vowelWriteCanvas'), '«Назад» не вернула холст');
+    assert.ok(!app.document.querySelector('#drillSection .flashcard-vowel-name'),
+        '«Назад» оставила показ знака на экране');
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('колода написания огласовки — это пул знаков курса и проходит до конца', () => {
+    const app = loadApp(GREEK);
+    const w = withHebrewChapter(app);
+
+    assert.ok(w.lessonDrillAvailable(w.getLessonData(3), w.findLessonDrill('vowel_write', 'vowels')),
+        'в еврейской главе, где есть вопросы об огласовке, написание недоступно');
+
+    w.startLessonDrill('vowel_write', 'vowels');
+    const total = app.get('vowelWriteState.total');
+    const pool = JSON.parse(app.get('JSON.stringify(HEBREW_ALPHABET.vowels)')).length;
+    assert.strictEqual(total, pool, 'колода написания не совпала с пулом курса');
+
+    const result = playThrough(app, '#drillSection');
+    assert.ok(result.finished, 'написание огласовки не дошло до экрана результата');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('написание огласовки не появляется в греческом курсе', () => {
+    const app = loadApp(GREEK);
+    const w = app.window;
+    w.openLesson(1);
+
+    assert.ok(!w.lessonDrillAvailable(w.getLessonData(1), w.findLessonDrill('vowel_write', 'vowels')),
+        'у греческого урока появилось написание огласовки');
+    w.switchLessonPart('exercise');
+    const box = app.document.getElementById('drillGroups');
+    assert.ok(!/Написание огласовки/.test(box.textContent),
+        'написание огласовки просочилось в меню греческого урока');
+    app.close();
+});

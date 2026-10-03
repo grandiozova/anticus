@@ -185,8 +185,9 @@ Structural facts worth knowing before editing:
 - **The lesson is three levels deep, not one.** Opening a lesson lands on `#partMenu` — its sections offered as a list of M3 list items (`renderLessonMenu()`), not on the material. Choosing one calls `switchLessonPart()`, which reveals the tab bar; `#lessonTabs` carries `.hidden` while the part is `'menu'`, so the tabs exist only inside a section, where there is something to switch between. The part names map to panel ids by capitalisation (`material` → `partMaterial`, `menu` → `partMenu`), which is what `switchLessonPart()` and `restoreLessonPart()` rely on, and `'menu'` is a part like any other — that is why `currentLessonPart` starts as `'menu'`. Back is a step **up**, not out: `goBack()` (`js/shell.js`) turns a section back into the menu, and only from the menu does it leave for the lesson list.
 - **`#partMaterial` holds the grammar card with the lesson's vocabulary card under it; `#partExercise` holds only the list of drills.** A drill is one entry in `LESSON_DRILL_GROUPS` (`js/lesson.js`) with a `kind` that says what runs it and where it draws: `exercise` → `startExercise()` into `#exerciseQuestion`, `translation` → `startTranslation()` into `#translationQuestion`, `flashcards` → `startFlashcards()` into `#flashcardContainer`. Those three containers live on **`#drillSection`, a screen of its own** — a chosen drill is a page, not a card appended under the list. `startLessonDrill()` shows the one container the chosen drill needs, clears the other two and calls `showSection('drillSection')`, so the three renderers keep their own ids and none of them had to change; `closeLessonDrill()` is the way back, and every drill's result block offers it. The app bar titles that screen from `currentDrill.label`, which is why `currentDrill` holds the drill **object**. Adding a drill means one entry in that catalogue — plus an availability rule in `lessonDrillAvailable()` if it is not an `exercises`/`translation` key.
 - **The writing drill is two steps with a way back.** `letter_write` draws a canvas (`#letterWriteCanvas`), «Готово» calls `completeLetterWritingPractice()`, which credits the answer and swaps the canvas for a card showing the letter. «Готово» gets pressed before the letter is finished, so the reveal carries a «Назад» (`backToLetterWriteCanvas()`) that *undoes* the credit — both `stats.totalCorrect` and `exerciseState.correct` — and calls `showExercise()` on the same index, which re-renders the canvas and re-binds its handlers. Both button rows are spread to the edges (`justify-content: space-between`): «Очистить | Готово» on the canvas, «Назад | Далее» on the reveal, so each button keeps its place across the swap. Clearing the canvas is `showExercise()`'s job, not the canvas handler's — otherwise coming back would wipe the already-drawn stroke. The question above the canvas names the letter in **Russian** in both courses: the Greek pool carries `ru` («альфа», the Russian reading lesson 1's own dictionary prints) beside its Greek `name`, because a beginner cannot yet read `ἄλφα`, and Hebrew's `name` is already Russian, so `letterWritePracticeState()` uses `q.ru || q.name`. The reveal is the same markup in both courses — one `.letter-write-reveal__forms` with a `.script` child (two children for Greek's capital and small, one for Hebrew) — so both centre by the same flex rule and take the same size; putting `.script` on the container itself for Hebrew left it one multiplier short and half the Greek size. The writing card also overrides the flashcard-back alignment it borrows: `justify-content: center` and a 24px bottom padding in place of `--has-flip`'s 76px (that reserve is for the flip button, which the writing reveal does not have), so the letter sits in the middle of the card rather than its upper third. `tests/static.test.js` fails if that centring rule goes.
-- **The canvas bitmap is resized to its own CSS box, never left to be stretched.** `initLetterWriteCanvas()` measures the canvas and sets `canvas.width/height` so the drawing buffer matches the rendered box (we stroke in CSS px via `setTransform(ratio, …)`, so the two must agree or strokes land off the finger and lines blur). It follows its box through **both** a `ResizeObserver` on `.writing-canvas-card` and a plain `window.resize` listener — the card narrows on the phone breakpoint without the window changing, and the field's *height* comes from the window, which the observer does not reliably report. Before a resize the bitmap is copied to a scratch canvas and drawn back afterwards, so a drawing survives a rotation; re-rendering the canvas produces a new observer, which is what keeps strokes from leaking across questions. Do not add click-based teardown: an earlier version disconnected the observer on the first tap, which killed tracking after the first stroke. `tests/drills.test.js` stubs the rect and a fake 2D context (jsdom has neither) to hold the buffer to the box and to check the `window.resize` path.
-- **A drag on the writing field must not pan the page.** iOS Safari rubber-bands the document on a gesture that starts on the canvas even with `touch-action: none` on it: the whole UI — the fixed app bar and nav bar included — slides down under the finger («окошко тянется вниз») and the stroke smears. Three guards hold it: `.writing-canvas-card` (not just the canvas) carries `touch-action: none` plus `user-select: none` / `-webkit-touch-callout: none`; `initLetterWriteCanvas()` adds a **non-passive** `touchmove` listener that calls `preventDefault()` — a bare `touch-action` was not enough on iOS, and a passive listener would have its `preventDefault` ignored; and the page root sets `overscroll-behavior: none` in `base.css`, which kills the elastic bounce and pull-to-refresh without touching ordinary scrolling. Drawing stays on pointer events and is unaffected. `tests/drills.test.js` dispatches a cancelable `touchmove` on the canvas and requires it to be default-prevented.
+- **The writing canvas is one component, styled by class, not by id.** Both the letter drill (`#letterWriteCanvas`) and the vowel drill (`#vowelWriteCanvas`, see "Alphabet and reading") are `.writing-canvas`; the sizing rule in `screens.css` selects that class. Styling by `#letterWriteCanvas` left the second canvas with the `<canvas>` intrinsic 300×150 and stretched the page — a second id in the selector is the maintenance trap, so use the class.
+- **The canvas bitmap is resized to its own CSS box, never left to be stretched.** `initWritingCanvas(id)` measures the canvas and sets `canvas.width/height` so the drawing buffer matches the rendered box (we stroke in CSS px via `setTransform(ratio, …)`, so the two must agree or strokes land off the finger and lines blur). It follows its box through **both** a `ResizeObserver` on `.writing-canvas-card` and a plain `window.resize` listener — the card narrows on the phone breakpoint without the window changing, and the field's *height* comes from the window, which the observer does not reliably report. Before a resize the bitmap is copied to a scratch canvas and drawn back afterwards, so a drawing survives a rotation; re-rendering the canvas produces a new observer, which is what keeps strokes from leaking across questions. Do not add click-based teardown: an earlier version disconnected the observer on the first tap, which killed tracking after the first stroke. `tests/drills.test.js` stubs the rect and a fake 2D context (jsdom has neither) to hold the buffer to the box and to check the `window.resize` path.
+- **A drag on the writing field must not pan the page.** iOS Safari rubber-bands the document on a gesture that starts on the canvas even with `touch-action: none` on it: the whole UI — the fixed app bar and nav bar included — slides down under the finger («окошко тянется вниз») and the stroke smears. Three guards hold it: `.writing-canvas-card` (not just the canvas) carries `touch-action: none` plus `user-select: none` / `-webkit-touch-callout: none`; `initWritingCanvas(id)` adds a **non-passive** `touchmove` listener that calls `preventDefault()` — a bare `touch-action` was not enough on iOS, and a passive listener would have its `preventDefault` ignored; and the page root sets `overscroll-behavior: none` in `base.css`, which kills the elastic bounce and pull-to-refresh without touching ordinary scrolling. Drawing stays on pointer events and is unaffected. `tests/drills.test.js` dispatches a cancelable `touchmove` on the canvas and requires it to be default-prevented.
 - **The writing field takes its height from the window, down a flex chain.** `#drillSection` is `min-height: calc(100dvh - app-bar - safe-top - nav-bar - safe-bottom - 88px)` (the last is `.md-content`'s own bottom padding in `base.css`; `dvh`, not `vh`, because mobile browser chrome moves), and `#drillSection > .card` → `#exerciseQuestion` → `.writing-practice` → `.writing-canvas-card` are each `flex: 1 1 auto; min-height: 0`. **The `display: flex` that chain needs belongs to `#drillSection.active`, never to `#drillSection`**: a selector by id (1,0,0) beats `.section { display: none }` (0,1,0), so flex declared on the bare id keeps the drill screen on screen after you leave it — every following screen then opens *below* the abandoned drill card. That is exactly how «Настройки» came to sit under a stray exercise card; `static.test.js` now fails on any `display` that a bare section id sets. The canvas itself is `position: absolute` with `top/left: 12px` and `width/height: calc(100% - 24px)` — explicit, because `<canvas>` has an intrinsic 300×150 and ignores a stretch otherwise. Do **not** put a `%` height on the canvas: it would resolve against a card whose height it also defines, and the browser falls back to the clamp floor, which is what left a small field above a large empty gap. The card keeps a floor (`min-height: clamp(180px, 34vh, 340px)`) so a short window scrolls instead of crushing the field, and `.writing-practice .flashcard-flip > .md-flashcard--writing` grows the same way so the reveal does not jump.
 - **The grammar in `data/lessons.js` is a `<br>`-separated stream, and the app does not render it raw.** In the data, paragraphs are separated by pairs of `<br>`, a section heading is a line that is nothing but `<b>…</b>`, and a list is *either* lines starting with `•` *or* a real `<ul>` (lesson 5 is the one that uses tags). That shape makes vertical rhythm a function of how many `<br>` someone typed, and it puts a wrapped bullet's second line under the marker. `renderGrammarHtml()` (`js/lesson.js`) rebuilds it into real blocks at render time — `.grammar-h`, `.grammar-p`, `.grammar-list` — so spacing comes from CSS instead. It changes markup only, never text; `<b>Примечание:</b> …` with the sentence continuing on the same line stays a paragraph, which is why the heading test requires the bold element to span the **whole** line. Fix grammar spacing here or in `screens.css`, **not** by editing `<br>` runs in the content.
 - **Studied-language runs in the prose are marked at render time.** The Greek
@@ -467,23 +468,30 @@ own answer handler. A new kind is an entry in that table, not a branch.
   `case_number`, which is labelled «Падеж и число». The prefix is a convention for
   readers; no code parses it.
 - **A kind can keep its data and its place in the test without a place in the menu.**
-  `heb_vowel_name` and `heb_vowel_sound` are no longer drills: огласовки заучивают
-  карточками (`vowel_flashcards`, see "Alphabet and reading"). Their data and their
-  `TEST_TYPES` entries stay, so «Тест» still asks them and `tests/alphabet.test.js`
-  still renders them through `startExercise()` — the same arrangement `declension_fill`
-  has. Removing a drill from `LESSON_DRILL_GROUPS` therefore does **not** orphan its
-  kind, but it does mean a test that drove it through `startLessonDrill()` must switch
-  to `startExercise()`.
+  `declension_fill` is that kind today: a form is trained on the back of a flashcard
+  (`cardDeclensionQuestions()`, see "Paradigms"), so the kind has no `LESSON_DRILL_GROUPS`
+  entry, yet its data and its `TEST_TYPES` entry stay and «Тест» still asks it.
+  Removing a drill from `LESSON_DRILL_GROUPS` therefore does **not** orphan its kind,
+  but it does mean a test that drove it through `startLessonDrill()` must switch to
+  `startExercise()`. The two vowel kinds travelled that road once — while огласовку
+  спрашивали только карточками, `heb_vowel_name`/`heb_vowel_sound` жили в данных и в
+  тесте без пункта меню — and were returned to the menu beside the cards; the tests
+  that had switched to `startExercise()` did not have to switch back, because a kind
+  in both places is reachable either way.
 - **A drill kind that is not an `EXERCISE_TYPES` entry needs four places, not three.**
-  `flashcards` and `vowel_flashcards` are `kind` values dispatched by
+  `flashcards`, `vowel_flashcards` and `vowel_write` are `kind` values dispatched by
   `startLessonDrill()`: their entry in `LESSON_DRILL_GROUPS`, their container in
   `DRILL_BOXES`, an availability rule in `lessonDrillAvailable()` when it is not
   `data.vocabulary`, and a branch in `startLessonDrill()`. Two kinds may share a
   container (`flashcards` and `vowel_flashcards` both draw into `#flashcardContainer`),
   but then `startLessonDrill()` must hide the rest **by container id**, not by kind —
   comparing kind would have the second one hide the first's container. `vowel_flashcards`
-  is available where the lesson actually drills the vowels (`heb_vowel_*` in its data),
-  because `courseAlphabet().vowels` alone is true for every Hebrew lesson.
+  and `vowel_write` are available where the lesson actually drills the vowels
+  (`heb_vowel_*` in its data), because `courseAlphabet().vowels` alone is true for every
+  Hebrew lesson. `vowel_write` draws into `#exerciseQuestion` (as `letter_write` does)
+  and reuses the shared `initWritingCanvas()`/`clearWritingCanvas()` rather than the
+  exercise run — it has no `EXERCISE_TYPES` entry and no options, only its own
+  `vowelWriteState` and `showVowelWrite()`.
 - **A group with nothing available is not drawn.** That is what keeps the phonology
   group («Огласовка и чтение») off Greek lesson screens without any branching on course.
 - **Do not put the answer in the question.** `heb_construct` and `heb_suffix_type` carry
@@ -497,13 +505,26 @@ are the letters, and the lesson after them is the reading rules (Greek: diphthon
 breathings, accents; Hebrew: the vowel points). Those two units per course are now
 drilled like any other material — thirteen kinds exist for them.
 
-**The Hebrew vowel points are learnt from flashcards, not from a choice of options.**
-The drill `vowel_flashcards` (речь о нём в разделе «Exercise types») shows the sign with
-its carrier on the front (`בַּ`) and the name and sound on the back (`патах`, `[а]`), in
-one card that both former multiple-choice kinds — `heb_vowel_name` and
-`heb_vowel_sound` — used to ask. It is a drill *kind* like `flashcards`, not an
-`EXERCISE_TYPES` entry: it has no question and no options, and its deck is
-`courseAlphabet().vowels`, not a lesson's vocabulary. See "Exercise types".
+**The Hebrew vowel points are learnt from flashcards, choice questions and drawing.**
+The three drills all work the one pool. The drill `vowel_flashcards` (речь о нём в
+разделе «Exercise types») shows the sign with its carrier on the front (`בַּ`) and the
+name and sound on the back (`патах`, `[а]`); the two multiple-choice kinds give the same
+two facts one at a time — `heb_vowel_name` asks «Как называется этот знак?» and
+`heb_vowel_sound` «Какой звук обозначает этот знак?». The card is a drill *kind* like
+`flashcards`, not an `EXERCISE_TYPES` entry: it has no question and no options, and its
+deck is `courseAlphabet().vowels`, not a lesson's vocabulary; the two choice kinds are
+ordinary `EXERCISE_TYPES` entries whose questions come from the same pool. See
+"Exercise types".
+
+**The same pool is also drawn, not only recognised.** `vowel_write` gives the sign's
+name and sound and asks for the sign itself: the canvas carries the carrier
+(`בּ`) as a faint guide (`.vowel-write-guide`, one shared `.vowel-write-form` size with
+the reveal, the flashcard's sign size), the user draws the point, and «Готово» credits
+the answer and reveals the whole sign with its name and sound — the same two-step
+shape, and the same way back, as `letter_write` (see "Exercise types"). The drawing is
+not graded; it is a self-check. The carrier is the pool's own prefix — every sign is
+written on `בּ`, which `tests/alphabet.test.js` already assumes — and a test asserts
+the pool keeps that prefix rather than retyping the letter.
 
 **The letters live in a pool per course, not in the questions.** `GREEK_ALPHABET`
 (`data/lessons.js`) and `HEBREW_ALPHABET` (`data/hebrew-lessons.js`) hold the letters
@@ -554,7 +575,9 @@ copies of the same table, and they would have drifted.
   «Буква» cell (`<td lang="el"><span class="alphabet-glyph">Αα</span></td>`) and has no
   extra columns, so the collapse rules simply find nothing to hide on it — that is why it
   has no `Показать всё` button. Two numbers there are ceilings rather than taste: the glyph
-  is `1.75rem` because at `2rem` three columns stop fitting a 412px phone, and the letter
+  is fixed at `44.8px` — the size the old `1.75rem × 1.6` slider formula gave at the
+  shipped 160%, see "Text size" — because at `2rem` three columns stop fitting a 412px
+  phone, and the letter
   column keeps `white-space: nowrap` (via the `td:not(:first-child)` rule) because «Σσ» and
   «בּ / ב» are single marks — letting them break inflates the row to 140px.
 - **A directional drill label reads «shown → chosen»**, as in «Фразы: {lang} → русский».
@@ -835,7 +858,9 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   narrow-screen override that forgot the multiplier once hid the whole language
   step on phones. The exemptions are named in that sweep — the two course glyphs,
   the dictionary headword and the usage example, each of them fixed on purpose and
-  each of them pinned by its own test below. Where the *content* decides the
+  each of them pinned by its own test below. (The alphabet's letters and signs are
+  fixed too, but the sweep never sees them — see the bullet after the next one.)
+  Where the *content* decides the
   language rather than the course — `.greek` / `.hebrew` / `[lang="he"]`, and the
   two samples on the settings screen — use `--app-greek-scale` /
   `--app-hebrew-scale` by name instead.
@@ -887,6 +912,19 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   pins both values (Hebrew > Greek, example < headword, `line-height` a number so
   the fixed size is not dragged back by a `rem` line box), so the exemption cannot
   quietly become a forgotten rule.
+- **The alphabet's letters and signs are fixed by the same decision.** The alphabet
+  table's letter (`.md-table--alphabet .alphabet-glyph`), the begadkefat letters
+  (`.grammar-text .md-table--begadkefat td[lang="he"]`) and the vowel sign
+  (`.md-table--pool .md-table-pool__glyph`) are the alphabet's own objects of study,
+  so they are scanned and recognised like a dictionary row rather than read as
+  prose, and the owner asked for them to stop moving with the sliders. Each is
+  written in bare `px` — the value the old `calc()` produced at the shipped 160%
+  (`1.75rem`/`1.5rem`/`1.375rem` × `1.6` → `44.8px`/`38.4px`/`35.2px`), so at the
+  default nothing moved, and `px` keeps the general slider away as well. The niqqud
+  floor is dropped from all three: every value is already above 20px, and the floor
+  is not a slider. These three rules are *not* seen by the multiplier sweep (they
+  carry no typeface and no `.script` — the face comes from `lang=` in `base.css`),
+  so `fontscale.test.js` pins them by text instead, next to the course-glyph check.
 - **Do not multiply the niqqud floor into a stepped size the wrong way round.**
   `max(<base>, var(--md-ref-script-min-size)) * var(--md-ref-script-size) * …`
   lifts Hebrew's *base* from 1rem to 1.25rem and then inflates the whole 1.92 — the
