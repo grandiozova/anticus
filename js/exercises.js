@@ -456,21 +456,6 @@ function letterWriteRevealForms(q) {
     return pair ? [pair.letter, pair.final] : [q.letter];
 }
 
-// Подпись над показанной буквой — её название. У греческого название само
-// изучаемое («ἄλφα»), и рядом стоит русское прочтение: тем же порядком, что
-// и в строке словаря (слово, затем чтение). Название берёт .script, прочтение
-// — нет: оно набрано русскими буквами. У иврита название уже русское («каф»),
-// поэтому строка одна и .script ей не нужен. Обычная и конечная форма названы
-// одинаково, без пометки: оборот показывает обе формы сразу
-// (letterWriteRevealForms), и слово «конечная» на карточке лишнее.
-function letterRevealNameHtml(q) {
-    if (isScriptText(q.name)) {
-        return '<span class="script">' + escHtml(q.name) + '</span>' +
-            (q.ru ? '<span class="letter-write-reveal__reading">' + escHtml(q.ru) + '</span>' : '');
-    }
-    return escHtml(q.name);
-}
-
 // Вид «письмо от руки»: отдаёт начертание, с которого вид начинается, или null,
 // если вид не про письмо. По этому ответу решается и какая разметка рисуется,
 // и нужно ли инициализировать холст, — поэтому спрашиваем таблицу видов, а не
@@ -579,9 +564,8 @@ function completeLetterWritingPractice() {
     saveStats();
 
     const isGreek = !!q.upper;
-    // Карточка показа — начертание и название буквы под ним: ученик рисует по
-    // русскому имени, а на ответе видит и начертание, и то, как это имя
-    // выглядит и звучит (см. letterRevealNameHtml выше).
+    // Карточка показа — только начертание: имя уже было вопросом перед
+    // рисованием, и повторять его на ответе незачем.
     //
     // Начертание взято из выбора на весь заход, а не у вида: печатное и
     // рукописное — один и тот же вопрос, и отличается у них только гарнитура
@@ -598,21 +582,20 @@ function completeLetterWritingPractice() {
     const writingCardClass = 'md-flashcard md-flashcard--writing' +
         (isGreek ? ' md-flashcard--writing-greek' : '') +
         ' md-flashcard--back md-flashcard--has-flip md-flashcard--flip';
-    // Показ устроен одинаково в обоих курсах: .letter-write-reveal__forms
-    // с .script внутри, а над ним — название. Так обе карточки и центрируют
-    // букву одним и тем же флексом, и берут один кегль. Кегль здесь
-    // складывается из двух множителей нарочно: 3.5rem × ползунок на коробке
-    // даёт .script в 1em, а его собственный множитель умножает ещё раз, —
-    // именно так выглядит греческий показ, и иврит обязан совпасть с ним по
-    // крупности, а не остаться на одном множителе (был вдвое мельче, см.
-    // tests/drills.test.js). Формы — в том числе конечную у иврита — отдаёт
-    // letterWriteRevealForms; начертание (.script--cursive) одно на весь заход.
+    // Показ устроен одинаково в обоих курсах: одна .letter-write-reveal__forms,
+    // внутри — .script. Так обе карточки и центрируют букву одним и тем же
+    // флексом, и берут один кегль. Кегль здесь складывается из двух множителей
+    // нарочно: 3.5rem × ползунок на коробке даёт .script в 1em, а его
+    // собственный множитель умножает ещё раз, — именно так выглядит греческий
+    // показ, и иврит обязан совпасть с ним по крупности, а не остаться на
+    // одном множителе (был вдвое мельче, см. tests/drills.test.js). Формы —
+    // в том числе конечную у иврита — отдаёт letterWriteRevealForms;
+    // начертание (.script--cursive) одно на весь заход.
     const revealForms = letterWriteRevealForms(q)
         .map(f => '<span class="script' + (cursive ? ' script--cursive' : '') + '">' + f + '</span>')
         .join('');
     const reveal =
         '<div class="letter-write-reveal">' +
-        '<div class="letter-write-reveal__name">' + letterRevealNameHtml(q) + '</div>' +
         '<div class="letter-write-reveal__forms">' + revealForms + '</div>' +
         '</div>';
 
@@ -625,6 +608,57 @@ function completeLetterWritingPractice() {
         reveal +
         '</div></div>' +
         '<div class="md-button-row exercise-actions"><button type="button" class="menu-btn outlined" onclick="backToLetterWriteCanvas()"><span class="msym">edit</span>Назад</button><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
+
+    alignLetterReveal();
+}
+
+// Начертание ставится по центру карточки — по чернилам, а не по строке. Строку
+// флекс центрует и так, но чернила глифа сидят в ней не посередине: у ламеда
+// выносная уходит вверх, у конечных форм хвост вниз, и буква кажется сдвинутой.
+// Поэтому после отрисовки меряем чернильную рамку буквы и сдвигаем показ ровно
+// настолько, чтобы посередине карточки оказалась она. Сдвиг идёт через
+// transform: поток не меняется, поле письма не удлиняется, карточка не прыгает.
+function alignLetterReveal() {
+    const reveal = document.querySelector('#exerciseQuestion .letter-write-reveal');
+    const forms = reveal && reveal.querySelector('.letter-write-reveal__forms');
+    if (!forms || !forms.children.length) return;
+    const band = letterRevealInkBand(forms);
+    if (!band) return;
+    const shift = Math.round(forms.offsetHeight / 2 - (band.top + band.bottom) / 2);
+    if (shift) reveal.style.setProperty('--letter-write-ink-shift', shift + 'px');
+}
+
+// Чернильная рамка форм относительно верха их строки: top — самый высокий глиф,
+// bottom — самый низкий. Границы берём у холста (actualBoundingBox*): DOM до
+// контура глифа не добирается. В jsdom холста нет (tests/helpers/app.js
+// подменяет getContext на null) — тогда null, и показ остаётся как есть.
+function letterRevealInkBand(forms) {
+    const scripts = [...forms.querySelectorAll('.script')];
+    if (!scripts.length) return null;
+    let ctx;
+    try {
+        ctx = document.createElement('canvas').getContext('2d');
+    } catch (error) {
+        return null;
+    }
+    if (!ctx || typeof ctx.measureText !== 'function') return null;
+    let top = Infinity;
+    let bottom = -Infinity;
+    for (const el of scripts) {
+        const cs = getComputedStyle(el);
+        const lineHeight = parseFloat(cs.lineHeight);
+        if (!isFinite(lineHeight)) return null;
+        ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+        const m = ctx.measureText(el.textContent);
+        const rise = m.fontBoundingBoxAscent;
+        const fall = m.fontBoundingBoxDescent;
+        if (!isFinite(rise) || !isFinite(fall) ||
+            !isFinite(m.actualBoundingBoxAscent) || !isFinite(m.actualBoundingBoxDescent)) return null;
+        const baseline = (lineHeight - (rise + fall)) / 2 + rise;
+        top = Math.min(top, baseline - m.actualBoundingBoxAscent);
+        bottom = Math.max(bottom, baseline + m.actualBoundingBoxDescent);
+    }
+    return isFinite(top) && isFinite(bottom) ? { top: top, bottom: bottom } : null;
 }
 
 // Возврат к письму после показа буквы. Отменяет засчитанный ответ и отдаёт тот

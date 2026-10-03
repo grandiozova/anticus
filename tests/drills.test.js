@@ -99,26 +99,16 @@ test('греческий показ буквы идёт прописной вп�
             app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__title').length, 0,
             q.name + ': над буквами остался заголовок карточки показа');
 
-        // Показ грека — название сверху и две формы под ним: название самим письмом
-        // (ἄλφα) и рядом русское прочтение (альфа). Курсива и выбора начертания
-        // на экране нет.
-        const name = app.document.querySelector('#exerciseQuestion .letter-write-reveal__name');
-        assert.ok(name, q.name + ': на карточке показа нет названия буквы');
-        const nameScript = name.querySelector('.script');
-        assert.ok(nameScript, q.name + ': название не помечено .script');
-        assert.strictEqual(nameScript.textContent, q.name, q.name + ': показано не греческое название');
+        // Показ грека — только две формы, без имени: оно уже было вопросом
+        // перед рисованием. Курсива и выбора начертания на экране нет.
         assert.strictEqual(
-            name.querySelector('.letter-write-reveal__reading').textContent, q.ru,
-            q.name + ': под названием нет русского прочтения');
+            app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__name').length, 0,
+            q.name + ': на карточке показа снова есть название буквы');
         const revealBox = app.document.querySelector('#exerciseQuestion .letter-write-reveal');
-        assert.strictEqual(revealBox.children.length, 2,
-            q.name + ': в карточке показа не два элемента');
-        // Название стоит над буквой, а не под ней: под буквой его сбивали
-        // выносные элементы начертания.
-        assert.ok(revealBox.children[0].classList.contains('letter-write-reveal__name'),
-            q.name + ': название не над буквой');
-        assert.ok(revealBox.children[1].classList.contains('letter-write-reveal__forms'),
-            q.name + ': буква не под названием');
+        assert.strictEqual(revealBox.children.length, 1,
+            q.name + ': в карточке показа больше одного элемента');
+        assert.ok(revealBox.children[0].classList.contains('letter-write-reveal__forms'),
+            q.name + ': в карточке показа нет форм буквы');
         assert.strictEqual(
             app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__forms.script--cursive').length, 0,
             q.name + ': греческий показ показан курсивом');
@@ -310,7 +300,7 @@ test('письмо начинается с выбора начертания н�
     // Выбор курсива: весь заход идёт курсивом, и переключателя нигде нет.
     rows[1].click();
     assert.ok(!app.document.querySelector('#exerciseQuestion .letter-write-choice'), 'выбор остался на экране');
-    assert.strictEqual(app.get('exerciseState.questions.length'), 28, 'после выбора не 28 букв');
+    assert.strictEqual(app.get('exerciseState.questions.length'), 23, 'после выбора не 23 буквы');
     assert.ok(app.document.querySelector('#exerciseQuestion canvas'), 'после выбора нет холста');
     assert.strictEqual(
         app.document.querySelectorAll('#exerciseQuestion .letter-write-toggle, #exerciseQuestion .md-segmented').length,
@@ -318,16 +308,22 @@ test('письмо начинается с выбора начертания н�
     // В упражнении нет поясняющей строки: под прогрессом сразу название буквы.
     assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .question').length, 0,
         'в письме осталась строка «Напишите букву от руки»');
+    // Вопрос фиксируем на алефе: у него одна форма и нет конечной пары, поэтому
+    // разметка показа предсказуема. Колода перемешана, и буква с конечной
+    // формой дала бы в показе две формы — проверка ниже на одну форму.
+    const state0 = app.get('exerciseState');
+    state0.index = state0.questions.findIndex(x => x.letter === '\u05D0');
+    assert.ok(state0.index >= 0, 'в вопросах письма нет алефа');
+    w.showExercise();
+
     const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-strong, #exerciseQuestion .md-prompt-ru');
-    const q0 = app.get('exerciseState.questions[0]');
-    // Обычную и конечную форму называют одинаково: пометки «(конечная)» нет,
-    // потому что показ после «Готово» даёт обе формы сразу.
+    const q0 = state0.questions[state0.index];
     assert.strictEqual(prompt.textContent.trim(), q0.name, 'под вопросом не имя буквы');
 
     w.completeLetterWritingPractice();
     const forms = app.document.querySelector('#exerciseQuestion .letter-write-reveal__forms');
     const glyph = forms.querySelector('.script');
-    const q = app.get('exerciseState.questions[0]');
+    const q = q0;
     assert.strictEqual(forms.textContent.trim(), q.letter, 'показано не то начертание');
     // Буква помечена .script внутри коробки, как у греческого, а не самой
     // коробкой: та же разметка даёт и общий с греком кегль (см. ниже), и
@@ -336,24 +332,25 @@ test('письмо начинается с выбора начертания н�
     assert.ok(glyph, 'буква не помечена .script');
     assert.strictEqual(forms.children.length, 1, 'в показе больше одной формы');
     assert.ok(glyph.classList.contains('script--cursive'), 'курсив не получил .script--cursive');
-    // Карточка показа — название буквы сверху и начертание под ним; «Готово» на ней
-    // нет (кнопку с этим словом уже нажали, и после показа её сменила «Далее»).
-    const nameEl = app.document.querySelector('#exerciseQuestion .letter-write-reveal__name');
-    assert.ok(nameEl, 'на карточке показа нет имени буквы');
-    assert.strictEqual(nameEl.textContent.trim(), q.name, 'на карточке показа не имя буквы');
-    // Ивритское имя — русское, поэтому .script на нём нет: множители изучаемого
-    // языка к подписи не применяются.
-    assert.strictEqual(nameEl.querySelector('.script'), null, 'ивритское имя помечено .script');
+    // Карточка показа — только начертание; имени буквы на ней нет, «Готово»
+    // тоже (кнопку с этим словом уже нажали, и после показа её сменила «Далее»).
+    assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__name').length, 0,
+        'на карточке показа снова есть имя буквы');
     assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__title').length, 0,
         'над буквой остался заголовок карточки показа');
     assert.ok(!/Готово/.test(app.document.getElementById('exerciseQuestion').textContent),
         'на карточке показа осталось слово «Готово»');
     const revealBox = app.document.querySelector('#exerciseQuestion .letter-write-reveal');
-    assert.strictEqual(revealBox.children.length, 2, 'в карточке показа не два элемента');
-    assert.ok(revealBox.children[0].classList.contains('letter-write-reveal__name'),
-        'название не над буквой');
+    assert.strictEqual(revealBox.children.length, 1, 'в карточке показа больше одного элемента');
+    assert.ok(revealBox.children[0].classList.contains('letter-write-reveal__forms'),
+        'в карточке показа нет форм буквы');
 
     // Начертание держится до конца захода, а не слетает на следующем вопросе.
+    // Дальше идём с начала колоды: впереди ещё три вопроса, и «Далее» не
+    // упрётся в экран результата, где холста уже нет.
+    state0.index = 0;
+    w.showExercise();
+    w.completeLetterWritingPractice();
     for (let i = 0; i < 3; i++) {
         const next = [...app.document.querySelectorAll('#exerciseQuestion .menu-btn')]
             .find(b => /Далее/.test(b.textContent));
@@ -393,10 +390,10 @@ test('письмо начинается с выбора начертания н�
 });
 
 test('письмо показывает конечную форму вместе с обычной и различает шин и син', () => {
-    // О конечной форме в вопросе не предупреждают: имя у неё то же, что у
-    // основной буквы, и показ после «Готово» даёт обе формы сразу (см. ниже).
-    // А у ש в письме два разных начертания, и по общему названию «син / шин»
-    // ученик не знал бы, что рисовать, поэтому имя у них разное.
+    // Конечных форм в колоде письма нет — их начертание показывает основная
+    // буква вместе со своей парой (см. ниже). А у ש в письме два разных
+    // начертания, и по общему названию «син / шин» ученик не знал бы, что
+    // рисовать, поэтому имя у них разное.
     const app = loadApp({ storage: { app_course: 'hebrew', app_default_course: 'hebrew' } });
     const w = app.window;
     const state = () => app.get('exerciseState');
@@ -419,15 +416,14 @@ test('письмо показывает конечную форму вместе
 
     choose(false);
     const s = state();
-    assert.strictEqual(s.questions.filter(x => x.finalForm).length, 5, 'помечены не пять конечных форм');
+    assert.strictEqual(s.questions.length, 23, 'в письме не 23 буквы');
+    assert.ok(!s.questions.some(x => x.finalForm), 'в письме есть конечные формы');
     assert.ok(!s.questions.some(x => x.letter === '\u05E9'), 'в письме есть голая ש');
 
-    // Обе формы названы одинаково — вопрос называет букву, а не начертание.
-    show('\u05DA');                                   // ך
-    assert.strictEqual(promptOf(), 'каф', 'конечная форма названа иначе, чем обычная');
+    // Конечная форма отдельным вопросом не спрашивается: вопрос называет букву,
+    // и «каф» — это основная כ.
     show('\u05DB');                                   // כ
     assert.strictEqual(promptOf(), 'каф', 'обычная буква названа не «каф»');
-    assert.ok(!state().questions[state().index].finalForm, 'обычная буква помечена finalForm');
 
     // Точки шина и сина — те же кодовые точки, что в таблице алфавита главы 1.
     // Значение из данных, а не набранное в тесте: сверить надо данные.
@@ -440,16 +436,13 @@ test('письмо показывает конечную форму вместе
 
     // На обороте буква с конечной формой показана обеими формами — так же, как
     // греческий показывает прописную и строчную. Порядок «обычная, конечная»:
-    // в RTL-строке обычная встанет справа и прочтётся первой. Это верно и когда
-    // спрашивали обычную букву, и когда конечную: на обороте видно их родство.
-    for (const [asked, base, final] of [['\u05DB', '\u05DB', '\u05DA'], ['\u05DA', '\u05DB', '\u05DA']]) {
-        show(asked);
-        w.completeLetterWritingPractice();
-        const pair = [...app.document.querySelectorAll('.letter-write-reveal__forms .script')]
-            .map(el => el.textContent);
-        assert.deepStrictEqual(pair, [base, final],
-            'показ ' + JSON.stringify(asked) + ' — не пара «обычная, конечная»');
-    }
+    // в RTL-строке обычная встанет справа и прочтётся первой. Так начертание
+    // конечной и остаётся в упражнении, хотя своим вопросом она не спрашивается.
+    show('\u05DB');                                   // כ
+    w.completeLetterWritingPractice();
+    const pair = [...app.document.querySelectorAll('.letter-write-reveal__forms .script')]
+        .map(el => el.textContent);
+    assert.deepStrictEqual(pair, ['\u05DB', '\u05DA'], 'показ кафа — не пара «обычная, конечная»');
 
     // Печатный заход: показ — та же строка с точкой и её имя над ней.
     for (const [letter, name] of [[SHIN, 'шин'], [SIN, 'син']]) {
@@ -462,9 +455,8 @@ test('письмо показывает конечную форму вместе
             'показ ' + name + ' потерял точку');
         assert.ok(!forms.querySelector('.script').classList.contains('script--cursive'),
             'печатный показ ' + name + ' курсивом');
-        assert.strictEqual(
-            app.document.querySelector('#exerciseQuestion .letter-write-reveal__name').textContent.trim(), name,
-            'на карточке показа ' + name + ' не её имя');
+        assert.strictEqual(app.document.querySelectorAll('#exerciseQuestion .letter-write-reveal__name').length, 0,
+            'на карточке показа ' + name + ' снова есть имя буквы');
     }
 
     // Курсивный заход — те же строки, но рукописной гарнитурой.
