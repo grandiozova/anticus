@@ -202,7 +202,14 @@ Structural facts worth knowing before editing:
   prose blocks are named in the selector (`.grammar-p .script`, …) rather than
   using `.grammar-text .script`, because a grammar table also lives under
   `.grammar-text` and the descendant selector (0,2,0) would beat
-  `.md-table-pool__glyph` (0,1,0) and break the chapter-2 vowel table.
+  `.md-table-pool__glyph` (0,1,0) and break the chapter-2 vowel table. A run that
+  is **only** a spacing diacritic — a breathing or accent sign with no letter under
+  it, as in «Придыхание: ῾ … ᾿ …» — is not a word but a label in brackets, so it is
+  wrapped in `script script--mark`   instead; that class takes a fixed `1.5rem` (bigger than the Russian text, smaller
+  than the Greek words) plus a negative `vertical-align`, because at the word step
+  the lone sign was drawn 2.4× and hung high above the Russian letters beside it —
+  the owner asked for it both larger than the text and lower on the line.
+  `tests/fontscale.test.js` pins both the class in the markup and the rule.
 - **`<table>`, `<ul>` and `<ol>` are lifted out of the stream before it is split** (`GRAMMAR_LIFT_RE` → placeholders → `grammarLiftedHtml()`). Two reasons, and both bite: `<br>` and `•` mean nothing inside them, and — the subtler one — a native `<ul>` in the source has no `<br>` around it, so without lifting, the paragraph before it, the list, and the paragraph after it all collapse into one `.grammar-p` with no spacing between them, and the `<ul>` never gets `.grammar-list`, which drops it through to the global `* { margin: 0; padding: 0 }` reset with no indent at all. A lifted table comes back wrapped in `.md-table-scroll`; a lifted list comes back carrying `.grammar-list`, the same class the `•` form produces. The lift regex is non-nesting — a list inside a list would break it, and there are none.
 - **Cells take their alignment from the strip, not from their own text** — `--md-table-align`, never `text-align: start`. See "Writing direction" for why the logical value is wrong here.
 - **A table wider than the screen scrolls inside its own strip; the page never scrolls sideways.** Every table sits in `.md-table-scroll` (`overflow-x: auto` plus `overscroll-behavior-x: contain`, so the gesture does not chain to the page), and `body` has `overflow-x: clip` as the backstop — `clip` rather than `hidden` because `hidden` would make `body` a scroll container and break the `window.scrollY` the app bar reads. Inside the strip the table is `width: auto; min-width: 100%` and its cells are `white-space: nowrap`: squeezing columns to fit would inflate a row to three lines because of a «Перевод» column that is off-screen anyway. All cells are left-aligned. If you add a table anywhere, wrap it.
@@ -880,7 +887,9 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   Hebrew and 1.5 × 1.6 = 2.4 for Greek, and 1.6 × 1.2 = 1.92 for Hebrew once its
   slider has been returned to "follows the general". Only four things ask
   for the step, each at its own base: `.grammar-p/.grammar-h/.grammar-list .script`
-  and `.question .script` (1em — the size of the prose/line they sit in),
+  and `.question .script` (1em — the size of the prose/line they sit in; the
+  mono-sign `script--mark` override deliberately opts out of the step, see the
+  prose bullet above),
   `.md-prompt-strong` (1.375rem — the `.question` line, the Russian text on that
   screen), `.options--script .option-btn` (1.125rem, ≈0.82 of the prompt — answers
   read as secondary but stay legible) and the word-bank chips, which *are* answers.

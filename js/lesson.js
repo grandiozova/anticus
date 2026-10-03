@@ -271,6 +271,14 @@ const LIFT_MARK = '\u0001';
 // символов берётся у core.js, чтобы «что считать изучаемым письмом» было
 // записано в приложении один раз.
 const GRAMMAR_SCRIPT_RUN_RE = new RegExp('[' + SCRIPT_CHAR_CLASS + ']+(?:\\s+[' + SCRIPT_CHAR_CLASS + ']+)*', 'g');
+// Одиночный знак ударения или придыхания греческого письма — диакритика без
+// буквы-основы (тонкое и густое придыхание, облечение, кория, тонос). Это метка
+// в скобках, а не слово, и обёртка помечает её вторым классом: языковой шаг
+// кегля раздувал знак в 1.5 × ползунок и вешал его высоко над русской строкой.
+// Набор — именно стоячие знаки из греческих блоков; предсобранные буквы с
+// диакритикой (ἀ, ῶ, …) сюда не попадают и остаются словом.
+const GREEK_MARK_CLASS = '\\u0374\\u0375\\u0384\\u0385\\u1FBD\\u1FBF-\\u1FC1\\u1FCD-\\u1FCF\\u1FDD-\\u1FDF\\u1FED-\\u1FEF\\u1FFD\\u1FFE';
+const GREEK_MARK_RUN_RE = new RegExp('^[' + GREEK_MARK_CLASS + ']+$');
 // Элемент, который уже помечен как изучаемый язык: классом (автор разметил
 // вставку сам) или языком (ячейка таблицы, <td lang="he">).
 const GRAMMAR_MARKED_RE = /\bclass\s*=\s*["'][^"']*\b(?:script|greek|hebrew)\b|(?:^|\s)lang\s*=/i;
@@ -315,7 +323,9 @@ function wrapScriptRuns(html) {
         let text = html.slice(i, end);
         out += markedElement(open)
             ? text
-            : text.replace(GRAMMAR_SCRIPT_RUN_RE, m => '<span class="script">' + m + '</span>');
+            : text.replace(GRAMMAR_SCRIPT_RUN_RE, m => GREEK_MARK_RUN_RE.test(m)
+                ? '<span class="script script--mark">' + m + '</span>'
+                : '<span class="script">' + m + '</span>');
         i = end;
     }
     return out;

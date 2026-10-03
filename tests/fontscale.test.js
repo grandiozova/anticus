@@ -444,10 +444,15 @@ test('каждый кегль текста изучаемого языка не�
             // ползунками), тоже в px и тоже закреплён проверкой ниже.
             // Четвёртый — пример употребления: он читается там же, в строке
             // словаря и в «В словосочетании», и закреплён так же.
+            // Пятый — одиночный знак ударения или придыхания (.script--mark):
+            // это метка в скобках, а не слово, и она намеренно набрана кеглем
+            // русского текста вокруг (1em), а не языковым шагом; закреплено
+            // отдельной проверкой ниже.
             if (sel.indexOf('.course-card__glyph') !== -1 ||
                 sel.indexOf('.course-glyph') !== -1 ||
                 sel.indexOf('.word-item .word-row strong') !== -1 ||
-                sel.indexOf('.vocab-example__script') !== -1) continue;
+                sel.indexOf('.vocab-example__script') !== -1 ||
+                sel.indexOf('.script--mark') !== -1) continue;
             const size = body.match(/font-size: ([^;]+);/);
             if (!size) continue;
             if (/var\(--(md-ref-script-scale|md-ref-script-size|app-greek-scale|app-hebrew-scale)\)/.test(size[1])) continue;
@@ -636,6 +641,38 @@ test('буква таблицы алфавита закреплена, своя 
         'буква таблицы алфавита снова считает себя от ползунков');
     assert.strictEqual(body.indexOf('var(--md-ref-script-scale)'), -1,
         'буква таблицы алфавита вернулась к множителю ползунка');
+});
+
+test('знак ударения и придыхания — метка кеглем текста и ниже строки', () => {
+    // Одиночный греческий знак без буквы-основы (тонкое и густое придыхание,
+    // облечение) в прозе урока — это метка в скобках, а не слово. Языковой шаг
+    // кегля раздувал её через два множителя и вешал высоко над русской строкой,
+    // где рядом стоят обычные ´ и `. Кегль метки — 1.5rem (крупнее русского
+    // текста, но меньше греческих слов), множителя ползунка языка нет намеренно,
+    // а отрицательный vertical-align возвращает знак на прежнюю высоту: его глиф
+    // нарисован у макушки. Проверяем обе стороны: разметку (wrapScriptRuns,
+    // js/lesson.js) и правило (styles/screens.css).
+    const css = read('styles/screens.css');
+    const at = css.indexOf('\n.grammar-p .script.script--mark,');
+    assert.notStrictEqual(at, -1, 'правила знака-метки нет');
+    const body = css.slice(at, css.indexOf('}', at));
+    const size = body.match(/font-size: ([^;]+);/);
+    assert.ok(size, 'у знака-метки не задан кегль');
+    assert.strictEqual(size[1].trim(), '1.5rem',
+        'кегль знака-метки изменился: ' + size[1].trim());
+    const va = body.match(/vertical-align: ([^;]+);/);
+    assert.ok(va && /^-[0-9]/.test(va[1].trim()),
+        'знак не опущен на строку: ' + (va ? va[1].trim() : 'нет vertical-align'));
+
+    const app = loadApp(GREEK);
+    const html = app.get("wrapScriptRuns('<b>Придыхание:</b> ῾ густое, ᾿ тонкое, и ἀνήρ.')");
+    app.close();
+    assert.match(html, /<span class="script script--mark">῾<\/span>/,
+        'густое придыхание не помечено .script--mark');
+    assert.match(html, /<span class="script script--mark">᾿<\/span>/,
+        'тонкое придыхание не помечено .script--mark');
+    assert.match(html, /<span class="script">ἀνήρ<\/span>/,
+        'слово с придыханием ошибочно принято за метку');
 });
 
 test('шаг кегля изучаемого языка свой у каждого письма и не подменяет ползунок', () => {
