@@ -575,11 +575,16 @@ copies of the same table, and they would have drifted.
   «Буква» cell (`<td lang="el"><span class="alphabet-glyph">Αα</span></td>`) and has no
   extra columns, so the collapse rules simply find nothing to hide on it — that is why it
   has no `Показать всё` button. Two numbers there are ceilings rather than taste: the glyph
-  is fixed at `44.8px` — the size the old `1.75rem × 1.6` slider formula gave at the
-  shipped 160%, see "Text size" — because at `2rem` three columns stop fitting a 412px
-  phone, and the letter
+  is fixed at `--md-ref-script-alphabet-size` — `44.8px` for Greek, the size the old
+  `1.75rem × 1.6` slider formula gave at the shipped 160% (see "Text size") — because at
+  `2rem` three columns stop fitting a 412px phone, and the letter
   column keeps `white-space: nowrap` (via the `td:not(:first-child)` rule) because «Σσ» and
-  «בּ / ב» are single marks — letting them break inflates the row to 140px.
+  «בּ / ב» are single marks — letting them break inflates the row to 140px. Hebrew takes
+  `56px`, not the Greek value: its cell holds one narrow letter where Greek's holds the
+  «Αα» pair, so at an equal size the Hebrew table read smaller than the Greek one, and the
+  owner asked for the opposite. That larger letter lets the Hebrew table drift a little
+  inside its own strip on a 412px phone, which is what the per-table scroll strip is for —
+  the page itself never scrolls sideways.
 - **A directional drill label reads «shown → chosen»**, as in «Фразы: {lang} → русский».
   `letter_case_lower` shows the capital, so it is «Прописная → строчная». The first
   version said «Строчная к прописной» and «Прописная к строчной». Russian «X к Y»
@@ -917,14 +922,18 @@ the Russian around it. `js/fontscale.js` holds the sliders; the tokens are in
   (`.grammar-text .md-table--begadkefat td[lang="he"]`) and the vowel sign
   (`.md-table--pool .md-table-pool__glyph`) are the alphabet's own objects of study,
   so they are scanned and recognised like a dictionary row rather than read as
-  prose, and the owner asked for them to stop moving with the sliders. Each is
-  written in bare `px` — the value the old `calc()` produced at the shipped 160%
-  (`1.75rem`/`1.5rem`/`1.375rem` × `1.6` → `44.8px`/`38.4px`/`35.2px`), so at the
-  default nothing moved, and `px` keeps the general slider away as well. The niqqud
+  prose, and the owner asked for them to stop moving with the sliders. The begadkefat
+  letters and the vowel sign are written in bare `px` — the value the old `calc()`
+  produced at the shipped 160% (`1.5rem`/`1.375rem` × `1.6` → `38.4px`/`35.2px`), so
+  at the default nothing moved, and `px` keeps the general slider away as well. The
+  alphabet table's letter is the same decision but takes a per-script token,
+  `--md-ref-script-alphabet-size` (`44.8px` Greek / `56px` Hebrew) — see the alphabet
+  table bullet above for why Hebrew needs its own, larger value. The niqqud
   floor is dropped from all three: every value is already above 20px, and the floor
-  is not a slider. These three rules are *not* seen by the multiplier sweep (they
+  is not a slider. These rules are *not* seen by the multiplier sweep (they
   carry no typeface and no `.script` — the face comes from `lang=` in `base.css`),
-  so `fontscale.test.js` pins them by text instead, next to the course-glyph check.
+  so `fontscale.test.js` pins the two bare-`px` rules by text and the alphabet
+  token by a dedicated test, next to the course-glyph check.
 - **Do not multiply the niqqud floor into a stepped size the wrong way round.**
   `max(<base>, var(--md-ref-script-min-size)) * var(--md-ref-script-size) * …`
   lifts Hebrew's *base* from 1rem to 1.25rem and then inflates the whole 1.92 — the
