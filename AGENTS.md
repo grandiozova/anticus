@@ -531,7 +531,13 @@ the answer and reveals the whole sign with its name and sound — the same two-s
 shape, and the same way back, as `letter_write` (see "Exercise types"). The drawing is
 not graded; it is a self-check. The carrier is the pool's own prefix — every sign is
 written on `בּ`, which `tests/alphabet.test.js` already assumes — and a test asserts
-the pool keeps that prefix rather than retyping the letter.
+the pool keeps that prefix rather than retyping the letter. **Most of the signs are
+dots, so this canvas is the one that draws a dot on a plain tap**: it is opened with
+`initWritingCanvas('vowelWriteCanvas', { tapDot: true })`, and a pointer that comes up
+without having moved further than a tap's slop leaves a filled dot at the touch point.
+A pointer that does move still draws a stroke — the bar of a patach or a qamets is
+still led by hand — and the letter canvas keeps the old behaviour, where a tap leaves
+nothing, because there a dot is a part of the letter rather than the whole answer.
 
 **The letters live in a pool per course, not in the questions.** `GREEK_ALPHABET`
 (`data/lessons.js`) and `HEBREW_ALPHABET` (`data/hebrew-lessons.js`) hold the letters

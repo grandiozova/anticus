@@ -303,7 +303,11 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   контейнер в `DRILL_BOXES` (`#exerciseQuestion`, как у `letter_write`),
   доступность по данным урока (`heb_vowel_*`) и ветка в `startLessonDrill()`;
   состояние своё — `vowelWriteState`, `showVowelWrite()`. Рисунок не оценивается:
-  это самопроверка, а не проверка.
+  это самопроверка, а не проверка. Большинство знаков — точки, поэтому холст
+  огласовки открывается с `tapDot` (`initWritingCanvas('vowelWriteCanvas',
+  { tapDot: true })`): нажатие без движения ставит залитую точку, а штрих (чёрточку
+  патаха и камеца) ведут движением, как раньше. У письма буквы тап точки не
+  ставит — там точка лишь часть начертания, а не весь ответ.
 - Kind names shared by both courses have no prefix (`agreement`, `translate_*`).
   Kinds that only exist for Hebrew are prefixed `heb_` (`heb_construct`,
   `heb_gender_number`, etc.) — this is a naming convention only, no code parses it.

@@ -679,7 +679,15 @@ function backToLetterWriteCanvas() {
 
 // Холст один на письмо буквы и на написание огласовки; id приходит из разметки,
 // потому что на экране он всегда ровно один из двух.
-function initWritingCanvas(canvasId) {
+//
+// options.tapDot (только у огласовки, см. showVowelWrite) — простое нажатие без
+// движения рисует точку, а не требует вести палец по кругу, чтобы её получить:
+// половина знаков огласовки — это точки (хирек, холем, киббуц, сегол, цере), и
+// вести палец по кругу ради одной точки и неудобно, и на точку не похоже. Штрих
+// остаётся штрихом: палец, уехавший от точки касания дальше порога, рисует
+// линию, как раньше, — чёрточку патаха и камеца по-прежнему ведут. У письма
+// буквы тап точку не ставит: там точка — часть начертания, а не весь ответ.
+function initWritingCanvas(canvasId, options) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
     let ctx;
@@ -690,7 +698,13 @@ function initWritingCanvas(canvasId) {
     }
     if (!ctx) return;
 
-    const state = { drawing: false, lastX: 0, lastY: 0 };
+    const tapDot = !!(options && options.tapDot);
+    // Порог «это ещё тап, а не штрих» в CSS-пикселях: палец всегда чуть
+    // вздрагивает на месте, и без порога каждый тап оставлял бы короткую
+    // линию рядом с точкой. Пока смещение не превысило порог, линия не
+    // начинается вовсе; перевалив — штрих ведётся от точки касания.
+    const TAP_SLOP = 8;
+    const state = { drawing: false, lastX: 0, lastY: 0, startX: 0, startY: 0, moved: false };
     // Размер буфера холста и его CSS-рамка — не одно и то же. Рамку задаёт
     // вёрстка (карточка тянется вместе с окном), а буфер надо под неё подогнать,
     // иначе браузер растянет нарисованное: штрих ляжет не под пальцем, а линии
@@ -749,12 +763,27 @@ function initWritingCanvas(canvasId) {
         ctx.stroke();
     };
 
+    // Точка — залитый кружок того же цвета, что и штрих, и толщиной с него:
+    // она должна читаться как та же точка, что в образце под холстом, а не как
+    // клякса. Радиус от ширины линии (6px), но с запасом на случай, если
+    // resize ещё не задал её.
+    const drawDot = (pos) => {
+        const radius = Math.max(3, (ctx.lineWidth || 6) * 0.85);
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.fill();
+    };
+
     const finishStroke = () => { state.drawing = false; };
 
     canvas.addEventListener('pointerdown', function (event) {
         const pos = pointerPos(event);
         canvas.setPointerCapture(event.pointerId);
         state.drawing = true;
+        state.moved = false;
+        state.startX = pos.x;
+        state.startY = pos.y;
         state.lastX = pos.x;
         state.lastY = pos.y;
         ctx.beginPath();
@@ -764,12 +793,30 @@ function initWritingCanvas(canvasId) {
     canvas.addEventListener('pointermove', function (event) {
         if (!state.drawing) return;
         const pos = pointerPos(event);
+        if (!state.moved) {
+            const dx = pos.x - state.startX;
+            const dy = pos.y - state.startY;
+            if (Math.hypot(dx, dy) < TAP_SLOP) return;
+            // Порог пройден — это штрих, и он начинается там, где палец
+            // коснулся холста, а не там, где закончилось дрожание.
+            state.moved = true;
+            state.lastX = state.startX;
+            state.lastY = state.startY;
+        }
         drawLine({ x: state.lastX, y: state.lastY }, pos);
         state.lastX = pos.x;
         state.lastY = pos.y;
     });
 
-    canvas.addEventListener('pointerup', finishStroke);
+    canvas.addEventListener('pointerup', function () {
+        // Тап без движения — точка. Координату берём из pointerdown: у
+        // синтетического pointerup её может и не быть, а палец за время тапа
+        // никуда не ушёл.
+        if (tapDot && state.drawing && !state.moved) {
+            drawDot({ x: state.startX, y: state.startY });
+        }
+        finishStroke();
+    });
     canvas.addEventListener('pointerleave', finishStroke);
     canvas.addEventListener('pointercancel', finishStroke);
 
@@ -931,7 +978,7 @@ function showVowelWrite() {
             '</div>';
     }
     box.innerHTML = html;
-    if (!s.revealed) initWritingCanvas('vowelWriteCanvas');
+    if (!s.revealed) initWritingCanvas('vowelWriteCanvas', { tapDot: true });
 }
 
 // Ответ засчитан уже на «Готово»: рисунок приложению не проверить, и это не

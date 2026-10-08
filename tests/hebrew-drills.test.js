@@ -392,6 +392,64 @@ test('огласовку дописывают по названию: под хо
     app.close();
 });
 
+test('огласовку ставят тапом: нажатие рисует точку, движение — штрих', () => {
+    const app = loadApp(GREEK);
+    const w = app.window;
+    // jsdom холста не умеет: подменяем контекст заглушкой, которая считает
+    // вызовы. Точка — это arc + fill, штрих — lineTo + stroke.
+    w.eval(`
+        window.__canvasCalls = { arc: 0, fill: 0, line: 0 };
+        const noop = function () {};
+        const fakeCtx = {
+            setTransform: noop, clearRect: noop, beginPath: noop, moveTo: noop,
+            lineTo: function () { window.__canvasCalls.line++; },
+            stroke: noop, drawImage: noop,
+            arc: function () { window.__canvasCalls.arc++; },
+            fill: function () { window.__canvasCalls.fill++; },
+            lineWidth: 6,
+            getImageData: function () { return { data: [] }; }
+        };
+        HTMLCanvasElement.prototype.getContext = function () { return fakeCtx; };
+        HTMLCanvasElement.prototype.getBoundingClientRect = function () {
+            return { width: 300, height: 200, left: 0, top: 0, right: 300, bottom: 200 };
+        };
+        HTMLCanvasElement.prototype.setPointerCapture = function () {};
+        window.ResizeObserver = undefined;
+    `);
+
+    const hebrew = withHebrewChapter(app);
+    hebrew.startLessonDrill('vowel_write', 'vowels');
+
+    const canvas = app.document.querySelector('#vowelWriteCanvas');
+    assert.ok(canvas, 'холст огласовки не нарисовался');
+
+    const pointer = (type, x, y) => {
+        const ev = new w.Event(type, { bubbles: true, cancelable: true });
+        ev.clientX = x;
+        ev.clientY = y;
+        ev.pointerId = 1;
+        canvas.dispatchEvent(ev);
+    };
+
+    // Нажатие без движения — точка, и только она: вести палец по кругу ради
+    // точки не надо, но и лишнего штриха тап оставлять не должен.
+    pointer('pointerdown', 40, 60);
+    pointer('pointerup', 40, 60);
+    assert.strictEqual(app.get('window.__canvasCalls.arc'), 1, 'тап не поставил точку');
+    assert.strictEqual(app.get('window.__canvasCalls.fill'), 1, 'точка не залита');
+    assert.strictEqual(app.get('window.__canvasCalls.line'), 0, 'тап оставил ещё и штрих');
+
+    // Палец ушёл дальше порога — это штрих, и точки он не ставит.
+    pointer('pointerdown', 40, 100);
+    pointer('pointermove', 40, 140);
+    pointer('pointerup', 40, 140);
+    assert.strictEqual(app.get('window.__canvasCalls.arc'), 1, 'штрих нарисовал лишнюю точку');
+    assert.ok(app.get('window.__canvasCalls.line') > 0, 'штрих не нарисовался');
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 test('колода написания огласовки — это пул знаков курса и проходит до конца', () => {
     const app = loadApp(GREEK);
     const w = withHebrewChapter(app);
