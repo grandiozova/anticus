@@ -751,9 +751,9 @@ function initWritingCanvas(canvasId, options) {
         if (previous) ctx.drawImage(previous, 0, 0, rect.width, rect.height);
     };
 
-    const pointerPos = (event) => {
+    const pointerPos = (clientX, clientY) => {
         const rect = canvas.getBoundingClientRect();
-        return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+        return { x: clientX - rect.left, y: clientY - rect.top };
     };
 
     const drawLine = (from, to) => {
@@ -775,11 +775,9 @@ function initWritingCanvas(canvasId, options) {
         ctx.fill();
     };
 
-    const finishStroke = () => { state.drawing = false; };
-
-    canvas.addEventListener('pointerdown', function (event) {
-        const pos = pointerPos(event);
-        canvas.setPointerCapture(event.pointerId);
+    // Начало и продолжение одного штриха. Вынесены сюда, потому что ведут их
+    // две дороги — касания и указатель (мышь, перо): сам штрих у них общий.
+    const startStroke = (pos) => {
         state.drawing = true;
         state.moved = false;
         state.startX = pos.x;
@@ -788,11 +786,10 @@ function initWritingCanvas(canvasId, options) {
         state.lastY = pos.y;
         ctx.beginPath();
         ctx.moveTo(pos.x, pos.y);
-    });
+    };
 
-    canvas.addEventListener('pointermove', function (event) {
+    const moveStroke = (pos) => {
         if (!state.drawing) return;
-        const pos = pointerPos(event);
         if (!state.moved) {
             const dx = pos.x - state.startX;
             const dy = pos.y - state.startY;
@@ -806,30 +803,91 @@ function initWritingCanvas(canvasId, options) {
         drawLine({ x: state.lastX, y: state.lastY }, pos);
         state.lastX = pos.x;
         state.lastY = pos.y;
-    });
+    };
 
-    canvas.addEventListener('pointerup', function () {
-        // Тап без движения — точка. Координату берём из pointerdown: у
-        // синтетического pointerup её может и не быть, а палец за время тапа
-        // никуда не ушёл.
+    // Палец (или кнопку) отпустили. Тап без движения — точка: координату берём
+    // из начала штриха, потому что у отпускания её может и не быть, а за время
+    // тапа палец никуда не ушёл.
+    const endStroke = () => {
         if (tapDot && state.drawing && !state.moved) {
             drawDot({ x: state.startX, y: state.startY });
         }
-        finishStroke();
-    });
-    canvas.addEventListener('pointerleave', finishStroke);
-    canvas.addEventListener('pointercancel', finishStroke);
+        state.drawing = false;
+    };
 
-    // iOS Safari тянет страницу за палец, которым рисуют, даже с touch-action:
-    // none: жест доходит до прокрутки документа, и поле уезжает вниз прямо под
-    // рукой — «окошко тянется вниз», — а штрих смазывается. preventDefault на
-    // touchmove гасит именно прокрутку от жеста, начатого на холсте; рисование
-    // идёт на pointer-событиях, которые это не затрагивает. Слушатель не
-    // passive: иначе preventDefault на iOS игнорируется. Отключать его по
-    // тапу, как и наблюдатель размера, нельзя — поле перестанет держаться.
-    canvas.addEventListener('touchmove', function (event) {
+    // Штрих прерван, а не закончен (указатель ушёл с холста, браузер забрал
+    // жест): точку не ставим — палец ещё не отпустили.
+    const cancelStroke = () => { state.drawing = false; };
+
+    // --- касания ---------------------------------------------------------
+    // Жест рисуем по touch-событиям, а не по pointer-событиям, и это
+    // принципиально. iOS Safari на жесте, начатом на холсте, забирает движение
+    // себе даже с touch-action: none: страница уезжает под рукой («дёргается
+    // экран»), штрих обрывается на середине, и приходит pointercancel — а он в
+    // прежней версии гасил рисование, поэтому дальше палец водили вхолостую
+    // («думает, что я двигаю, а не пишу»). preventDefault на touchstart и
+    // touchmove — это ответ «жест наш»: после него браузер не начинает ни
+    // прокрутку, ни масштабирование, и движения продолжают приходить. Слушатели
+    // не passive: passive preventDefault на iOS игнорируется.
+    //
+    // Поэтому же pointer-события с pointerType 'touch' ниже игнорируются —
+    // иначе штрих писался бы дважды, а pointercancel обрывал бы его. Мышь и
+    // перо остаются на pointer-событиях: touch-событий у них нет.
+    //
+    // Слушаем всю карточку, а не холст: холст вписан в неё с полем 12px
+    // (styles/screens.css), и жест, начатый в этом поле, тоже должен рисовать,
+    // а не уезжать страницей.
+    const surface = canvas.closest('.writing-canvas-card') || canvas;
+    const touchPos = (touch) => pointerPos(touch.clientX, touch.clientY);
+
+    surface.addEventListener('touchstart', function (event) {
+        // Второй палец — это масштабирование, а не рисование: жест ему и
+        // оставляем, свой штрих заканчиваем.
+        if (!event.touches || event.touches.length !== 1) { cancelStroke(); return; }
         event.preventDefault();
+        startStroke(touchPos(event.touches[0]));
     }, { passive: false });
+
+    surface.addEventListener('touchmove', function (event) {
+        if (event.touches && event.touches.length > 1) { cancelStroke(); return; }
+        // Прокрутку гасим всегда, даже вне штриха (синтетическое событие без
+        // touches — как у прежнего предохранителя): поле не должно уезжать.
+        event.preventDefault();
+        if (!state.drawing || !event.touches || !event.touches.length) return;
+        moveStroke(touchPos(event.touches[0]));
+    }, { passive: false });
+
+    surface.addEventListener('touchend', endStroke);
+    surface.addEventListener('touchcancel', cancelStroke);
+
+    // --- мышь и перо -----------------------------------------------------
+    canvas.addEventListener('pointerdown', function (event) {
+        if (event.pointerType === 'touch') return;
+        // Состояние выставляем до захвата указателя: setPointerCapture может
+        // бросить (указателя уже нет, браузер без поддержки), и тогда прежний
+        // порядок оставлял холст нерисующим вовсе.
+        startStroke(pointerPos(event.clientX, event.clientY));
+        try { canvas.setPointerCapture(event.pointerId); } catch (error) {}
+    });
+
+    canvas.addEventListener('pointermove', function (event) {
+        if (event.pointerType === 'touch') return;
+        moveStroke(pointerPos(event.clientX, event.clientY));
+    });
+
+    canvas.addEventListener('pointerup', function (event) {
+        if (event.pointerType === 'touch') return;
+        endStroke();
+    });
+
+    canvas.addEventListener('pointerleave', function (event) {
+        if (event.pointerType === 'touch') return;
+        cancelStroke();
+    });
+    canvas.addEventListener('pointercancel', function (event) {
+        if (event.pointerType === 'touch') return;
+        cancelStroke();
+    });
 
     resize();
     // Подгоняем холст по обеим осям двумя путями, потому что одного мало.

@@ -262,6 +262,95 @@ test('холст письма подгоняется под свою ширин�
     app.close();
 });
 
+test('жест на холсте письма ведёт касание, а не указатель', () => {
+    // Общий холст письма буквы и огласовки. Рисование обязано идти по
+    // touch-событиям: iOS Safari на жесте, начатом на холсте, забирает движение
+    // себе, присылает pointercancel и уводит страницу под рукой — штрих
+    // обрывался на середине, и палец дальше водили вхолостую. Поэтому же
+    // pointer-события с pointerType 'touch' игнорируются (иначе штрих писался
+    // бы дважды), а мышь и перо остаются на pointer-событиях, и падение
+    // setPointerCapture рисование больше не срывает.
+    const app = loadApp();
+    const w = app.window;
+
+    w.eval(`
+        window.__calls = { stroke: 0, arc: 0, fill: 0 };
+        const noop = function () {};
+        const fakeCtx = {
+            setTransform: noop, clearRect: noop, beginPath: noop, moveTo: noop,
+            lineTo: noop, drawImage: noop,
+            stroke: function () { window.__calls.stroke++; },
+            arc: function () { window.__calls.arc++; },
+            fill: function () { window.__calls.fill++; },
+            lineWidth: 6,
+            getImageData: function () { return { data: [] }; }
+        };
+        HTMLCanvasElement.prototype.getContext = function () { return fakeCtx; };
+        HTMLCanvasElement.prototype.getBoundingClientRect = function () {
+            return { width: 300, height: 200, left: 0, top: 0, right: 300, bottom: 200 };
+        };
+        window.ResizeObserver = undefined;
+    `);
+
+    w.openLesson(1);
+    w.startLessonDrill('exercise', 'letter_write');
+    const canvas = app.document.querySelector('#letterWriteCanvas');
+    assert.ok(canvas, 'холст письма не отрисовался');
+
+    const touch = (type, x, y) => {
+        const ev = new w.Event(type, { bubbles: true, cancelable: true });
+        ev.touches = (type === 'touchend' || type === 'touchcancel') ? [] : [{ clientX: x, clientY: y }];
+        canvas.dispatchEvent(ev);
+        return ev;
+    };
+    const pointer = (type, x, y, pointerType) => {
+        const ev = new w.Event(type, { bubbles: true, cancelable: true });
+        ev.clientX = x;
+        ev.clientY = y;
+        ev.pointerId = 1;
+        ev.pointerType = pointerType;
+        canvas.dispatchEvent(ev);
+        return ev;
+    };
+
+    // Палец: касание начинает штрих, движение его ведёт — и оба погашены, иначе
+    // страница уезжает под рукой.
+    const start = touch('touchstart', 40, 60);
+    assert.ok(start.defaultPrevented, 'touchstart на холсте не погашен — страница поедет под рукой');
+    const move = touch('touchmove', 40, 140);
+    assert.ok(move.defaultPrevented, 'touchmove на холсте не погашен — страница поедет под рукой');
+    assert.ok(app.get('window.__calls.stroke') > 0, 'касание не нарисовало штрих');
+
+    // Браузер забрал жест и прислал pointercancel на касание: штрих обязан
+    // продолжаться, рисование ведёт touch-путь.
+    const beforeCancel = app.get('window.__calls.stroke');
+    pointer('pointercancel', 40, 140, 'touch');
+    touch('touchmove', 60, 160);
+    assert.ok(app.get('window.__calls.stroke') > beforeCancel,
+        'pointercancel от касания оборвал штрих на середине');
+    // И тут же — указатель того же касания: второй штрих писать нельзя.
+    const beforeDouble = app.get('window.__calls.stroke');
+    pointer('pointerdown', 60, 160, 'touch');
+    pointer('pointermove', 60, 190, 'touch');
+    assert.strictEqual(app.get('window.__calls.stroke'), beforeDouble,
+        'штрих писался дважды — касание и указатель ведут рисование вместе');
+    touch('touchend', 60, 160);
+
+    // Мышь и перо идут pointer-событиями, и захват указателя для них не
+    // обязателен: бросивший setPointerCapture не должен оставлять холст
+    // нерисующим (прежний порядок — захват до состояния — именно так и ломался).
+    w.eval('HTMLCanvasElement.prototype.setPointerCapture = function () { throw new Error("нет указателя"); };');
+    const beforeMouse = app.get('window.__calls.stroke');
+    pointer('pointerdown', 20, 20, 'mouse');
+    pointer('pointermove', 20, 120, 'mouse');
+    pointer('pointerup', 20, 120, 'mouse');
+    assert.ok(app.get('window.__calls.stroke') > beforeMouse,
+        'мышь не нарисовала штрих, когда setPointerCapture бросил');
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 test('письмо начинается с выбора начертания на весь заход', () => {
     // Печатное и рукописное — один и тот же вопрос с разным показом, поэтому
     // начертание выбирается один раз, до первой буквы, и держится до конца
