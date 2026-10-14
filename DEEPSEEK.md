@@ -154,6 +154,18 @@ invisible until someone hits the specific path (offline load, one specific theme
   `tests/hebrew-content.test.js` checks every Hebrew string in the lesson data occurs
   verbatim in `reference/nbbs-hebrew/`. **If that test fails, copy the correct string
   from the reference — do not retype it to "fix" it.**
+- **Greek lessons are ported one at a time.** The app has lessons 1–15 of the book's
+  33 (as of 2026-10-14). To add lesson N: read `reference/machen-nt-greek/lessons/lesson-NN.md`
+  and `data/vocabulary-by-lesson.json` (`raw_lines` when `parsed_ok` is false — the parse
+  is heuristic and sometimes glues articles together). Build `title`, `grammar`,
+  `vocabulary`, `exercises`, `translation` in the shape of the neighbouring lessons.
+  Greek strings come from the book (copy, never compose: recovery of OCR damage is
+  allowed, new sentences are not); the Russian side is written fresh. Build
+  `declension_fill`/`case_number` only from forms printed in the lesson, and use a short
+  verbatim phrase from the book for any word the book never puts in a sentence —
+  `vocab.test.js` ("у каждого слова есть примеры, автопример или внятное объяснение")
+  fails otherwise. Put the paradigm the lesson itself prints into `declension_forms`.
+  No `index.html`/`sw.js` change is needed — a lesson is just a `LESSONS_DATA` entry.
 - Hebrew course currently covers chapters 1–11 (nominal system) only. The verb
   (chapters 12–36) is out of scope — don't add it unless asked.
 - **Every Hebrew vocabulary entry carries a `translit`** — the reading of the word:

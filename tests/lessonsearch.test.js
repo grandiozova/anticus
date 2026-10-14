@@ -32,8 +32,11 @@ function search(app, text) {
 
 test('без запроса список уроков — прежнее оглавление, без тем', () => {
     const app = loadApp({ storage: GREEK });
-    assert.strictEqual(app.text('#lessonGridTitle'), 'Уроки 1–10');
-    assert.strictEqual(texts(app, ROWS).length, 10);
+    // Число уроков берём из данных: курс растёт, и зашитая цифра ломалась бы
+    // на каждом добавленном уроке.
+    const nums = app.window.lessonNumbers();
+    assert.strictEqual(app.text('#lessonGridTitle'), 'Уроки ' + nums[0] + '–' + nums[nums.length - 1]);
+    assert.strictEqual(texts(app, ROWS).length, nums.length);
     assert.strictEqual(texts(app, NUMBERS)[0], '1');
     assert.strictEqual(texts(app, TOPICS).length, 0, 'темы в оглавлении не показываются');
     assert.deepStrictEqual(app.errors, []);
@@ -112,11 +115,12 @@ test('запрос без совпадений говорит об этом пр
 
 test('очистка возвращает оглавление', () => {
     const app = loadApp({ storage: GREEK });
+    const nums = app.window.lessonNumbers();
     search(app, 'ударен');
     assert.ok(texts(app, ROWS).length > 1);
     app.window.clearLessonSearch();
-    assert.strictEqual(texts(app, ROWS).length, 10);
-    assert.strictEqual(app.text('#lessonGridTitle'), 'Уроки 1–10');
+    assert.strictEqual(texts(app, ROWS).length, nums.length);
+    assert.strictEqual(app.text('#lessonGridTitle'), 'Уроки ' + nums[0] + '–' + nums[nums.length - 1]);
     assert.strictEqual(app.document.getElementById('lessonSearchInput').value, '');
     assert.ok(!app.document.getElementById('lessonSearchClear').classList.contains('show'));
     assert.deepStrictEqual(app.errors, []);
@@ -188,15 +192,19 @@ test('поиск идёт по урокам открытого курса, а с
 // в жизни он появляется в файле до запуска, и указатель собирается уже с ним.
 test('урок, дописанный в данные, попадает в список и в поиск со своими темами', () => {
     const app = loadApp({ storage: GREEK });
-    app.window.eval(`COURSES.greek.lessons[11] = {
-        title: 'Имперфект активного залога',
-        grammar: '<b>1. Имперфект и его признаки</b><br>Вторичные окончания.<br><br><b>2. Употребление имперфекта</b><br>О незавершённом действии.'
+    // Номер берём следующий за последним: настоящие уроки растут, и жёстко
+    // зашитая «11» однажды совпала бы с реальным уроком и сломала бы тест.
+    const nums = app.window.lessonNumbers();
+    const num = nums[nums.length - 1] + 1;
+    app.window.eval(`COURSES.greek.lessons[${num}] = {
+        title: 'Урок-образец',
+        grammar: '<b>1. Проверочная тема</b><br>Вторичные окончания.<br><br><b>2. Вторая проверочная тема</b><br>О незавершённом действии.'
     };`);
     app.window.eval('lessonSearchIndex = null');
     app.window.renderMainMenu();
-    assert.strictEqual(texts(app, ROWS).length, 11, 'новый урок попал в оглавление');
-    search(app, 'имперфект');
-    assert.strictEqual(texts(app, NUMBERS).join(','), '11');
+    assert.strictEqual(texts(app, ROWS).length, nums.length + 1, 'новый урок попал в оглавление');
+    search(app, 'проверочная');
+    assert.strictEqual(texts(app, NUMBERS).join(','), String(num));
     assert.strictEqual(texts(app, TOPICS).length, 2, 'обе темы нового урока нашлись');
     assert.deepStrictEqual(app.errors, []);
     app.close();
