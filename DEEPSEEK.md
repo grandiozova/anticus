@@ -186,7 +186,11 @@ invisible until someone hits the specific path (offline load, one specific theme
   `reference/nbbs-hebrew/`. A word the book never uses in a sentence gets no
   example, and its dictionary row is simply not expandable — that is correct, not
   a gap. `tests/hebrew-content.test.js` requires every example shown to occur as a
-  whole sentence in the reference.
+  whole sentence in the reference. Coverage is 35 of 179 words; the chapters' phrase
+  tables hold more, and 16 of them were promoted on 2026-10-14. **Never retype the
+  Hebrew you insert** — mine it out of the reference and match by bare consonants,
+  or the combining-mark order differs and every added example fails the test at once.
+  Write the Russian with no inner punctuation: it is split into word-bank chips.
 
 ## Design system: Material 3 — mandatory, always
 
