@@ -166,8 +166,13 @@ invisible until someone hits the specific path (offline load, one specific theme
   `vocab.test.js` ("у каждого слова есть примеры, автопример или внятное объяснение")
   fails otherwise. Put the paradigm the lesson itself prints into `declension_forms`.
   No `index.html`/`sw.js` change is needed — a lesson is just a `LESSONS_DATA` entry.
-- Hebrew course currently covers chapters 1–11 (nominal system) only. The verb
-  (chapters 12–36) is out of scope — don't add it unless asked.
+- Hebrew course currently covers chapters 1–12. Chapters 1–11 are the nominal system,
+  fully grounded in `reference/nbbs-hebrew/lessons/`. **Chapter 12 (Глагол) is the
+  exception**: its prose is not transcribed yet, only its 16 vocabulary entries, which
+  were verified against the Westminster Leningrad Codex and hand-added to
+  `reference/nbbs-hebrew/data/vocabulary-by-lesson.json` — so running `build_vocab.py`
+  would delete them. Its grammar may use only Hebrew the reference already contains
+  (why the seven stems are named in Latin there). Chapters 13–36 are not started.
 - **Every Hebrew vocabulary entry carries a `translit`** — the reading of the word:
   Russian letters with a stress mark, then the textbook's transliteration in brackets
   («давáр (dāḇār)»). It is authored, not derived: shva and stop/fricative begadkefat

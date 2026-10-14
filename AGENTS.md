@@ -436,7 +436,9 @@ is the visible tell. Russian text, page numbers and structure are reliable throu
 `reference/nbbs-hebrew/` holds the Novosibirsk Biblical Theological Seminary's
 *Учебное пособие по грамматике древнееврейского языка* (2011, after Pratico &
 Van Pelt's *Basics of Biblical Hebrew Grammar*; 273 pages, 36 chapters).
-**Chapters 1–11 are transcribed** — the whole nominal system, up to the verb.
+**Chapters 1–11 are transcribed** — the whole nominal system, up to the verb; the
+verb itself (chapters 12–36) is not transcribed yet, but chapter 12 has been authored
+in the app — see "The Hebrew course" below for where its vocabulary came from.
 Start at `reference/nbbs-hebrew/INDEX.md`.
 
 Unlike the Greek, this was never OCR'd. The PDF stores Hebrew in the **BWHEBB**
@@ -460,12 +462,33 @@ Two things to know before copying:
 
 ## The Hebrew course
 
-Scope is a pilot of **chapters 1–11**, the nominal system; the verb (chapters 12–36) is
-out of scope. All eleven chapters are authored in `data/hebrew-lessons.js` — grammar,
+Scope was a pilot of **chapters 1–11**, the nominal system; **chapter 12 (Глагол) was
+added on its own** as the first verb chapter, so the course now runs 1–12. Chapters
+13–36 are not started. Chapters 1–11 are authored in `data/hebrew-lessons.js` — grammar,
 163 dictionary entries ordered by the textbook's own Hebrew-Bible frequency, drills for
 every `heb_*` type, and sentence-building where the book prints sentences. That file
 carries the field-by-field authoring guide; follow it rather than inferring the shape
 from a neighbouring entry.
+
+**Chapter 12 is the one chapter whose Hebrew is not grounded in a transcribed
+`lessons/lesson-NN.md`.** The reference PDF was read mechanically (its Hebrew is in the
+same BWHEBB encoding, so `tools/unfont.py` applies), but the chapter's prose has not been
+transcribed yet — by the owner's decision, deliberately. What *was* done instead: its 16
+vocabulary entries were added to `reference/nbbs-hebrew/data/vocabulary-by-lesson.json`,
+every form verified against the Westminster Leningrad Codex (OSHB) independently of the
+order of combining marks. Consequences to keep in mind:
+
+- **`build_vocab.py` regenerates that JSON from `lessons/*.md` and would therefore delete
+  lesson 12's hand-added vocabulary.** Do not run it until chapter 12 is transcribed, or
+  re-add the entries afterwards. The same warning is in `tools/README.md`.
+- **The grammar may only use Hebrew that the reference corpus contains** —
+  `tests/hebrew-content.test.js` enforces it for every Hebrew token in the lesson data.
+  For chapter 12 that means the 16 vocabulary words plus forms already present from
+  chapters 1–11 (which is why the seven stems are named in Latin and their marks are
+  described in Russian, and why the root examples use the grounded pairs
+  שָׁבַת / שַׁבָּת and עָשָׂה / מַעֲשֶׂה). **When the chapter is transcribed, the stem
+  paradigm (קָטַל, נִקְטַל, קִטֵּל, קֻטַּל, הִקְטִיל, הָקְטַל, הִתְקַטֵּל) can be added
+  to the grammar** — that is the one thing the current version is missing.
 
 Chapters 1–2 are the alphabet and the vowel points, and they now carry drills like
 every other chapter — see "Alphabet and reading". Chapter 9 has drills but no

@@ -220,13 +220,13 @@ test('у каждой словарной статьи есть перевод и
     assert.strictEqual(bad, '', bad);
 });
 
-test('главы 1–11 на месте, и у каждой есть упражнения', () => {
+test('главы 1–12 на месте, и у каждой есть упражнения', () => {
     const app = loadApp(GREEK);
     app.window.applyCourse('hebrew');
     // Строкой, а не массивом: числа приходят из другого realm, и
     // deepStrictEqual сравнил бы ещё и прототипы.
     const nums = app.window.lessonNumbers();
-    assert.strictEqual([...nums].join(','), '1,2,3,4,5,6,7,8,9,10,11');
+    assert.strictEqual([...nums].join(','), '1,2,3,4,5,6,7,8,9,10,11,12');
 
     for (const n of nums) {
         const d = app.window.getLessonData(n);
