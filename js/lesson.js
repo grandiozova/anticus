@@ -354,8 +354,13 @@ function grammarLiftedHtml(html) {
     return html.replace(/^<(ul|ol)\b/i, '<$1 class="grammar-list"');
 }
 
-function renderGrammarHtml(html) {
+// Второй аргумент — необязательный сборщик заголовков: тем же проходом, что
+// рисует .grammar-h, набирается указатель тем для поиска по урокам (js/shell.js).
+// Своя копия правила «заголовок — строка целиком из <b>» разошлась бы с
+// отрисовкой, и поиск находил бы не то, что стоит на экране.
+function renderGrammarHtml(html, headings) {
     if (!html) return '';
+    headings = headings || [];
     // Таблицы и списки прячем первыми: внутри них <br> и «•» ничего не разделяют.
     let lifted = [];
     let text = String(html).replace(GRAMMAR_LIFT_RE, m => LIFT_MARK + (lifted.push(m) - 1) + LIFT_MARK);
@@ -370,13 +375,13 @@ function renderGrammarHtml(html) {
             if (i % 2) { out.push(grammarLiftedHtml(lifted[+piece])); return; }
             // <br> по краям куска только и делали, что рисовали отступ — он теперь на CSS
             let chunk = piece.replace(/^(?:\s*<br\s*\/?>)+/i, '').replace(/(?:<br\s*\/?>\s*)+$/i, '').trim();
-            if (chunk) out.push(grammarBlockHtml(chunk));
+            if (chunk) out.push(grammarBlockHtml(chunk, headings));
         });
     });
     return out.join('');
 }
 
-function grammarBlockHtml(chunk) {
+function grammarBlockHtml(chunk, headings) {
     let out = '';
     let para = [], list = [];
     let flushPara = () => { if (para.length) { out += '<div class="grammar-p">' + para.join('<br>') + '</div>'; para = []; } };
@@ -393,7 +398,12 @@ function grammarBlockHtml(chunk) {
         if (head) {
             // Заголовку нужен воздух сверху, которого у строки абзаца быть не может
             flushList(); flushPara();
-            out += '<h4 class="grammar-h">' + wrapScriptRuns(head[1]) + '</h4>';
+            // Метка — это то, куда прыгает поиск: тема в результатах и заголовок
+            // на экране адресуются одним числом, порядком следования в материале.
+            // Порядок задаёт сам разбор, поэтому копии указателя не нужны.
+            let index = headings.length;
+            headings.push(head[1]);
+            out += '<h4 class="grammar-h" data-grammar-heading="' + index + '">' + wrapScriptRuns(head[1]) + '</h4>';
         } else if (/^•/.test(line)) {
             flushPara();
             list.push(wrapScriptRuns(line.replace(/^•\s*/, '')));
@@ -405,6 +415,48 @@ function grammarBlockHtml(chunk) {
     flushList();
     flushPara();
     return out;
+}
+
+// Темы урока для поиска: ровно те строки, которые отрисовка делает заголовками
+// (.grammar-h), в том же порядке. Собираются тем же разбором — материал при
+// этом только читается, на экран ничего не попадает. Отдаётся сырая разметка
+// заголовка: искать по ней нужно текстом (см. lessonTopicText), а показывать —
+// через wrapScriptRuns, как в самом материале.
+function grammarHeadings(grammar) {
+    let headings = [];
+    renderGrammarHtml(grammar, headings);
+    return headings;
+}
+
+// Прыжок из поиска к найденной теме. Отступ считается от живого app bar: он
+// fixed, и без вычета заголовок оказался бы под ним. Подсветка снимается
+// таймером — это указатель «вот оно», а не состояние экрана.
+let grammarTargetTimer = null;
+function scrollToGrammarHeading(index) {
+    let el = document.querySelector('#grammarContent [data-grammar-heading="' + index + '"]');
+    if (!el) return;
+    // Два прыжка подряд по одному уроку: подсветка всегда одна, иначе первый
+    // заголовок остался бы подсвеченным навсегда — его таймер отменён вторым.
+    document.querySelectorAll('#grammarContent .grammar-h.is-target')
+        .forEach(old => old.classList.remove('is-target'));
+    let bar = document.getElementById('topAppBar');
+    let offset = (bar ? bar.getBoundingClientRect().height : 0) + 16;
+    let top = 0;
+    try { top = Math.max(0, window.scrollY + el.getBoundingClientRect().top - offset); } catch (e) { top = 0; }
+    try { window.scrollTo({ top: top, behavior: scrollBehavior() }); }
+    catch (e) { window.scrollTo(0, top); }
+    el.classList.add('is-target');
+    clearTimeout(grammarTargetTimer);
+    grammarTargetTimer = setTimeout(() => el.classList.remove('is-target'), 1600);
+}
+
+// Переход из результатов поиска: урок открывается сразу на материале и
+// прокручивается к найденному заголовку. openLesson() рисует материал целиком
+// в любом случае, поэтому метка на месте уже к моменту прокрутки.
+function openLessonTopic(lesson, index) {
+    openLesson(lesson);
+    switchLessonPart('material');
+    scrollToGrammarHeading(index);
 }
 
 // Таблица алфавита главы 1 иврита показывает три колонки из шести: конечные

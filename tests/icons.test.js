@@ -63,6 +63,13 @@ function collectIcons() {
         if (w.countTestQuestions(data)) { w.startTest(); grab(); }
     }
 
+    // Результаты поиска по урокам: у найденной темы своя иконка, а в обычном
+    // списке её не видно — строки тем появляются только с запросом.
+    w.navigateTo('lessons');
+    app.document.getElementById('lessonSearchInput').value = 'склонение';
+    w.filterLessonList(); grab();
+    w.clearLessonSearch(); grab();
+
     // экраны результата
     w.startAllFlashcards('нет-такой-части-речи'); grab();   // пустое состояние
     w.showToast('проверка', 'info'); grab();

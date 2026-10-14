@@ -955,8 +955,22 @@
     letter-spacing: 0.009375rem;
     color: var(--md-sys-color-on-surface);
     margin: 28px 0 8px;
+    /* Переход на самой основе, а не на .is-target: иначе подсветка гасла бы
+       мгновенно, когда класс снимается таймером (см. scrollToGrammarHeading). */
+    transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+                color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+                box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
 }
 .grammar-text > .grammar-h:first-child { margin-top: 0; }
+/* Заголовок, к которому пришёл прыжок из поиска: короткая подсветка, чтобы
+   после прокрутки было видно, какая тема нашлась. Ореол нарисован box-shadow,
+   а не padding: указатель не должен сдвигать разметку. */
+.grammar-h.is-target {
+    background: var(--md-sys-color-primary-container);
+    color: var(--md-sys-color-on-primary-container);
+    border-radius: var(--md-sys-shape-corner-small);
+    box-shadow: 0 0 0 8px var(--md-sys-color-primary-container);
+}
 .grammar-p { margin: 0 0 12px; }
 .grammar-text > :last-child { margin-bottom: 0; }
 /* Маркер снаружи: вторая строка пункта встаёт под текст, а не под «•» */

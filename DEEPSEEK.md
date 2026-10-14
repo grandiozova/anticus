@@ -440,6 +440,41 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   `.writing-practice .flashcard-flip > .md-flashcard--writing` растягивается так
   же, чтобы переворот не прыгал.
 
+## Lesson & topic search (экран уроков)
+
+The lessons screen stays a flat table of contents (owner's decision, 2026-10-14 —
+neither textbook has parts, the numbering is continuous), and a search bar above it
+(`#lessonSearchInput`, `js/shell.js`) answers "which lesson was that in?".
+
+- **Topics are derived, not authored.** `grammarHeadings()` (`js/lesson.js`) returns
+  exactly the lines `renderGrammarHtml()` turns into `.grammar-h`, from the same pass
+  (`renderGrammarHtml(html, headings)`), in the same order. There is no `topics` field in
+  `data/*-lessons.js` and you should not add one: a lesson added to the data enters the
+  search by itself. `tests/lessonsearch.test.js` compares the index against the headings
+  actually rendered, in both courses.
+- **A heading is addressed by its order in the material**: each `.grammar-h` carries
+  `data-grammar-heading="N"`, and the topic row in the results carries the same number.
+  `openLessonTopic(lesson, index)` opens the lesson, switches to `material` and
+  `scrollToGrammarHeading(index)`.
+- The scroll offset is computed from the live app bar height (it is `position: fixed`),
+  and the highlight is `.grammar-h.is-target` — a `box-shadow` halo, so the layout does
+  not shift — removed by a 1.6 s timer. The `transition` lives on `.grammar-h` itself,
+  not on `.is-target`, or the highlight would go out instantly when the class is removed.
+- **The query is split into words and all of them must match** (`lessonTextMatches`):
+  «знак шва» finds «4. Знак шва и слогораздел». Both sides are folded by
+  `foldForSearch()` (`js/vocab.js`), so accents and niqqud do not matter — the same
+  search the dictionary uses.
+- A topic row is its own `.lesson-topic` button (48dp) under the lesson row, because it
+  opens the lesson *at that section*; nested buttons are not valid markup. Its icon is
+  `subdirectory_arrow_right` and must stay in `icon_names=`; `.lesson-topic` must stay in
+  `RIPPLE_TARGETS` (`js/ui.js`).
+- **With no query, map the index to entries with empty `topics`** in `renderMainMenu()` —
+  the first version passed the index through and every table-of-contents row grew its
+  whole topic list. No matches is a state, not an empty screen: `emptyState` with
+  `search_off` and the card title «Поиск», with the query left in the field.
+- **The index is cached per course** (`lessonSearchIndex`) and reset in `applyCourse()`
+  together with the query and the input (`resetLessonSearch()`).
+
 ## Courses
 
 - `data/courses.js` is the registry (`COURSES`), `js/course.js` holds switching logic.

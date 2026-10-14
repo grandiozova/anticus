@@ -189,43 +189,170 @@ function goToLessonsDest() {
     goToMain();
 }
 
+// ============================================================
+// ПОИСК ПО УРОКАМ И ТЕМАМ
+// ============================================================
+// Список уроков — оглавление курса, и когда уроков станет тридцать три,
+// «в каком это уроке» перестаёт быть очевидным. Поэтому над списком стоит
+// строка поиска, и ищет она не только по названиям уроков: темами служат
+// заголовки материала — те же строки, которые renderGrammarHtml() (js/lesson.js)
+// делает .grammar-h. Отдельного поля «темы» в данных нет и не нужно: указатель
+// собирается из самого урока, поэтому следующий урок попадает в поиск сам,
+// без правок в списке уроков.
+let lessonQuery = '';
+let lessonSearchIndex = null;
+
+// Разметку заголовка разбирает DOM, а не регулярка: «&nbsp;» в теме тоже
+// должен стать пробелом.
+function lessonTopicText(html) {
+    let box = document.createElement('div');
+    box.innerHTML = html;
+    return (box.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function lessonSearchIndexBuild() {
+    let out = [];
+    lessonNumbers().forEach(n => {
+        let data = getLessonData(n);
+        if (!data) return;
+        out.push({
+            number: n,
+            title: data.title || '',
+            topics: grammarHeadings(data.grammar).map((raw, index) => ({
+                index: index, html: raw, text: lessonTopicText(raw)
+            }))
+        });
+    });
+    return out;
+}
+
+function lessonIndex() {
+    if (!lessonSearchIndex) lessonSearchIndex = lessonSearchIndexBuild();
+    return lessonSearchIndex;
+}
+
+// Запрос режется на слова, и найтись должны все — как в любом поиске по
+// заголовкам: «знак шва» находит «4. Знак шва и слогораздел», хотя подряд такой
+// строки в теме нет. Обе стороны сравнения сворачиваются одинаково
+// (foldForSearch из js/vocab.js), поэтому диакритика не мешает: «ωρα» находит
+// «ὥρα», а набранное на телефоне слово — слово с огласовкой в данных.
+function lessonTextMatches(text, words) {
+    let folded = foldForSearch(text);
+    return words.every(w => folded.indexOf(w) !== -1);
+}
+
+// null — запроса нет, список показывает все уроки. Иначе только совпадения,
+// и темы внутри урока отфильтрованы тем же запросом.
+function lessonSearchResults() {
+    let words = lessonQuery.split(/\s+/).map(foldForSearch).filter(Boolean);
+    if (!words.length) return null;
+    let out = [];
+    lessonIndex().forEach(entry => {
+        let topics = entry.topics.filter(t => lessonTextMatches(t.text, words));
+        if (!topics.length && !lessonTextMatches(entry.title, words)) return;
+        out.push({ number: entry.number, title: entry.title, topics: topics });
+    });
+    return out;
+}
+
+// Указатель и запрос набраны по урокам курса: смена курса начинается с этого
+// сброса (см. applyCourse в js/course.js), иначе поиск искал бы по прошлому.
+function resetLessonSearch() {
+    lessonSearchIndex = null;
+    lessonQuery = '';
+    let input = document.getElementById('lessonSearchInput');
+    if (input) input.value = '';
+    let clearBtn = document.getElementById('lessonSearchClear');
+    if (clearBtn) clearBtn.classList.remove('show');
+}
+
+function filterLessonList() {
+    let input = document.getElementById('lessonSearchInput');
+    if (!input) return;
+    lessonQuery = input.value.trim();
+    let clearBtn = document.getElementById('lessonSearchClear');
+    if (clearBtn) clearBtn.classList.toggle('show', lessonQuery.length > 0);
+    renderMainMenu();
+}
+
+function clearLessonSearch() {
+    resetLessonSearch();
+    renderMainMenu();
+}
+
 function renderMainMenu() {
     let grid = document.getElementById('lessonGrid');
     if (!grid) return;
     grid.innerHTML = '';
-    let last = 0;
-    try { last = parseInt(localStorage.getItem(courseKey('last_lesson')), 10) || 0; } catch (e) {}
-    let numbers = lessonNumbers();
     let heading = document.getElementById('lessonGridTitle');
     // Курс может быть подключён раньше, чем наполнен: показываем это прямо,
     // а не пустой карточкой без объяснений.
-    if (!numbers.length) {
+    if (!lessonNumbers().length) {
         grid.innerHTML = emptyState('hourglass_top', 'Уроки готовятся',
             'Материал этого курса ещё не подключён. Курс можно сменить в настройках.');
         if (heading) heading.textContent = 'Уроки';
         return;
     }
-    for (let l of numbers) {
-        let data = getLessonData(l);
-        if (!data) continue;
-        if (grid.children.length) grid.appendChild(Object.assign(document.createElement('hr'), { className: 'md-divider' }));
-        let btn = document.createElement('button');
-        // Одна строка — номер и название. Подписи со счётчиками («24 слова ·
-        // 181 упражнение») у строки урока нет намеренно: список читается как
-        // оглавление, а не как отчёт о содержимом урока. Однострочный list item
-        // берёт у M3 свою высоту — как пункты меню разделов с той же разметкой.
-        btn.className = 'lesson-item lesson-item--single';
-        btn.innerHTML =
-            '<span class="lesson-item__avatar">' + l + '</span>' +
-            '<span class="lesson-item__text">' +
-                '<span class="lesson-item__headline">' + data.title + '</span>' +
-            '</span>' +
-            '<span class="lesson-item__trailing msym">' + (l === last ? 'resume' : 'chevron_right') + '</span>';
-        btn.onclick = (function(lesson) { return function() { openLesson(lesson); }; })(l);
-        grid.appendChild(btn);
+    let last = 0;
+    try { last = parseInt(localStorage.getItem(courseKey('last_lesson')), 10) || 0; } catch (e) {}
+    let results = lessonSearchResults();
+    // Поиск без совпадений — это ответ, а не пустой экран: говорим, по чему он
+    // искал, и оставляем запрос в поле.
+    if (results && !results.length) {
+        grid.innerHTML = emptyState('search_off', 'Ничего не найдено',
+            'Поиск идёт по названиям уроков и по темам внутри них.');
+        if (heading) heading.textContent = 'Поиск';
+        return;
     }
+    let numbers = lessonNumbers();
+    // Без запроса список — оглавление: темы показываются только в результатах,
+    // иначе под каждым уроком висел бы весь его материал.
+    let entries = results || lessonIndex().map(e => ({ number: e.number, title: e.title, topics: [] }));
+    entries.forEach(entry => {
+        if (grid.children.length) grid.appendChild(Object.assign(document.createElement('hr'), { className: 'md-divider' }));
+        grid.appendChild(lessonRow(entry, last));
+        if (entry.topics && entry.topics.length) {
+            let box = document.createElement('div');
+            box.className = 'lesson-topics';
+            entry.topics.forEach(t => box.appendChild(lessonTopicRow(entry.number, t)));
+            grid.appendChild(box);
+        }
+    });
     // Заголовок карточки называет реальный диапазон уроков в данных
     if (heading) {
-        heading.textContent = 'Уроки ' + numbers[0] + '–' + numbers[numbers.length - 1];
+        heading.textContent = results
+            ? 'Совпадения: ' + results.length
+            : 'Уроки ' + numbers[0] + '–' + numbers[numbers.length - 1];
     }
 }
+
+// Строка урока в списке — одна на весь экран: и в оглавлении, и в результатах
+// поиска. Одна строка — номер и название. Подписи со счётчиками («24 слова ·
+// 181 упражнение») у неё нет намеренно: список читается как оглавление, а не
+// как отчёт о содержимом урока. Однострочный list item берёт у M3 свою высоту —
+// как пункты меню разделов с той же разметкой.
+function lessonRow(entry, last) {
+    let btn = document.createElement('button');
+    btn.className = 'lesson-item lesson-item--single';
+    btn.innerHTML =
+        '<span class="lesson-item__avatar">' + entry.number + '</span>' +
+        '<span class="lesson-item__text">' +
+            '<span class="lesson-item__headline">' + entry.title + '</span>' +
+        '</span>' +
+        '<span class="lesson-item__trailing msym">' + (entry.number === last ? 'resume' : 'chevron_right') + '</span>';
+    btn.onclick = function() { openLesson(entry.number); };
+    return btn;
+}
+
+// Найденная тема — отдельная цель, а не подпись строки: нажатие открывает урок
+// на этой теме. Поэтому у неё своя кнопка в 48dp под строкой урока — кнопку
+// внутри кнопки разметка не допускает.
+function lessonTopicRow(lesson, topic) {
+    let btn = document.createElement('button');
+    btn.className = 'lesson-topic';
+    btn.innerHTML = '<span class="msym sm">subdirectory_arrow_right</span>' +
+        '<span class="lesson-topic__text">' + wrapScriptRuns(topic.html) + '</span>';
+    btn.onclick = function() { openLessonTopic(lesson, topic.index); };
+    return btn;
+}
+

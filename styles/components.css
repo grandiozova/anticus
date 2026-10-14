@@ -209,6 +209,56 @@
     color: var(--md-sys-color-on-surface-variant);
 }
 .lesson-item__trailing { color: var(--md-sys-color-on-surface-variant); }
+
+/* Найденные в уроке темы под строкой урока (результаты поиска, js/shell.js).
+   Тема — самостоятельная цель: она открывает урок на этом разделе, поэтому
+   у неё своя кнопка, а не подпись строки. Отступ слева выравнивает текст темы
+   под названием урока (4px поля строки + аватар 40px + промежуток 16px). */
+.lesson-topics { display: flex; flex-direction: column; }
+.lesson-topic {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 48px;
+    padding: 8px 8px 8px 60px;
+    border: 0;
+    background: transparent;
+    color: var(--md-sys-color-on-surface-variant);
+    font-family: inherit;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    letter-spacing: 0.015625rem;
+    text-align: left;
+    cursor: pointer;
+    border-radius: var(--md-sys-shape-corner-large);
+    -webkit-tap-highlight-color: transparent;
+}
+.lesson-topic::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--md-sys-color-on-surface);
+    opacity: 0;
+    transition: opacity var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-standard);
+    z-index: -1;
+}
+.lesson-topic:hover::before { opacity: var(--md-sys-state-hover-opacity); }
+.lesson-topic:active::before { opacity: var(--md-sys-state-pressed-opacity); }
+.lesson-topic .msym {
+    font-size: 18px;
+    flex-shrink: 0;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+}
+.lesson-topic__text { flex: 1; min-width: 0; }
+/* Знаки изучаемого языка в теме: кегль мелкий, поэтому как везде на мелком
+   письме — ползунок языка и пол огласовки (см. «Text size» в AGENTS.md) */
+.lesson-topic__text .script {
+    font-size: calc(max(0.875rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+}
 .md-divider {
     height: 1px;
     border: 0;

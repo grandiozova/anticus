@@ -312,6 +312,58 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
 - **Licenses** come from the `LICENSES` array; add an entry when you add a dependency. Only the middle of that list is open licences: the app's own code is first and is all-rights-reserved (see `LICENSE`), and the course materials are last as their holders' copyright. Both are statements, not licences, and carry no `url`.
 - The nav bar now holds **five** destinations — the M3 maximum. A sixth needs a different pattern, not a sixth item. That is exactly why the course picker is a full-screen overlay rather than a destination.
 
+## Поиск по урокам и темам
+
+Экран уроков — оглавление курса: плоский список, по строке на урок. Когда уроков
+станет тридцать три (греческий) и тридцать шесть (иврит), открыть нужный по
+памяти ещё можно, а вот найти урок по теме («где вообще учат аористу») — нет.
+Вопрос «в каком это уроке» закрывает строка поиска над списком (`#lessonSearchInput`,
+`js/shell.js`); сам список остаётся плоским — это решение владельца от 2026-10-14,
+и группировать уроки по частям учебника не нужно, потому что частей в обоих
+пособиях нет: нумерация сплошная.
+
+- **Темы не авторские, а выведенные.** `grammarHeadings()` (`js/lesson.js`)
+  возвращает ровно те строки, которые `renderGrammarHtml()` делает заголовками
+  `.grammar-h`, — тем же проходом (`renderGrammarHtml(html, headings)`), в том же
+  порядке. Поля `topics` в `data/*-lessons.js` нет и заводить его не надо: урок,
+  добавленный в данные, попадает в поиск сам, вместе со своими темами. Копия
+  правила «заголовок — строка целиком из `<b>`» разошлась бы с отрисовкой, поэтому
+  её нет; `tests/lessonsearch.test.js` сверяет указатель с заголовками на экране
+  в обоих курсах.
+- **Заголовок адресуется порядком следования.** Каждый `.grammar-h` получает
+  `data-grammar-heading="N"` (N — его номер в материале урока), и тема в
+  результатах носит то же число. `openLessonTopic(lesson, index)` открывает урок,
+  сразу `switchLessonPart('material')` и `scrollToGrammarHeading(index)` —
+  поэтому заголовок на экране и найденная тема это один и тот же адрес, без
+  второго разбора материала.
+- **Прокрутка считается от живого app bar:** он `position: fixed`, и без вычета
+  его высоты заголовок оказался бы под ним. Подсветка — `.grammar-h.is-target`
+  (ореол `box-shadow`, а не `padding`: указатель не должен сдвигать разметку),
+  снимается таймером через 1.6 с. Переход (`transition`) объявлен на самом
+  `.grammar-h`, а не на `.is-target`: иначе подсветка гасла бы мгновенно, когда
+  класс снимается.
+- **Запрос режется на слова, и найтись должны все** (`lessonTextMatches`) —
+  как в любом поиске по заголовкам: «знак шва» находит «4. Знак шва и слогораздел»,
+  хотя подряд такой строки в теме нет. Обе стороны сравнения сворачивает
+  `foldForSearch()` (`js/vocab.js`), поэтому диакритика не мешает: «ωρα» находит
+  «ὥρα», а набранное на телефоне слово — политонику в данных. Это тот же поиск,
+  что в словаре, и по той же причине.
+- **Строка урока одна на весь экран** (`lessonRow()`), а найденная тема —
+  отдельная кнопка `.lesson-topic` под ней, в 48dp: тема **открывает урок на этом
+  разделе**, поэтому это цель, а не подпись. Кнопку внутри кнопки разметка не
+  допускает — отсюда две кнопки, а не одна с вложенной строкой. Иконка темы —
+  `subdirectory_arrow_right`, и её имя обязано остаться в `icon_names=`;
+  `.lesson-topic` должен остаться в `RIPPLE_TARGETS` (`js/ui.js`).
+- **Без запроса указатель берётся с пустыми темами** (`lessonIndex().map(…)` в
+  `renderMainMenu()`): первая версия отдавала записи указателя как есть, и под
+  каждым уроком оглавления висел весь его материал — 61 строка тем на десяти
+  уроках. Пустой результат поиска — это ответ, а не пустой экран: `emptyState` с
+  `search_off` и заголовок карточки «Поиск», а в поле остаётся запрос.
+- **Указатель кешируется на курс** (`lessonSearchIndex`) и сбрасывается в
+  `applyCourse()` вместе с запросом и полем ввода (`resetLessonSearch()`): иначе
+  поиск искал бы по урокам курса, который закрыли. Тест держит это сравнением
+  ссылок на указатель до и после `switchCourse()`.
+
 ## Source textbooks
 
 There are two, one per course. Both are **reference material only**: nothing under

@@ -114,6 +114,9 @@ function applyCourse(id) {
 
     loadStats();
     applyCourseChrome();
+    // Указатель тем и запрос поиска набраны по урокам курса — на новом курсе
+    // они недействительны (js/shell.js).
+    resetLessonSearch();
     renderMainMenu();
     syncCourseControls();
 }
