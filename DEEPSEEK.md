@@ -154,7 +154,7 @@ invisible until someone hits the specific path (offline load, one specific theme
   `tests/hebrew-content.test.js` checks every Hebrew string in the lesson data occurs
   verbatim in `reference/nbbs-hebrew/`. **If that test fails, copy the correct string
   from the reference — do not retype it to "fix" it.**
-- **Greek lessons are ported one at a time.** The app has lessons 1–15 of the book's
+- **Greek lessons are ported one at a time.** The app has lessons 1–16 of the book's
   33 (as of 2026-10-14). To add lesson N: read `reference/machen-nt-greek/lessons/lesson-NN.md`
   and `data/vocabulary-by-lesson.json` (`raw_lines` when `parsed_ok` is false — the parse
   is heuristic and sometimes glues articles together). Build `title`, `grammar`,

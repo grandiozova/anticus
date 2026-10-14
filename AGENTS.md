@@ -129,7 +129,7 @@ styles/
   layout.css            68  переходы экранов, утилиты, адаптивность (nav rail)
   settings.css         312  segmented button темы и курса, карточка курса, ползунки размера текста, список лицензий
 data/
-  lessons.js         2,613  const LESSONS_DATA (греческий курс, уроки 1–15) и GREEK_ALPHABET — пул букв для уроков 1–2
+  lessons.js         2,764  const LESSONS_DATA (греческий курс, уроки 1–16) и GREEK_ALPHABET — пул букв для уроков 1–2
   hebrew-lessons.js    872  const HEBREW_LESSONS_DATA — главы 1–11: грамматика, словарь, упражнения; HEBREW_ALPHABET — пул букв и огласовок
   prayer.js            136  const PRAYER_DATA
   licenses.js           49  const LICENSES
@@ -391,7 +391,7 @@ is the visible tell. Russian text, page numbers and structure are reliable throu
 
 #### Перенос урока учебника в `data/lessons.js`
 
-В книге 33 урока; в приложении перенесены уроки 1–15 (на 2026-10-14). Дальше уроки
+В книге 33 урока; в приложении перенесены уроки 1–16 (на 2026-10-14). Дальше уроки
 добавляются по одному — как фазы: урок целиком, `npm test` зелёный, документация в
 том же изменении. Ни `index.html`, ни `sw.js` при этом не трогаются: урок — это
 запись в `LESSONS_DATA`, а файл уже подключён и уже в `CORE_ASSETS`.
