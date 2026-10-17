@@ -1,17 +1,24 @@
 // ============================================================
-// ФУНКЦИИ ДЛЯ "ОТЧЕ НАШ"
+// РАЗБОР ТЕКСТА: «ОТЧЕ НАШ» И ЧТЕНИЕ БИБЛИИ
 // ============================================================
 
 // prayerExerciseState объявлен в core.js вместе с остальным состоянием:
 // повторное `let` в другом файле — SyntaxError.
 
-// Разбор молитвы есть не у каждого курса: PRAYER_DATA — это данные греческого,
-// у еврейского его аналог («Шма», Втор. 6:4–5) появится вместе с уроками.
+// Разбор текста есть не у каждого курса: у греческого это молитва «Отче наш»,
+// у еврейского — чтение Бытия 1:1–5. Данные разные (PRAYER_DATA /
+// HEBREW_READING_DATA), а экран, разбор и упражнения общие; поэтому поля
+// читаются через helpers ниже, а не по греческим именам напрямую.
 // Карточку-ссылку на главном экране прячет applyCourseChrome(), а этот guard
 // страхует прямой вызов — из строки адреса, теста или будущего кода.
+function prayerWordText(word) { return word.text || word.greek || ''; }
+
 function showPrayer() {
-    if (!coursePrayer()) return;
+    const data = coursePrayer();
+    if (!data) return;
     showSection('prayerSection');
+    const title = document.getElementById('prayerSectionTitle');
+    if (title) title.textContent = data.incipit || '';
     renderPrayerText();
     renderPrayerExercise();
 }
@@ -23,7 +30,7 @@ function renderPrayerText() {
         html += `<div class="prayer-verse">`;
         html += `<div class="prayer-line script">`;
         verse.words.forEach((word, wordIdx) => {
-            html += `<span class="prayer-word" data-verse="${verseIdx}" data-word="${wordIdx}" role="button" tabindex="0" onclick="showWordAnalysis(${verseIdx}, ${wordIdx})">${word.greek}</span>`;
+            html += `<span class="prayer-word" data-verse="${verseIdx}" data-word="${wordIdx}" role="button" tabindex="0" onclick="showWordAnalysis(${verseIdx}, ${wordIdx})">${prayerWordText(word)}</span>`;
         });
         html += `</div>`;
         html += `<div class="prayer-russian">${verse.russian}</div>`;
@@ -56,9 +63,15 @@ function showWordAnalysis(verseIdx, wordIdx) {
     if (wordEl) wordEl.classList.add('selected');
 
     analysisDiv.style.display = 'block';
+    // Чтение слова необязательно: у греческой молитвы транскрипция стоит
+    // под стихом целиком, у еврейского чтения — ещё и у каждого слова,
+    // как в словаре иврита.
+    const reading = word.translit
+        ? `<span class="prayer-word-reading">${word.translit}</span>`
+        : '';
     analysisDiv.innerHTML = `
-        <strong>${word.greek}</strong> — ${word.translation}<br>
-        <span>${word.analysis}</span>
+        <strong>${prayerWordText(word)}</strong> — ${word.translation}<br>
+        ${reading}<span>${word.analysis}</span>
     `;
 }
 
@@ -78,22 +91,26 @@ function closeAllAnalysis() {
     });
 }
     
-// Все слова молитвы без повторов. В тексте они повторяются (ἡμῶν — четыре раза,
-// καί — четыре, σου — три), и без этого одно и то же лишнее слово могло
-// попасть в варианты или в банк дважды.
+// Все слова разбора без повторов. В тексте они повторяются (в молитве ἡμῶν —
+// четыре раза, καί — четыре, σου — три; в чтении — «элохим»), и без этого одно
+// и то же лишнее слово могло попасть в варианты или в банк дважды.
 function prayerWordPool() {
-    return Array.from(new Set(coursePrayer().verses.flatMap(v => v.words.map(w => w.greek))));
+    return Array.from(new Set(coursePrayer().verses.flatMap(v => v.words.map(prayerWordText))));
 }
 
 function startPrayerFill() {
     let questions = [];
     const allWords = prayerWordPool();
     coursePrayer().verses.forEach(verse => {
-        const wordIndex = Math.floor(Math.random() * verse.words.length);
-        const correctWord = verse.words[wordIndex].greek;
+        const words = verse.words.map(prayerWordText);
+        const wordIndex = Math.floor(Math.random() * words.length);
+        const correctWord = words[wordIndex];
         const distractors = shuffle(allWords.filter(w => w !== correctWord)).slice(0, 3);
         questions.push({
-            verse: verse.greek,
+            // Пропуск адресуется тем же массивом, из которого берётся индекс:
+            // разбивка текста по пробелам разошлась бы с words там, где слова
+            // соединены маккефом (ʾeṯ-hāʾôr), и пропуск встал бы не на место.
+            words: words,
             correct: correctWord,
             distractors: distractors,
             blankIndex: wordIndex,
@@ -108,9 +125,9 @@ function startPrayerTranslate() {
     let questions = [];
     const allWords = prayerWordPool();
     coursePrayer().verses.forEach(verse => {
-        // Правильные слова — как в стихе, с повторами: ἡμῶν в одном стихе
+        // Правильные слова — как в стихе, с повторами: одно слово в стихе
         // бывает дважды, и фишек для него нужно две. Без повторов — только лишние.
-        const correctWords = verse.words.map(w => w.greek);
+        const correctWords = verse.words.map(prayerWordText);
         const extras = shuffle(allWords.filter(w => !correctWords.includes(w))).slice(0, 3);
         const pool = shuffle([...correctWords, ...extras]);
         questions.push({
@@ -133,8 +150,7 @@ function showPrayerExerciseQuestion() {
     }
     const q = state.questions[state.index];
     if (state.type === 'fill') {
-        const words = q.verse.split(' ');
-        const displayWords = words.map((w, i) => {
+        const displayWords = q.words.map((w, i) => {
             if (i === q.blankIndex) return '___';
             return w;
         });
@@ -152,7 +168,11 @@ function showPrayerExerciseQuestion() {
     } else if (state.type === 'translate') {
         let html = progressHead(`Вопрос ${state.index+1} из ${state.total}`, state.index, state.total);
         html += `<div class="question">${q.russian}</div>`;
-        html += `<div class="prayer-russian mb-12">Соберите перевод на ${courseLang()} из слов</div>`;
+        // Подсказку можно выключить в данных: у еврейского чтения она убрана,
+        // потому что задание и так понятно, а лишняя строка отвлекает.
+        if (!coursePrayer().hideTranslateHint) {
+            html += `<div class="prayer-russian mb-12">Соберите перевод на ${courseLang()} из слов</div>`;
+        }
         html += `<div class="build-area build-area--script" id="prayerBuildArea"></div>`;
         html += `<div class="word-bank word-bank--script" id="prayerWordBank">`;
         q.pool.forEach(w => {
@@ -217,7 +237,9 @@ function prayerCheckTranslate() {
         container.innerHTML = '<div class="feedback ok"><span>Верно!</span></div>';
     } else {
         stats.totalWrong++;
-        container.innerHTML = `<div class="feedback fail"><span>Неверно. Правильный порядок: <strong>${correct.join(' ')}</strong></span></div>`;
+        // Порядок слов — текст изучаемого языка: без .script иврит остался бы
+        // в интерфейсной гарнитуре и слева направо.
+        container.innerHTML = `<div class="feedback fail"><span>Неверно. Правильный порядок: <strong class="script">${correct.join(' ')}</strong></span></div>`;
     }
     saveStats();
     state.index++;

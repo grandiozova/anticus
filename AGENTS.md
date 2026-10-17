@@ -119,21 +119,22 @@ online test. When you add:
 ## Project layout
 
 ```
-index.html           422  <head>, разметка, порядок загрузки
+index.html           451  <head>, разметка, порядок загрузки
 styles/
   tokens.css           307  :root, [data-theme=dark], [data-theme=sepia] и [data-script] — все переменные
   base.css             385  сброс, типографика, метки языка (.script/.greek/.hebrew), каркас, app bar, icon button, nav bar, FAB, ripple
   components.css       953  кнопки, list item урока, карточки, табы, search bar, text field, chips
-  screens.css          862  вопрос/варианты, обратная связь, списки слов, таблицы и их прокрутка, ритм материала, flashcards и их оборот, статистика, «Отче наш», стартовый экран выбора курса
+  screens.css        1,570  вопрос/варианты, обратная связь, списки слов, таблицы и их прокрутка, ритм материала, flashcards и их оборот, статистика, разбор текста («Отче наш» / чтение Библии), стартовый экран выбора курса
   dialogs.css           88  snackbar, dialog
   layout.css            68  переходы экранов, утилиты, адаптивность (nav rail)
   settings.css         312  segmented button темы и курса, карточка курса, ползунки размера текста, список лицензий
 data/
   lessons.js         2,764  const LESSONS_DATA (греческий курс, уроки 1–16) и GREEK_ALPHABET — пул букв для уроков 1–2
   hebrew-lessons.js    872  const HEBREW_LESSONS_DATA — главы 1–11: грамматика, словарь, упражнения; HEBREW_ALPHABET — пул букв и огласовок
-  prayer.js            136  const PRAYER_DATA
-  licenses.js           49  const LICENSES
-  courses.js            94  const COURSES/COURSE_ORDER — реестр курсов, грузится последним из data/
+  prayer.js            142  const PRAYER_DATA — «Отче наш» (греческий)
+  hebrew-reading.js    106  const HEBREW_READING_DATA — Бытие 1:1–5 (иврит)
+  licenses.js           96  const LICENSES
+  courses.js           119  const COURSES/COURSE_ORDER — реестр курсов, грузится последним из data/
 tests/                    jsdom-набор, `npm test` — см. tests/README.md
 js/
   core.js              171  состояние, shuffle/escHtml/escArg, keywordsMatch, isScriptText, scheduleAdvance, localStorage
@@ -149,7 +150,7 @@ js/
   test.js              192  тест
   translation.js       230  перевод
   stats.js             107  статистика, ошибки, сброс прогресса
-  prayer.js            237  «Отче наш»: разбор и упражнения
+  prayer.js            259  разбор текста: «Отче наш» и чтение Бытия, упражнения
   vocab.js             693  общий словарь, поиск, фильтр по частям речи, клавиатура изучаемого языка
   settings.js           29  showSettings, renderLicenses
   boot.js               79  normalizeTranslationData, init*, глобальные слушатели
@@ -555,6 +556,47 @@ were promoted to `translation.el_to_ru`, which took example coverage from 17 to 
   book prints in parentheses.
 - **Do not use the `X + וְ` cells** from the waw-conjunction table: they read like a
   phrase but are a notation, and the same holds for cells with `(`, `/` or `+`.
+
+**The Hebrew course's «prayer» slot holds a Bible reading, not a prayer.** The Old
+Testament has no Lord's Prayer, so `COURSES.hebrew.prayer` points at
+`HEBREW_READING_DATA` (`data/hebrew-reading.js`) — Genesis 1:1–5, the first day. The
+screen, the word-by-word analysis and both drills are the same ones the Greek prayer
+uses (`prayerSection`, `js/prayer.js`), so there is no second code path:
+
+- **The field names differ, the code does not.** Hebrew entries carry `text` (verse and
+  word), Greek entries keep `greek`; `prayerWordText()` reads either. `prayer.title`
+  names the app bar (`updateShell()` in `js/shell.js`) and `prayer.incipit` is the
+  heading in the card; `tests/course.test.js` requires both on every course that has a
+  reading.
+- **Never retype the Hebrew.** The text and every word form were extracted from
+  OSHB/WLC 4.20 (`Gen.xml`) mechanically, then cross-checked with Sefaria — the only
+  difference is the accent on the word «тоху» (OSHB U+05A8, Sefaria U+0599), and OSHB
+  wins because the repo treats the Westminster Leningrad Codex as the authority. The
+  Russian is the Synodal translation (public domain); the OSHB attribution is in
+  `data/licenses.js`.
+- **A maqqef pair is one word entry.** `words` holds «ʿal-pǝnê» and «ʾeṯ-hāʾôr» as
+  single tokens, so the fill drill addresses `q.words` and not `verse.text.split(' ')`:
+  the split would put the blank inside a maqqef pair. `tests/prayer.test.js` checks that
+  the shown blank is on the word the index names.
+- **The reading's `.translit` is authored in the course's convention** — Russian with
+  the stress mark, then the book's transliteration in brackets, the same shape as a
+  vocabulary entry's `translit`. It is shown in the word's analysis card only (the
+  Greek prayer has no per-word reading).
+- **The Hebrew reading has no verse-level `transcription`.** The Greek prayer keeps
+  its line under each verse, but in the reading it was noise: the same information is
+  one tap away in the word's analysis. The field is simply absent from
+  `HEBREW_READING_DATA`, and `renderPrayerText()` draws it only when present — so do
+  not "restore" it for symmetry.
+- **`hideTranslateHint` is a reading fact, not a course branch.** The Hebrew data sets
+  it, and the translate drill opens without the «Соберите перевод на … из слов» line;
+  the Greek prayer has no field and keeps the hint. `tests/prayer.test.js` holds both
+  sides.
+- **Hebrew word chips need a taller line box.** `.prayer-word` has `overflow: hidden`
+  for its ripple, and the shared `1.75rem` line would clip the niqqud that hang below
+  the letter. `:root[data-script="hebrew"] .prayer-word { line-height: 1.5 }` and the
+  same line-height on `.prayer-analysis strong` are there for that reason, not as
+  spacing taste; `tests/static.test.js` does not catch this, so do not remove them
+  while tidying.
 
 ## Exercise types
 

@@ -33,6 +33,13 @@ const LICENSES = [
         url: 'https://m3.material.io/'
     },
     {
+        name: 'Open Scriptures Hebrew Bible (OSHB)',
+        terms: 'Текст Westminster Leningrad Codex — общественное достояние. ' +
+               'Леммы и морфология — Creative Commons Attribution 4.0 ' +
+               '© Open Scriptures Hebrew Bible Project.',
+        url: 'https://github.com/openscriptures/morphhb'
+    },
+    {
         name: 'PT Sans',
         terms: 'SIL Open Font License 1.1 © ParaType',
         url: 'https://openfontlicense.org/'
@@ -61,6 +68,11 @@ const LICENSES = [
         name: 'Source Serif 4',
         terms: 'SIL Open Font License 1.1 © Adobe',
         url: 'https://openfontlicense.org/'
+    },
+    {
+        name: 'Синодальный перевод Библии',
+        terms: 'Русский перевод Бытия 1:1–5 — Синодальный, общественное достояние.',
+        url: null
     },
     {
         name: 'Учебные материалы: греческий',

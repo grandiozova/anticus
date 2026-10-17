@@ -1359,6 +1359,11 @@
     transition: background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
                 color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
+/* У иврита огласовка живёт под буквой и внутри неё, а .prayer-word обрезает
+   содержимое ради ripple: тесная строка срезала бы точки снизу. */
+:root[data-script="hebrew"] .prayer-word {
+    line-height: 1.5;
+}
 .prayer-word:hover { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); }
 .prayer-word.selected { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
 .prayer-russian {
@@ -1389,6 +1394,16 @@
     font-family: var(--md-ref-typeface-script);
     unicode-bidi: plaintext;
     font-size: calc(max(1.0625rem, var(--md-ref-script-min-size)) * var(--md-ref-script-scale));
+    line-height: 1.5;
+}
+/* Чтение слова в разборе: русскими буквами и латиницей, поэтому идёт
+   интерфейсной гарнитурой, без множителей изучаемого языка. */
+.prayer-word-reading {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    font-style: italic;
 }
 
 

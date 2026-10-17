@@ -70,7 +70,7 @@ if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
     });
 }
 
-// Элементы с role="button" на <div>/<span> (слово в «Отче наш», строка словаря)
+// Элементы с role="button" на <div>/<span> (слово в разборе текста, строка словаря)
 // сами по себе клавиатуру не слушают — Enter и пробел доводим до клика руками.
 const KEY_ACTIVATED = 'prayer-word word-row';
 document.addEventListener('keydown', function (e) {

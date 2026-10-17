@@ -162,17 +162,21 @@ test('на курсе без уроков FAB «Продолжить» скры�
     greek.close();
 });
 
-test('карточка разбора молитвы есть только у курса, где он есть', () => {
+test('карточка разбора есть у обоих курсов и называет свой текст', () => {
     const greek = loadApp({ storage: { app_default_course: 'greek' } });
     assert.ok(!greek.document.getElementById('prayerFeatureCard').classList.contains('hidden'));
+    assert.match(greek.document.getElementById('prayerFeatureTitle').textContent, /Отче наш/);
     greek.close();
 
     const hebrew = loadApp({ storage: { app_default_course: 'hebrew' } });
-    assert.ok(hebrew.document.getElementById('prayerFeatureCard').classList.contains('hidden'),
-        'у еврейского курса разбора молитвы пока нет — карточку надо скрыть');
-    // Прямой вызов тоже не должен ничего сломать
+    assert.ok(!hebrew.document.getElementById('prayerFeatureCard').classList.contains('hidden'),
+        'у еврейского курса карточка чтения Библии должна быть');
+    assert.strictEqual(hebrew.document.getElementById('prayerFeatureTitle').textContent,
+        'Чтение — Берешит');
     hebrew.window.showPrayer();
-    assert.notStrictEqual(hebrew.screen(), 'prayerSection');
+    assert.strictEqual(hebrew.screen(), 'prayerSection');
+    assert.strictEqual(hebrew.appBarTitle(), 'Чтение Библии',
+        'заголовок app bar должен называть чтение, а не молитву');
     assert.deepStrictEqual(hebrew.errors, []);
     hebrew.close();
 });
@@ -324,8 +328,13 @@ test('каждый курс реестра описан полностью', () 
         assert.strictEqual(c.id, id, 'id внутри записи должен совпадать с ключом');
         assert.ok(c.lessons, id + ': нет объекта уроков');
         assert.ok(['ltr', 'rtl'].includes(c.dir), id + ': направление письма должно быть ltr или rtl');
-        // prayerCard имеет смысл только вместе с prayer
-        if (c.prayer) assert.ok(c.prayerCard, id + ': есть prayer, но нет подписей карточки');
+        // prayerCard имеет смысл только вместе с prayer; у самого разбора
+        // обязательны заголовок экрана и первая строка в шапке карточки
+        if (c.prayer) {
+            assert.ok(c.prayerCard, id + ': есть prayer, но нет подписей карточки');
+            assert.ok(c.prayer.title, id + ': у разбора нет заголовка экрана');
+            assert.ok(c.prayer.incipit, id + ': у разбора нет первой строки');
+        }
     }
     app.close();
 });

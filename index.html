@@ -55,8 +55,9 @@
 
 <!-- ============ УРОКИ (главный экран) ============ -->
 <div id="mainMenu" class="section active">
-    <!-- Разбор молитвы есть не у каждого курса: подписи и видимость задаёт
-         applyCourseChrome() по данным курса из data/courses.js. -->
+    <!-- Разбор текста есть не у каждого курса: подписи и видимость задаёт
+         applyCourseChrome() по данным курса из data/courses.js. У греческого
+         это «Отче наш», у еврейского — Бытие 1:1–5. -->
     <button class="md-feature-card" id="prayerFeatureCard" onclick="showPrayer()">
         <span class="md-feature-card__icon"><span class="msym">local_library</span></span>
         <span class="md-feature-card__text">
@@ -340,10 +341,10 @@
     </div>
 </div>
 
-<!-- ============ ОТЧЕ НАШ ============ -->
+<!-- ============ РАЗБОР ТЕКСТА (молитва / чтение Библии) ============ -->
 <div id="prayerSection" class="section">
     <div class="card">
-        <h3><span class="msym">local_library</span>Πάτερ ἡμῶν</h3>
+        <h3><span class="msym">local_library</span><span class="script" id="prayerSectionTitle">Πάτερ ἡμῶν</span></h3>
         <div id="prayerContent"></div>
     </div>
     <div class="card">
@@ -419,6 +420,7 @@
 <script src="data/lessons.js"></script>
 <script src="data/hebrew-lessons.js"></script>
 <script src="data/prayer.js"></script>
+<script src="data/hebrew-reading.js"></script>
 <script src="data/licenses.js"></script>
 <!-- courses.js — последним среди данных: реестр ссылается на объявленные выше объекты. -->
 <script src="data/courses.js"></script>

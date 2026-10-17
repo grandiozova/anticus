@@ -17,7 +17,9 @@ const SCREEN_META = {
     drillSection:         { title: 'Упражнение',      dest: 'lessons',  back: 'lesson' },
     testSection:          { title: 'Тест',            dest: null,       back: 'test' },
     errorsSection:        { title: 'Ошибки',          dest: 'progress', back: 'progress' },
-    prayerSection:        { title: 'Отче наш',        dest: 'lessons',  back: 'lessons' },
+    // Заголовок этого экрана приходит из данных курса (молитва или чтение),
+    // см. updateShell(); здесь — только запасное значение.
+    prayerSection:        { title: 'Разбор текста',   dest: 'lessons',  back: 'lessons' },
     settingsSection:      { title: 'Настройки',       dest: 'settings', back: null }
 };
 
@@ -71,6 +73,12 @@ function updateShell() {
         // На экране упражнения заголовок называет само упражнение — его карточка
         // единственная на экране, и повторять «Урок N» здесь нечем помочь.
         if (currentSectionId === 'drillSection' && currentDrill) title = drillLabel(currentDrill);
+        // Экран разбора общий для молитвы и чтения Библии, поэтому его
+        // заголовок берётся из данных курса, а не из SCREEN_META.
+        if (currentSectionId === 'prayerSection') {
+            let data = coursePrayer();
+            if (data && data.title) title = data.title;
+        }
         if (titleEl.textContent !== title) {
             // мягкая замена заголовка; быстрые переходы подряд не должны гонять таймеры
             clearTimeout(titleFadeTimer);

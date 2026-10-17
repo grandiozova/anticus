@@ -146,7 +146,8 @@ function applyCourseChrome() {
         input.setAttribute('dir', courseDir());
     }
 
-    // Карточка «Отче наш» — греческая; у курса без разбора молитвы её нет.
+    // Карточка разбора текста: у греческого это «Отче наш», у еврейского —
+    // чтение Бытия 1:1–5. У курса без разбора её нет.
     let card = document.getElementById('prayerFeatureCard');
     if (card) {
         let has = !!(course.prayer && course.prayerCard);
