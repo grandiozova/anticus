@@ -46,7 +46,7 @@ function startTest() {
 function cancelTest() {
     testState = { questions: [], index: 0, correct: 0, total: 0, answered: false };
     showSection('lessonSection');
-    switchLessonPart(currentLessonPart || 'menu');
+    switchLessonPart(currentLessonPart || 'material');
 }
 
 function showTest() {

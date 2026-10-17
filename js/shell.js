@@ -34,7 +34,7 @@ const FAB_CONFIG = {
     mainMenu:             { icon: 'play_arrow',  label: 'Продолжить' },
     allVocabSection:      { icon: 'style',       label: 'Повторить' },
     allFlashcardsSection: { icon: 'restart_alt', label: 'Заново' },
-    lessonSection:        { icon: 'quiz',        label: 'Тест' },
+    lessonSection:        { icon: 'edit_note',   label: 'Упражнения' },
     prayerSection:        { icon: 'translate',   label: 'Упражнение' }
 };
 
@@ -100,6 +100,9 @@ function updateShell() {
     // --- контекстный FAB ---
     let fab = document.getElementById('mainFab');
     let cfg = FAB_CONFIG[currentSectionId];
+    // На материале главное действие — перейти к упражнениям. В самом списке
+    // упражнений выбирать нужно вручную, и подсказывать FAB нечего.
+    if (currentSectionId === 'lessonSection' && currentLessonPart === 'exercise') cfg = null;
     // «Продолжить» нечему продолжать, пока в курсе нет ни одного урока.
     if (currentSectionId === 'mainMenu' && !courseHasLessons()) cfg = null;
     if (fab) {
@@ -140,13 +143,7 @@ function navigateTo(dest) {
 }
 
 function goBack() {
-    // Урок теперь двухуровневый: из раздела «назад» ведёт к списку разделов,
-    // и только с него — к списку уроков.
-    if (currentSectionId === 'lessonSection' && currentLessonPart !== 'menu') {
-        switchLessonPart('menu');
-        scrollPageTop();
-        return;
-    }
+    // Урок — один уровень: «назад» с любого его раздела ведёт к списку уроков.
     let meta = SCREEN_META[currentSectionId];
     if (!meta || !meta.back) return;
     if (meta.back === 'test') { cancelTest(); return; }
@@ -160,7 +157,7 @@ function onFabClick() {
         case 'mainMenu':             continueLesson(); break;
         case 'allVocabSection':      startAllFlashcards(vocabTypeFilter); break;
         case 'allFlashcardsSection': startAllFlashcards(); break;
-        case 'lessonSection':        startTest(); break;
+        case 'lessonSection':        switchLessonPart('exercise'); break;
         case 'prayerSection':        startPrayerTranslate(); break;
     }
 }

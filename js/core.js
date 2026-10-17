@@ -4,7 +4,7 @@
 
 // Глобальное состояние
 let currentLesson = 3;
-let currentLessonPart = 'menu';
+let currentLessonPart = 'material';
 let lessonsReturnSection = 'mainMenu'; // какой экран показывать при возврате на вкладку «Уроки»
 let stats = { totalCorrect: 0, totalWrong: 0, errors: {} };
 let testState = { questions: [], index: 0, correct: 0, total: 10, answered: false };

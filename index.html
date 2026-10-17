@@ -122,20 +122,13 @@
 <div id="lessonSection" class="section">
     <h2 id="lessonTitle" class="mb-12"></h2>
 
-    <!-- Панель вкладок появляется только внутри раздела: на самом уроке
-         разделы предлагаются списком (#partMenu). -->
+    <!-- Вкладки раздела урока. Урок открывается сразу на материале — списка
+         разделов больше нет. «Тест» — пункт внутри «Упражнений», а не третья
+         вкладка: это проверка после тренировки, и рядом с тренировками ей место. -->
     <div class="tab-bar hidden" id="lessonTabs" role="tablist">
         <button data-part="material" onclick="switchLessonPart('material')" role="tab"><span class="msym">school</span>Материал</button>
         <button data-part="exercise" onclick="switchLessonPart('exercise')" role="tab"><span class="msym">edit_note</span>Упражнения</button>
-        <button data-part="test" onclick="startTest()" role="tab"><span class="msym">quiz</span>Тест</button>
         <div class="md-tabs__indicator" id="lessonTabsIndicator"></div>
-    </div>
-
-    <!-- Разделы урока списком — это первое, что видно при открытии урока -->
-    <div id="partMenu" class="section active">
-        <div class="card">
-            <div class="lesson-list" id="lessonPartMenu"></div>
-        </div>
     </div>
 
     <!-- Материал урока: грамматика, под ней словарь -->
@@ -150,8 +143,14 @@
         </div>
     </div>
 
-    <!-- Все упражнения урока: список выбора, само упражнение — отдельным экраном -->
+    <!-- Все упражнения урока: список выбора, само упражнение — отдельным экраном.
+         «Тест» стоит отдельной карточкой над списком, чтобы его не приходилось
+         искать под концом длинного списка тренировок. -->
     <div id="partExercise" class="section">
+        <div class="card" id="lessonTestCard">
+            <h3><span class="msym">quiz</span>Проверка знаний</h3>
+            <div class="lesson-list" id="lessonTestEntry"></div>
+        </div>
         <div class="card">
             <h3><span class="msym">edit_note</span>Упражнения</h3>
             <div id="drillGroups"></div>

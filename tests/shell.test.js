@@ -84,20 +84,18 @@ test('кнопка «назад» появляется ровно там, где
     app.close();
 });
 
-test('«назад» из раздела урока ведёт к списку разделов, потом к урокам', () => {
+test('урок открывается сразу на материале, а «назад» ведёт к списку уроков', () => {
     const app = loadApp();
     const w = app.window;
 
     w.openLesson(4);
-    w.switchLessonPart('material');
-    assert.strictEqual(app.get('currentLessonPart'), 'material');
+    assert.strictEqual(app.get('currentLessonPart'), 'material', 'урок открывается на материале');
+    assert.ok(app.document.getElementById('partMaterial').classList.contains('active'));
+    assert.ok(!app.document.getElementById('partMenu'), 'списка разделов больше нет');
+    assert.ok(!app.document.getElementById('lessonTabs').classList.contains('hidden'), 'вкладки видны');
 
     w.goBack();
-    assert.strictEqual(app.get('currentLessonPart'), 'menu', 'первый «назад» — к списку разделов урока');
-    assert.strictEqual(app.get('currentSectionId'), 'lessonSection');
-
-    w.goBack();
-    assert.strictEqual(app.get('currentSectionId'), 'mainMenu', 'второй «назад» — к списку уроков');
+    assert.strictEqual(app.get('currentSectionId'), 'mainMenu', '«назад» с урока — к списку уроков');
     app.close();
 });
 
@@ -134,27 +132,54 @@ test('заголовок app bar называет текущий урок и у�
     app.close();
 });
 
-test('FAB «Тест» есть там, где есть вопросы, и скрыт на объявленном вводном уроке', () => {
+test('FAB на уроке ведёт к упражнениям и скрыт в самом списке упражнений', () => {
     const app = loadApp();
     const w = app.window;
 
-    // Алфавит и правила чтения тоже тренируются, поэтому уроки 1–2 больше не
-    // вводные: предложить тест есть что, и FAB ведёт себя как на прочих уроках.
+    // Алфавит и правила чтения тоже тренируются, поэтому уроки 1–2 не вводные.
     w.openLesson(1);
-    assert.ok(!app.fab().hidden, 'урок 1 — алфавит, тест есть');
-    assert.strictEqual(app.fab().label, 'Тест');
-    w.openLesson(2);
-    assert.ok(!app.fab().hidden, 'урок 2 — правила чтения');
-    w.openLesson(3);
-    assert.ok(!app.fab().hidden, 'с урока 3 тест есть');
+    assert.ok(!app.fab().hidden, 'урок 1 — алфавит, упражнения есть');
+    assert.strictEqual(app.fab().label, 'Упражнения');
+
+    w.onFabClick();
+    assert.strictEqual(app.get('currentLessonPart'), 'exercise', 'FAB открывает упражнения');
+    assert.ok(app.fab().hidden, 'в списке упражнений выбирают вручную — FAB не нужен');
+
+    w.switchLessonPart('material');
+    assert.ok(!app.fab().hidden, 'на материале FAB снова виден');
 
     // Сам механизм вводных уроков остался — курс может объявить урок без
     // упражнений в introLessons, и тогда FAB прячется. Ни один курс таких
     // уроков сейчас не объявляет, поэтому проверяем на дописанном.
     app.get('(function () { activeCourse().introLessons.push(1); return 0; })()');
     w.openLesson(1);
-    assert.ok(app.fab().hidden, 'вводный урок — тестировать нечего');
+    assert.ok(app.fab().hidden, 'вводный урок — тренировать нечего');
+    assert.ok(app.document.getElementById('lessonTabs').classList.contains('hidden'),
+        'у вводного урока одна вкладка — ряд вкладок не нужен');
+    assert.ok(app.document.getElementById('lessonTestCard').classList.contains('hidden'),
+        'и проверять нечего');
     app.get('(function () { activeCourse().introLessons.pop(); return 0; })()');
+    app.close();
+});
+
+test('тест — пункт внутри упражнений, отдельной вкладки у него нет', () => {
+    const app = loadApp();
+    const w = app.window;
+
+    w.openLesson(4);
+    const tabs = Array.from(app.document.querySelectorAll('#lessonTabs button'))
+        .map(b => b.getAttribute('data-part'));
+    assert.deepStrictEqual(tabs, ['material', 'exercise']);
+    assert.strictEqual(app.document.querySelector('#partMaterial .lesson-item'), null,
+        'в материале пунктов-меню больше нет');
+
+    w.switchLessonPart('exercise');
+    const entry = app.document.querySelector('#partExercise #lessonTestEntry .lesson-item');
+    assert.ok(entry, 'в «Упражнениях» есть пункт «Тест»');
+    assert.match(entry.textContent, /Тест/);
+
+    entry.click();
+    assert.strictEqual(app.get('currentSectionId'), 'testSection', 'пункт запускает тест');
     app.close();
 });
 

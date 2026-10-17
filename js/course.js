@@ -108,7 +108,7 @@ function applyCourse(id) {
     translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
     prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
     currentDrill = null;
-    currentLessonPart = 'menu';
+    currentLessonPart = 'material';
     lessonsReturnSection = 'mainMenu';
     currentLesson = firstLessonNumber();
 

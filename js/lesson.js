@@ -1,10 +1,10 @@
 // ============================================================
 // ОТКРЫТИЕ УРОКА И ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
 // ============================================================
-// Экран урока — три уровня. Открытый урок показывает список своих разделов
-// (#partMenu, часть 'menu'): «Материал» (грамматика, под ней словарь),
-// «Упражнения» и «Тест». Панель вкладок появляется только внутри раздела —
-// на первом уровне переключать нечего, а список объясняет, что там есть.
+// Экран урока — два раздела: «Материал» (грамматика, под ней словарь) и
+// «Упражнения». Урок открывается сразу на материале: списка разделов, который
+// приходилось проходить нажатием, больше нет, между разделами переключает
+// панель вкладок. «Тест» — пункт внутри «Упражнений», а не третья вкладка.
 // Выбранное упражнение уходит на собственный экран (#drillSection).
 
 // Каталог упражнений урока. kind говорит, чем запускать и в какой контейнер
@@ -132,8 +132,8 @@ function countLessonDrills(data) {
     return n;
 }
 
-// Пункт списка-меню: тот же M3 list item, что и в списке уроков, только в
-// «аватаре» иконка, а не номер.
+// Пункт списка: тот же M3 list item, что и в списке уроков, только в
+// «аватаре» иконка, а не номер. Им нарисованы и тест, и виды упражнений.
 function menuItemHtml(icon, label, hint, onclick) {
     return '<button class="lesson-item' + (hint ? '' : ' lesson-item--single') + '" onclick="' + onclick + '">' +
         '<span class="lesson-item__avatar"><span class="msym">' + icon + '</span></span>' +
@@ -145,32 +145,19 @@ function menuItemHtml(icon, label, hint, onclick) {
     '</button>';
 }
 
-// Разделы урока списком. У вводного урока (алфавит, правила чтения) тренировать
-// нечего, остаётся один пункт. Параметр называется intro, а не isIntroLesson:
-// последнее — глобальная функция курса, и одноимённый параметр её бы закрыл.
-function renderLessonMenu(data, intro) {
-    let box = document.getElementById('lessonPartMenu');
-    if (!box) return;
-    let items = [];
-
-    let words = (data.vocabulary && data.vocabulary.length) || 0;
-    items.push(menuItemHtml('school', 'Материал',
-        words ? 'Грамматика и ' + words + ' ' + pluralRu(words, 'слово', 'слова', 'слов') : 'Грамматика урока',
-        "switchLessonPart('material')"));
-
-    if (!intro) {
-        let drills = countLessonDrills(data);
-        if (drills) {
-            items.push(menuItemHtml('edit_note', 'Упражнения',
-                drills + ' ' + pluralRu(drills, 'вид', 'вида', 'видов') + ' тренировки',
-                "switchLessonPart('exercise')"));
-        }
-        if (countTestQuestions(data)) {
-            items.push(menuItemHtml('quiz', 'Тест', 'Случайные вопросы по уроку', 'startTest()'));
-        }
-    }
-
-    box.innerHTML = items.join('<hr class="md-divider">');
+// «Тест» — пункт внутри «Упражнений». У вводного урока (алфавит, правила
+// чтения) проверять нечего, и карточка прячется целиком.
+function renderLessonTestEntry(data, intro) {
+    let box = document.getElementById('lessonTestEntry');
+    let card = document.getElementById('lessonTestCard');
+    if (!box || !card) return;
+    let count = intro ? 0 : countTestQuestions(data);
+    card.classList.toggle('hidden', !count);
+    if (!count) { box.innerHTML = ''; return; }
+    let n = Math.min(10, count);
+    box.innerHTML = menuItemHtml('quiz', 'Тест',
+        n + ' ' + pluralRu(n, 'случайный вопрос', 'случайных вопроса', 'случайных вопросов') + ' по уроку',
+        'startTest()');
 }
 
 // Список выбора: группа без единого доступного упражнения не показывается.
@@ -450,12 +437,12 @@ function scrollToGrammarHeading(index) {
     grammarTargetTimer = setTimeout(() => el.classList.remove('is-target'), 1600);
 }
 
-// Переход из результатов поиска: урок открывается сразу на материале и
-// прокручивается к найденному заголовку. openLesson() рисует материал целиком
-// в любом случае, поэтому метка на месте уже к моменту прокрутки.
+// Переход из результатов поиска: урок открывается сразу на материале (так его
+// открывает и openLesson) и прокручивается к найденному заголовку. openLesson()
+// рисует материал целиком в любом случае, поэтому метка на месте уже к моменту
+// прокрутки.
 function openLessonTopic(lesson, index) {
     openLesson(lesson);
-    switchLessonPart('material');
     scrollToGrammarHeading(index);
 }
 
@@ -507,18 +494,19 @@ function openLesson(lesson) {
     if (!data) return;
     try { localStorage.setItem(courseKey('last_lesson'), String(lesson)); } catch (e) {}
     document.getElementById('lessonTitle').textContent = data.title;
-    currentLessonPart = 'menu';
-    showSection('lessonSection');
-    updateNavButtons(lesson);
 
     // Вводные уроки (алфавит, правила чтения) тренировать нечем — остаётся
-    // одна вкладка с материалом. Какие именно, знает курс: у греческого это
-    // уроки 1–2, у еврейского — главы 1–2.
+    // один материал, и вкладки не показываются. Какие именно, знает курс:
+    // у греческого это уроки 1–2, у еврейского — главы 1–2.
     let intro = isIntroLesson(lesson);
     document.querySelectorAll('#lessonTabs button').forEach(btn => {
         let part = btn.getAttribute('data-part');
         btn.style.display = (intro && part !== 'material') ? 'none' : '';
     });
+
+    currentLessonPart = 'material';
+    showSection('lessonSection');
+    updateNavButtons(lesson);
 
     document.getElementById('grammarContent').innerHTML = renderGrammarHtml(data.grammar);
     // Разметка алфавитной таблицы приходит из данных, а её раскрытое состояние
@@ -565,12 +553,12 @@ function openLesson(lesson) {
         });
     }
 
-    // Разделы урока и список упражнений внутри вкладки «Упражнения»
-    renderLessonMenu(data, intro);
+    // Тест и список упражнений внутри вкладки «Упражнения»
+    renderLessonTestEntry(data, intro);
     renderLessonDrills(data);
     resetLessonDrill();
 
-    switchLessonPart('menu');
+    switchLessonPart('material');
 }
 
 // Индикатор вкладок скользит под активной вкладкой (M3 primary tabs)
@@ -592,11 +580,11 @@ function lessonPartPanel(part) {
     return document.getElementById('part' + part.charAt(0).toUpperCase() + part.slice(1));
 }
 
-// Панель вкладок нужна только внутри раздела: на списке разделов ей нечего
-// показывать, а лишний ряд вкладок над меню только сбивает с толку.
+// Вкладки нужны, только когда есть между чем переключаться. У вводного урока
+// упражнений нет, и одинокая вкладка «Материал» — лишний ряд над материалом.
 function updateLessonTabsVisibility() {
     let bar = document.getElementById('lessonTabs');
-    if (bar) bar.classList.toggle('hidden', currentLessonPart === 'menu');
+    if (bar) bar.classList.toggle('hidden', lessonSwipeTabs().length < 2);
 }
 
 // Возврат на экран урока восстанавливает выбранную вкладку
@@ -618,6 +606,9 @@ function switchLessonPart(part) {
     document.querySelectorAll('#lessonSection .section').forEach(s => s.classList.remove('active'));
     let target = lessonPartPanel(part);
     if (target) target.classList.add('active');
+    // FAB зависит от раздела: на материале он ведёт к упражнениям, в самом
+    // списке упражнений его нет.
+    updateShell();
 }
 
 // ============================================================
@@ -660,7 +651,7 @@ function initLessonSwipe() {
     }, { passive: true });
 }
 
-// Вкладки, доступные жесту: у вводных уроков «Упражнения» и «Тест» скрыты
+// Вкладки, доступные жесту: у вводных уроков «Упражнения» скрыты
 // (openLesson прячет их через style.display), листать по ним нечего.
 function lessonSwipeTabs() {
     let tabs = [];
@@ -674,11 +665,12 @@ function swipeLessonPart(step) {
     let tabs = lessonSwipeTabs();
     let i = -1;
     tabs.forEach((tab, n) => { if (tab.getAttribute('data-part') === currentLessonPart) i = n; });
-    if (i < 0) return;              // список разделов: листать нечего
+    if (i < 0) return;              // текущего раздела нет среди вкладок
     let next = tabs[i + step];
     if (!next) return;              // с краю ряда жест ничего не делает
-    // Нажимаем саму вкладку, а не зовём switchLessonPart: у «Теста» на вкладке
-    // висит startTest(), и свайп обязан делать то же, что нажатие.
+    // Нажимаем саму вкладку, а не зовём switchLessonPart: свайп обязан делать
+    // ровно то же, что нажатие, даже если на вкладке когда-нибудь появится
+    // действие вместо переключения панели.
     next.click();
 }
 
