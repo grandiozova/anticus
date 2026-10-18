@@ -24,6 +24,16 @@ const LESSONS_EN = {
     hebrew: LESSONS_EN_HEBREW
 };
 
+// Английский текст проверяемых ответов: ключевые слова перевода, условия
+// заданий и предложения уроков. Отдельный файл, потому что это не материал
+// урока, а данные упражнений, и переводить их можно по одному упражнению за
+// раз — недопереведённое упражнение просто не показывается (см.
+// englishDrillReady).
+const EXERCISES_EN = {
+    greek: EXERCISES_EN_GREEK,
+    hebrew: EXERCISES_EN_HEBREW
+};
+
 const UI_EN = {
     // ---------------------------------------------------------- оболочка
     'Древнегреческий': 'Ancient Greek',
@@ -749,8 +759,108 @@ function localizedLesson(base, n) {
             return copy;
         });
     }
+    applyExercisesEn(lesson, base, n);
     localizedLessonCache.set(key, lesson);
     return lesson;
+}
+
+function exercisesEnPack(courseId, n) {
+    let pack = EXERCISES_EN[courseId || currentCourseId];
+    return (pack && (pack[n] || pack[String(n)])) || null;
+}
+
+// Проверяемые ответы переводятся по ключу, а не по месту в массиве: ключ —
+// русский (или греческий) текст условия, он и есть то, что переводится.
+// Вопроc без перевода остаётся русским, и тогда englishDrillReady() не пустит
+// это упражнение на экран.
+function applyExercisesEn(lesson, base, n) {
+    let pack = exercisesEnPack(currentCourseId, n);
+    if (!pack) return;
+    // Какие упражнения переведены целиком. Список живёт на самом английском
+    // уроке: lessonDrillAvailable() получает уже готовый объект и по нему
+    // решает, показывать ли пункт. Недопереведённое упражнение не рисуется
+    // вовсе, а не проверяет ответы не на том языке.
+    let ready = lesson._englishDrills = {};
+    let covered = (list, map, keyOf) => !Array.isArray(list) || list.length === 0 ||
+        (!!map && list.every(q => map[keyOf(q)] != null));
+    ready['exercise:translate_greek_to_russian'] = covered(
+        base.exercises && base.exercises.translate_greek_to_russian,
+        pack.exercises && pack.exercises.translate_greek_to_russian,
+        q => q.greek);
+    ready['exercise:translate_russian_to_greek'] = covered(
+        base.exercises && base.exercises.translate_russian_to_greek,
+        pack.exercises && pack.exercises.translate_russian_to_greek,
+        q => q.russian);
+    ready['translation:el_to_ru'] = covered(
+        base.translation && base.translation.el_to_ru,
+        pack.translation && pack.translation.el_to_ru,
+        q => q.source);
+    ready['translation:ru_to_el'] = covered(
+        base.translation && base.translation.ru_to_el,
+        pack.translation && pack.translation.ru_to_el,
+        q => q.source);
+    if (pack.exercises && base.exercises) {
+        let out = {};
+        Object.keys(base.exercises).forEach(kind => {
+            let map = pack.exercises[kind];
+            let src = base.exercises[kind];
+            if (!map || !Array.isArray(src)) return;
+            let isPrompt = kind === 'translate_russian_to_greek';
+            out[kind] = src.map(q => {
+                let value = map[isPrompt ? q.russian : q.greek];
+                if (value == null) return q;
+                let copy = Object.assign({}, q);
+                if (isPrompt) copy.russian = value;
+                else copy.keywords = value.slice();
+                return copy;
+            });
+        });
+        lesson.exercises = Object.assign({}, base.exercises, out);
+    }
+    if (pack.translation && base.translation) {
+        let out = {};
+        Object.keys(base.translation).forEach(dir => {
+            let map = pack.translation[dir];
+            let src = base.translation[dir];
+            if (!map || !Array.isArray(src)) return;
+            out[dir] = src.map(q => {
+                let value = map[q.source];
+                if (value == null) return q;
+                if (dir === 'ru_to_el') return Object.assign({}, q, { source: value });
+                let copy = Object.assign({}, q);
+                copy.correct = value.slice();
+                // Исходное предложение до разбора на слова — из него словарь
+                // берёт пример употребления (js/vocab.js).
+                copy.correctText = value.join(' ');
+                return copy;
+            });
+        });
+        lesson.translation = Object.assign({}, base.translation, out);
+    }
+}
+
+// Есть ли у упражнения английский текст целиком. Виды без проверяемых русских
+// ответов (алфавит, грамматика, карточки) готовы всегда: их подписи в UI_EN.
+function englishDrillReady(n, drill) {
+    if (!drill) return false;
+    let lesson = courseLessons()[n];
+    let pack = exercisesEnPack(currentCourseId, n);
+    if (!lesson || !pack) return false;
+    if (drill.kind === 'exercise') {
+        let src = (lesson.exercises || {})[drill.key];
+        if (!Array.isArray(src) || !src.length) return false;
+        if (drill.key !== 'translate_greek_to_russian' && drill.key !== 'translate_russian_to_greek') return true;
+        let map = (pack.exercises || {})[drill.key] || {};
+        let isPrompt = drill.key === 'translate_russian_to_greek';
+        return src.every(q => map[isPrompt ? q.russian : q.greek] != null);
+    }
+    if (drill.kind === 'translation') {
+        let src = (lesson.translation || {})[drill.key];
+        if (!Array.isArray(src) || !src.length) return false;
+        let map = (pack.translation || {})[drill.key] || {};
+        return src.every(q => map[q.source] != null);
+    }
+    return true;
 }
 
 // ------------------------------------------------------------ составные подписи

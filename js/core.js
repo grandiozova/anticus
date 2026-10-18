@@ -129,7 +129,40 @@ function keywordForm(k) {
     return normalizeRuAnswer(String(k).replace(/\([^)]*\)/g, ' ')) || normalizeRuAnswer(k);
 }
 
+// Английский ответ проверяется по словам, а не по подстроке: «see» не должно
+// засчитываться внутри «sees» и «i» — внутри «is». Сокращения разворачиваются
+// («I'm» → «i am»), чтобы набранное на телефоне не считалось ошибкой; порядок
+// слов не важен, лишние слова не мешают — так же, как в русском.
+const EN_CONTRACTIONS = [
+    [/\bwon't\b/g, 'will not'],
+    [/\bcan't\b/g, 'cannot'],
+    [/\bshan't\b/g, 'shall not'],
+    [/\bi'm\b/g, 'i am'],
+    [/\b(\w+)n't\b/g, '$1 not'],
+    [/\b(\w+)'re\b/g, '$1 are'],
+    [/\b(\w+)'ll\b/g, '$1 will'],
+    [/\b(\w+)'ve\b/g, '$1 have'],
+    [/\b(\w+)'d\b/g, '$1 would']
+];
+
+function normalizeEnAnswer(s) {
+    let out = String(s || '').toLowerCase().replace(/[’‘]/g, "'");
+    EN_CONTRACTIONS.forEach(pair => { out = out.replace(pair[0], pair[1]); });
+    return out.replace(/[^a-z0-9\s-]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+function keywordsMatchEn(answer, keywords) {
+    let ans = normalizeEnAnswer(answer);
+    if (!ans) return false;
+    let padded = ' ' + ans + ' ';
+    return (keywords || []).every(k => {
+        let kw = normalizeEnAnswer(k);
+        return !kw || padded.indexOf(' ' + kw + ' ') !== -1;
+    });
+}
+
 function keywordsMatch(answer, keywords) {
+    if (typeof isEnglish === 'function' && isEnglish()) return keywordsMatchEn(answer, keywords);
     let ans = normalizeRuAnswer(answer);
     if (!ans) return false;
     return (keywords || []).every(k => {

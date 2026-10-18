@@ -13,7 +13,7 @@
  * ВАЖНО: подняв CACHE_VERSION, вы гарантированно раздаёте новую версию —
  * старые кэши удаляются в activate.
  */
-const CACHE_VERSION = 'anticus-v24';
+const CACHE_VERSION = 'anticus-v25';
 const CORE_CACHE = CACHE_VERSION + '-core';
 const FONT_CACHE = CACHE_VERSION + '-fonts';
 
@@ -63,6 +63,8 @@ const CORE_ASSETS = [
     // открылся бы пустым.
     './data/lessons.en.js',
     './data/hebrew-lessons.en.js',
+    // Английский текст упражнений: без него английские задания молча исчезают.
+    './data/exercises.en.js',
     './data/courses.js',
     './js/core.js',
     './js/i18n.js',

@@ -111,8 +111,6 @@ function updateShell() {
     // На материале главное действие — перейти к упражнениям. В самом списке
     // упражнений выбирать нужно вручную, и подсказывать FAB нечего.
     if (currentSectionId === 'lessonSection' && currentLessonPart === 'exercise') cfg = null;
-    // В английском режиме упражнений нет — и подсказывать к ним переход нечего.
-    if (currentSectionId === 'lessonSection' && isEnglish()) cfg = null;
     // «Продолжить» нечему продолжать, пока в курсе нет ни одного урока.
     if (currentSectionId === 'mainMenu' && !courseHasLessons()) cfg = null;
     if (fab) {

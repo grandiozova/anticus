@@ -108,6 +108,13 @@ const DRILL_BOXES = { exercise: 'exerciseQuestion', translation: 'translationQue
 let currentDrill = null;
 
 function lessonDrillAvailable(data, drill) {
+    // Английский урок знает, какие упражнения у него переведены целиком
+    // (см. applyExercisesEn в js/i18n.js). Непереведённый пункт просто не
+    // показывается — вместо того чтобы проверять ответы не на том языке.
+    if (isEnglish() && data && data._englishDrills) {
+        let mark = data._englishDrills[drill.kind + ':' + drill.key];
+        if (mark === false) return false;
+    }
     if (drill.kind === 'exercise') return !!(data.exercises && data.exercises[drill.key] && data.exercises[drill.key].length);
     if (drill.kind === 'translation') return !!(data.translation && data.translation[drill.key] && data.translation[drill.key].length);
     if (drill.kind === 'flashcards') return !!(data.vocabulary && data.vocabulary.length);
@@ -203,10 +210,12 @@ function resetLessonDrill() {
 function startLessonDrill(kind, key) {
     // Упражнения английская версия не поддерживает: ответы проверяются по
     // русским ключевым словам (js/core.js, keywordsMatch).
-    if (isEnglish()) return;
     let data = getLessonData(currentLesson);
     let drill = findLessonDrill(kind, key);
     if (!data || !drill) return;
+    // Пункт мог остаться на экране с прошлого урока, а данные — смениться:
+    // непереведённое упражнение английской версии не запускается и вызовом.
+    if (isEnglish() && !lessonDrillAvailable(data, drill)) return;
     currentDrill = drill;
 
     let icon = document.getElementById('drillStageIcon');
@@ -506,11 +515,12 @@ function openLesson(lesson) {
     // Вводные уроки (алфавит, правила чтения) тренировать нечем — остаётся
     // один материал, и вкладки не показываются. Какие именно, знает курс:
     // у греческого это уроки 1–2, у еврейского — главы 1–2.
-    // В английском режиме упражнений нет: они не переведены, а ответы
-    // проверяются по русским ключевым словам. Вкладка остаётся одна —
-    // «Материал», — и ряд вкладок прячется целиком (см. lessonSwipeTabs).
+    // Упражнения английской версии появляются по мере перевода их ответов
+    // (englishDrillReady): если у урока не переведено ни одного пункта, вкладка
+    // остаётся одна — «Материал», — и ряд вкладок прячется целиком (см.
+    // lessonSwipeTabs).
     let intro = isIntroLesson(lesson);
-    let materialOnly = intro || isEnglish();
+    let materialOnly = intro || (isEnglish() && countLessonDrills(data) === 0);
     document.querySelectorAll('#lessonTabs button').forEach(btn => {
         let part = btn.getAttribute('data-part');
         btn.style.display = (materialOnly && part !== 'material') ? 'none' : '';
@@ -620,9 +630,6 @@ function restoreLessonPart() {
 }
 
 function switchLessonPart(part) {
-    // Английский режим знает только материал: вкладки упражнений в нём нет,
-    // и сюда можно попасть разве что старым вызовом.
-    if (isEnglish() && part !== 'material') part = 'material';
     currentLessonPart = part;
     updateLessonTabsVisibility();
     document.querySelectorAll('#lessonTabs button').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });

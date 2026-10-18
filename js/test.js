@@ -22,6 +22,9 @@ function collectTestQuestions(data) {
     let all = [];
     if (!data) return all;
     for (let t of TEST_TYPES) {
+        // Английский урок знает, какие виды переведены целиком (js/i18n.js):
+        // непереведённый вопрос не должен попасть в тест.
+        if (isEnglish() && data._englishDrills && data._englishDrills['exercise:' + t] === false) continue;
         let qs = (data.exercises && data.exercises[t]) || [];
         // Копия, а не сам объект урока: помечать _type прямо в LESSONS_DATA
         // значит писать в общие данные при каждом открытии урока.

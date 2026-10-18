@@ -70,14 +70,58 @@ test('английский урок 1 отдаёт английскую грам
     app.close();
 });
 
-test('в английском режиме вкладки упражнений нет', () => {
+// Упражнения открываются по мере перевода их ответов: пункт, у которого
+// переведены не все вопросы, в список не попадает (englishDrillReady), а вместе
+// с ним и в тест. Полностью непереведённый урок остаётся без вкладки.
+test('в английском режиме открыты только переведённые упражнения', () => {
     const app = loadApp({ storage: { app_lang: 'en' } });
-    app.window.openLesson(1);
-    const tab = app.document.querySelector('#lessonTabs button[data-part="exercise"]');
-    assert.strictEqual(tab.style.display, 'none', 'вкладка упражнений должна быть скрыта');
-    // И попасть в раздел упражнений нельзя даже вызовом
+    app.window.openLesson(3);
     app.window.switchLessonPart('exercise');
-    assert.strictEqual(app.window.eval('currentLessonPart'), 'material');
+    assert.strictEqual(app.window.eval('currentLessonPart'), 'exercise');
+    const labels = Array.from(app.document.querySelectorAll('#drillGroups .lesson-item__headline'))
+        .map(el => el.textContent);
+    assert.ok(labels.includes('Phrases: Greek → English'),
+        'нет переведённого перевода слов: ' + labels.join(' | '));
+    // Условия обратного перевода ещё русские — пункта быть не должно.
+    assert.ok(!labels.includes('Phrases: English → Greek'),
+        'показан непереведённый пункт: ' + labels.join(' | '));
+    assert.ok(!labels.some(l => l.startsWith('Sentences:')),
+        'показаны непереведённые предложения: ' + labels.join(' | '));
+    app.close();
+});
+
+test('непереведённые упражнения не попадают и в тест', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.openLesson(3);
+    const types = app.get('collectTestQuestions(getLessonData(3)).map(q => q._type).join(",")');
+    assert.ok(types.includes('translate_greek_to_russian'), 'в тесте нет переведённого вида: ' + types);
+    assert.ok(!types.includes('translate_russian_to_greek'),
+        'в тест попал вид с русскими условиями: ' + types);
+    app.close();
+});
+
+test('ответ на перевод проверяется по английским словам', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    assert.strictEqual(app.window.keywordsMatch('He unties.', ['he', 'unties']), true);
+    assert.strictEqual(app.window.keywordsMatch('unties', ['he', 'unties']), false);
+    assert.strictEqual(app.window.keywordsMatch("I'm hearing", ['i', 'am', 'hearing']), true);
+    assert.strictEqual(app.window.keywordsMatch('I see', ['i', 'sees']), false);
+    assert.strictEqual(app.window.keywordsMatch('I see the man', ['i', 'see', 'the', 'man']), true);
+    app.close();
+});
+
+test('упражнение перевода проходит с английским ответом', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.openLesson(3);
+    app.window.startExercise('translate_greek_to_russian');
+    const q = app.get('exerciseState.questions[exerciseState.index]');
+    const input = app.document.getElementById('transInput');
+    assert.ok(input, 'нет поля ввода');
+    input.value = q.keywords.join(' ');
+    app.window.checkExerciseTranslation(app.get('exerciseState.index'));
+    const text = app.document.getElementById('exerciseQuestion').textContent;
+    assert.ok(!CYR.test(text), 'русский текст в обратной связи: ' + around(text));
+    assert.ok(text.includes('Correct'), 'ответ не засчитан: ' + text);
     app.close();
 });
 
