@@ -503,3 +503,26 @@ test('значение слова в вопросе о форме совпада
         'подсказка не совпадает со словарной статьёй: ' + html);
     app.close();
 });
+
+// ------------------------------------------------------------ еврейская грамматика
+
+// Род и число, бегадкефат, гортанные, сопряжённое сочетание, суффиксы,
+// огласовка. Как и у греческого, проверяется отрисовка каждого вопроса всех
+// глав: варианты этих видов тоже приходят из данных русскими строками.
+test('вопросы еврейской грамматики рисуются без русского текста', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const skip = ['translate_greek_to_russian', 'translate_russian_to_greek', 'letter_write'];
+    app.window.applyCourse('hebrew');
+    app.window.lessonNumbers().forEach(lesson => {
+        const data = app.window.getLessonData(lesson);
+        Object.keys(data.exercises || {}).forEach(kind => {
+            if (skip.includes(kind)) return;
+            data.exercises[kind].forEach(q => {
+                const text = app.window.choiceQuestionHtml(kind, q, 'answerOpt').replace(/<[^>]+>/g, ' ');
+                assert.ok(!CYR.test(text),
+                    'русский текст в еврейской главе ' + lesson + ', ' + kind + ': ' + around(text));
+            });
+        });
+    });
+    app.close();
+});
