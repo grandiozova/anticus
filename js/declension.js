@@ -40,21 +40,21 @@ const NUMBER_COLS = [['singular', 'Ед.ч.'], ['plural', 'Мн.ч.']];
 // Одна таблица. Колонка, объявленная в <thead>, обязана быть в каждой строке —
 // иначе таблица едет вбок на строках без перевода; поэтому ячейки перебираются
 // по осям, а не по тому, что нашлось в данных.
-function paradigmTableHtml(t) {
-    if (!t || !t.rows || !t.cols) return '';
+function paradigmTableHtml(table) {
+    if (!table || !table.rows || !table.cols) return '';
     let html = '<table>';
-    if (t.caption) html += '<caption>' + t.caption + '</caption>';
-    html += '<thead><tr><th>' + (t.rows.label || '') + '</th>';
-    for (let col of t.cols.values) html += '<th>' + col[1] + '</th>';
-    if (t.translations) html += '<th>Перевод</th>';
+    if (table.caption) html += '<caption>' + t(table.caption) + '</caption>';
+    html += '<thead><tr><th>' + t(table.rows.label || '') + '</th>';
+    for (let col of table.cols.values) html += '<th>' + t(col[1]) + '</th>';
+    if (table.translations) html += '<th>' + t('Перевод') + '</th>';
     html += '</tr></thead><tbody>';
-    for (let row of t.rows.values) {
-        let cells = (t.cells && t.cells[row[0]]) || {};
-        html += '<tr><td>' + row[1] + '</td>';
+    for (let row of table.rows.values) {
+        let cells = (table.cells && table.cells[row[0]]) || {};
+        html += '<tr><td>' + t(row[1]) + '</td>';
         // Форма — текст изучаемого языка, подпись строки и перевод — русские,
         // поэтому метка стоит на ячейках пересечения, а не на всей таблице.
-        for (let col of t.cols.values) html += '<td class="script">' + (cells[col[0]] || '') + '</td>';
-        if (t.translations) html += '<td>' + (t.translations[row[0]] || '') + '</td>';
+        for (let col of table.cols.values) html += '<td class="script">' + (cells[col[0]] || '') + '</td>';
+        if (table.translations) html += '<td>' + t(table.translations[row[0]] || '') + '</td>';
         html += '</tr>';
     }
     return html + '</tbody></table>';

@@ -13,7 +13,7 @@
  * ВАЖНО: подняв CACHE_VERSION, вы гарантированно раздаёте новую версию —
  * старые кэши удаляются в activate.
  */
-const CACHE_VERSION = 'anticus-v23';
+const CACHE_VERSION = 'anticus-v24';
 const CORE_CACHE = CACHE_VERSION + '-core';
 const FONT_CACHE = CACHE_VERSION + '-fonts';
 
@@ -58,7 +58,7 @@ const CORE_ASSETS = [
     './data/hebrew-reading.js',
     './data/hebrew-examples.js',
     './data/licenses.js',
-    // Английский текст уроков 1–3 и его реестр (data/lessons.en.js,
+    // Английский текст всех уроков и его реестр (data/lessons.en.js,
     // data/hebrew-lessons.en.js). Без них английский режим холодным стартом
     // открылся бы пустым.
     './data/lessons.en.js',

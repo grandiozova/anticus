@@ -426,7 +426,7 @@ function vocabExtraGlosses(entry) {
 function renderVocabEntryTopHtml(entry) {
     if (!entry) return '';
     let translit = entry.translit
-        ? '<div class="vocab-translit">' + escHtml(entry.translit) + '</div>'
+        ? '<div class="vocab-translit">' + escHtml(displayTranslit(entry.translit)) + '</div>'
         : '';
     let extra = vocabExtraGlosses(entry);
     let glosses = extra.length
@@ -598,7 +598,7 @@ function showAllVocab() {
         langNote.classList.toggle('hidden', !isEnglish());
         if (langNoteText) {
             langNoteText.textContent = isEnglish()
-                ? t('Английские значения есть только у уроков 1–3; остальные слова пока по-русски.') : '';
+                ? t('Примеры употребления в словаре пока по-русски: это предложения из уроков.') : '';
         }
     }
     // Экран открывают заново — клавиатура снова убрана.

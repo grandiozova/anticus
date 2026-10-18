@@ -490,16 +490,31 @@ language card in settings, stored under `app_lang`.
 - Generated strings are wrapped where they are built; strings with a number use
   `tLessonNumber` / `tLessonRange` / `tMatches` / `tOf` / `tCountLabel`.
 - Lesson text is a per-lesson overlay: `data/lessons.en.js` and
-  `data/hebrew-lessons.en.js` hold lessons 1–3 of each course, keyed by lesson
-  number, with vocabulary keyed by headword. `getLessonData()` applies it, so
-  every screen sees the same lesson. These files were **generated**, not typed:
-  Greek and Hebrew forms are copied out of the Russian data, because a retyped
-  breathing or niqqud is a different string that looks identical.
+  `data/hebrew-lessons.en.js` hold **every lesson of both courses** (Greek 1–16,
+  Hebrew 1–12), keyed by lesson number, with vocabulary keyed by headword and an
+  optional `headwords` map for headwords whose Russian label is part of the string
+  (`διώξω (Fut. от διώκω)`). `getLessonData()` applies it, so every screen sees the
+  same lesson. These files were **generated**, not typed: Greek and Hebrew forms are
+  copied out of the Russian data, because a retyped breathing or niqqud is a
+  different string that looks identical. The builder is `tools/en-build/`
+  (`extract.js` → inventory, `build.js --check` → validate, `build.js` → write,
+  `markdown.js` → the readable copies); the app loads none of it.
 - A lesson without English opens in Russian and shows `#lessonLanguageNote`.
+- **Paradigm tables are material too.** Their axis labels are Russian strings that
+  never appear in the markup: `legacyParadigm()` builds the Greek ones, the Hebrew
+  ones are authored in the data. `paradigmTableHtml()` passes caption, row label,
+  axis values, the `'Перевод'` header and the translation cells through `t()`; the
+  forms at the intersections are studied-language text and never go through it.
+  `tests/i18n.test.js` walks every paradigm of both courses and fails on a Cyrillic
+  label missing from `UI_EN`.
+- **The Hebrew reading is `русскими (latin)`; English shows the Latin half.**
+  `displayTranslit()` keeps only the parenthesised textbook transliteration — the
+  data keeps the full authored string.
 - **Exercises are unavailable in English on purpose**: answers are checked with
   Russian keywords (`keywordsMatch`). The tab is hidden, `startLessonDrill()`
   returns early, the lesson FAB is gone, the cards destination shows a toast.
-  The dictionary keeps working and says English meanings cover lessons 1–3 only.
+  The dictionary keeps working and says above the list that usage examples are
+  still Russian — they are the lessons' own sentences.
 - `setAppLang()` must reset every cross-screen cache (localized lessons,
   `allVocabCache`, `lessonSearchIndex`, flashcard decks) — same rule as
   `applyCourse()` — and re-render the current screen.

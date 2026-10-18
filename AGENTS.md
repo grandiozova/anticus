@@ -314,7 +314,7 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
   `--md-ref-typeface-script`. The self-hosted families carry an `… Anticus` suffix so they
   cannot shadow the Google-loaded `'Noto Sans'` the "Системный" option must preserve.
 - **Support the project** is the first card on the screen. It is one optional external link (`target="_blank" rel="noopener noreferrer"`) to a donation page, framed as voluntary support for the developer's time and hosting costs. Nothing is gated, no functionality depends on it, and the text names no textbook or rights holder.
-- **Licenses** come from the `LICENSES` array; add an entry when you add a dependency. Only the middle of that list is open licences: the app's own code is first and is all-rights-reserved (see `LICENSE`), and the course materials are last as their holders' copyright. Both are statements, not licences, and carry no `url`.
+- **Licenses** come from the `LICENSES` array; add an entry when you add a dependency. Only the middle of that list is open licences: the app's own code is first and is all-rights-reserved (see `LICENSE`), and the course materials are last as their holders' copyright. Both are statements, not licences, and carry no `url`. **One more statement closes the list: the English lesson text.** The app now ships an English rendering of every lesson, and it was translated from the project's own Russian text, not taken from the English editions — so it is an unofficial translation, which the rights holders neither produced nor endorsed. Without that entry the list spoke only about the Russian textbooks and the English material had no explanation at all. It is a statement like its neighbours: no `url`.
 - The nav bar now holds **five** destinations — the M3 maximum. A sixth needs a different pattern, not a sixth item. That is exactly why the course picker is a full-screen overlay rather than a destination.
 
 ## English mode
@@ -344,17 +344,26 @@ English is an overlay on top of it. The switch is a card in the settings screen
   `coursePrayerCard()` and `courseLang()` (`js/course.js`) choose the field.
 - **Lesson text is a data overlay, keyed by lesson number and headword**:
   `data/lessons.en.js` and `data/hebrew-lessons.en.js` hold `{ title, grammar,
-  vocabulary: { <headword>: <meaning> } }` for lessons 1–3 of each course.
+  vocabulary: { <headword>: <meaning> }, headwords: { <russian headword>: <english> } }`
+  for **every lesson of both courses** — Greek 1–16 and Hebrew 1–12 today.
   `getLessonData()` (`js/core.js`) applies the overlay, so every screen — lesson,
   search, dictionary — sees the same lesson without a single course branch.
   A lesson is translated **whole or not at all**: a half-English lesson (English
-  grammar, Russian meanings) is worse than a Russian one.
+  grammar, Russian meanings) is worse than a Russian one. The optional `headwords`
+  map exists because a Greek headword itself carries a Russian label
+  (`διώξω (Fut. от διώκω)`); the overlay rewrites the label and leaves the Greek
+  word untouched.
 - **The English files are generated, never typed.** Greek and Hebrew forms are
   copied out of the Russian data by a script that replaces only the Russian
   segments between them; that is the same rule as `data/hebrew-lessons.js`, and for
   the same reason (a retyped breathing or niqqud is a different string that looks
-  identical). `tests/i18n.test.js` fails if English grammar contains Cyrillic or if
-  a vocabulary entry of a translated lesson has no English meaning.
+  identical). The builder lives in `tools/en-build/`: `extract.js` writes the
+  inventory of Russian segments, `build.js --check` validates without writing,
+  `build.js` writes the two data files, `markdown.js` re-exports the readable
+  copies under `translations/en/`. No app file loads anything from there, so
+  `CORE_ASSETS` does not list it. `tests/i18n.test.js` fails if English grammar
+  contains Cyrillic or if a vocabulary entry of a translated lesson has no English
+  meaning.
 - **A lesson without an English version opens in Russian and says so**
   (`#lessonLanguageNote`). Hiding it would break the course for an English reader;
   silently showing Russian would look like a bug.
@@ -363,8 +372,27 @@ English is an overlay on top of it. The switch is a card in the settings screen
   `js/core.js`), so an English drill would grade against the wrong language. The
   exercise tab is hidden, `startLessonDrill()` returns early, the lesson FAB is
   absent, the «Карточки» destination answers with a toast, and the prayer/reading
-  card is not shown at all. The dictionary keeps working and marks that English
-  meanings exist for lessons 1–3 only.
+  card is not shown at all. The dictionary keeps working and says, above the list,
+  that usage examples are still Russian — they are the lessons' own sentences, and
+  the drills that would carry them are what has not been translated.
+- **A paradigm table is material, so its labels follow the language too.** The axis
+  labels are Russian strings that are *not* in the markup: `legacyParadigm()`
+  (`js/declension.js`) builds the Greek ones (`'Падеж'`, `'Лицо'`, the `Ед.ч.` /
+  `Мн.ч.` / `Муж.` / `Жен.` / `Ср.` columns, `N-е лицо` rows) and the Hebrew ones
+  are authored in `data/hebrew-lessons.js`. `paradigmTableHtml()` therefore passes
+  the caption, the row label, every axis value, the `'Перевод'` header and the
+  translation cells through `t()`, and the dictionary carries them in a closed
+  «парадигмы» block of `UI_EN`. The cells at the intersections are studied-language
+  forms and are never passed through `t()`. `tests/i18n.test.js` walks every
+  paradigm of both courses and fails if a Cyrillic label is missing from `UI_EN`,
+  so a new table with a new label cannot go quiet in English mode.
+- **The Hebrew reading is `русскими (latin)` — «давáр (dāḇār)» — and English shows
+  the Latin half.** `displayTranslit()` (`js/i18n.js`) keeps only the parenthesised
+  textbook transliteration in English mode; both halves are the same reading, so
+  nothing is invented. The data keeps the full string (it is authored, and
+  `tests/hebrew-content.test.js` pins its shape), and the transformation happens
+  where it is drawn — `renderVocabEntryTopHtml()` (`js/vocab.js`) and
+  `flashcardBodyHtml()` (`js/flashcards.js`).
 - **`setAppLang()` must reset every cache that spans screens** — localized lessons,
   `allVocabCache`, `lessonSearchIndex`, the flashcard decks — for the same reason
   `applyCourse()` does: a cache built in one language must not survive into the

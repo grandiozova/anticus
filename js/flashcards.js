@@ -311,7 +311,7 @@ function flashcardBodyHtml(word, s, deck) {
             // (js/vocab.js): слово, его чтение, значение. Показывается оно
             // вместе с переводом, а не до него: карточка проверяет, помнит ли
             // ученик слово, и ответ на неё — и чтение, и значение сразу.
-            if (word.translit) html += '<div class="flashcard-translit">' + escHtml(word.translit) + '</div>';
+            if (word.translit) html += '<div class="flashcard-translit">' + escHtml(displayTranslit(word.translit)) + '</div>';
             html += '<div class="flashcard-translation">' + word.translation + '</div>';
         }
     }

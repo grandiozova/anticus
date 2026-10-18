@@ -97,8 +97,55 @@ const UI_EN = {
     'пример составлен автоматически': 'example generated automatically',
     'Попробуйте другое слово или его часть': 'Try another word or part of a word',
     'Стереть': 'Delete',
-    'Английские значения есть только у уроков 1–3; остальные слова пока по-русски.':
-        'English meanings exist for lessons 1–3 only; the rest are still in Russian.',
+    'Примеры употребления в словаре пока по-русски: это предложения из уроков.':
+        'Usage examples in the dictionary are still in Russian: they are the sentences of the lessons.',
+
+    // ---------------------------------------------------------- парадигмы
+    // Подписи осей и переводы строк — это русские строки из данных, а не
+    // разметки: греческие оси собирает legacyParadigm() в js/declension.js,
+    // ивритские написаны в data/hebrew-lessons.js. Словарь закрытый — это
+    // термины парадигмы и два десятка местоимений, — поэтому переводить их
+    // здесь, а данные не трогать.
+    'Падеж': 'Case',
+    'Лицо': 'Person',
+    'Перевод': 'Translation',
+    'Ед.ч.': 'Singular',
+    'Ед. число': 'Singular',
+    'Мн.ч.': 'Plural',
+    'Множ. число': 'Plural',
+    'Муж.': 'Masc.',
+    'Муж. род': 'Masc.',
+    'Муж. (мн.)': 'Masc. pl.',
+    'Жен.': 'Fem.',
+    'Жен. род': 'Fem.',
+    'Жен. (мн.)': 'Fem. pl.',
+    'Ср.': 'Neut.',
+    'Ср. (мн.)': 'Neut. pl.',
+    '1-е лицо': '1st person',
+    '2-е лицо': '2nd person',
+    '3-е лицо': '3rd person',
+    'я': 'I',
+    'ты': 'you (sg.)',
+    'он / она / оно есть': 'he / she / it is',
+    'мы': 'we',
+    'вы': 'you (pl.)',
+    'они': 'they',
+    'меня': 'me',
+    'тебя': 'you (sg.)',
+    'его / её': 'him / her',
+    'нас': 'us',
+    'вас': 'you (pl.)',
+    'их': 'them',
+    'мне': 'to me',
+    'тебе': 'to you (sg.)',
+    'ему / ей': 'to him / her',
+    'нам': 'to us',
+    'вам': 'to you (pl.)',
+    'им': 'to them',
+    'я есмь': 'I am',
+    'ты еси': 'you are',
+    'сам / сама / само': 'himself / herself / itself',
+    'сами': 'themselves',
 
     // ---------------------------------------------------------- статистика
     'Ваш прогресс': 'Your progress',
@@ -139,8 +186,8 @@ const UI_EN = {
     // ---------------------------------------------------------- настройки
     'Язык': 'Language',
     'Язык интерфейса и уроков': 'The language of the interface and lessons',
-    'Английский пока охватывает уроки 1–3: грамматику и словарь. Упражнения в нём недоступны.':
-        'English currently covers lessons 1–3: grammar and vocabulary. Exercises are not available in it.',
+    'Английский охватывает материал всех уроков: грамматику и словарь. Упражнения в нём недоступны.':
+        'English covers the material of every lesson: grammar and vocabulary. Exercises are not available in it.',
     'Русский': 'Russian',
     'Курс': 'Course',
     'Сменить курс': 'Switch course',
@@ -225,6 +272,17 @@ function t(s) {
 }
 
 function isEnglish() { return appLang === APP_LANG_EN; }
+
+// Чтение слова иврита записано как «русскими (latin)»: «давáр (dāḇār)». Русская
+// половина нужна русскому читателю, английскому — нет, и в скобках уже стоит
+// транслитерация учебника. Английский режим оставляет её одну: это то же
+// чтение, а не второй его вариант, поэтому ничего не приходится выдумывать.
+// Форма строки проверена на всех 179 статьях (tests/i18n.test.js).
+function displayTranslit(value) {
+    if (!value || !isEnglish()) return value;
+    let m = /\(([^()]+)\)\s*$/.exec(value);
+    return m ? m[1] : value;
+}
 
 // ------------------------------------------------------------ статическая разметка
 //
@@ -356,7 +414,7 @@ function syncLanguageControls() {
         });
     }
     let hint = document.getElementById('appLangHint');
-    if (hint) hint.textContent = t('Английский пока охватывает уроки 1–3: грамматику и словарь. Упражнения в нём недоступны.');
+    if (hint) hint.textContent = t('Английский охватывает материал всех уроков: грамматику и словарь. Упражнения в нём недоступны.');
 }
 
 // ------------------------------------------------------------ текст уроков
@@ -400,8 +458,14 @@ function localizedLesson(base, n) {
     if (pack.vocabulary && base.vocabulary) {
         lesson.vocabulary = base.vocabulary.map(word => {
             let gloss = pack.vocabulary[word.greek];
-            if (gloss == null) return word;
-            return Object.assign({}, word, { translation: gloss });
+            // Греческое слово-заголовок бывает с пометкой по-русски («Fut. от
+            // διώκω»); английский заголовок лежит в pack.headwords под исходным.
+            let head = pack.headwords && pack.headwords[word.greek];
+            if (gloss == null && head == null) return word;
+            let copy = Object.assign({}, word);
+            if (gloss != null) copy.translation = gloss;
+            if (head != null) copy.greek = head;
+            return copy;
         });
     }
     localizedLessonCache.set(key, lesson);

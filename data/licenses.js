@@ -116,5 +116,24 @@ const LICENSES = [
                  'Rights belong to the holders of the textbook. ' +
                  'This is a non-commercial educational project.',
         url: null
+    },
+    // Английский текст уроков — отдельная запись, потому что это отдельный
+    // текст со своим положением: он переведён с русского текста приложения, а
+    // не взят из англоязычных изданий, и официальным изданием не является.
+    // Без этой записи список говорил бы только о русских учебниках, а
+    // английский материал в приложении остался бы без объяснения.
+    {
+        name: 'Английский текст уроков',
+        nameEn: 'English lesson text',
+        terms: 'Английский текст уроков — перевод, сделанный для этого проекта ' +
+               'с его же русского текста. Это не официальное издание ни одного ' +
+               'из учебников, и правообладатели его не составляли и не одобряли. ' +
+               'Права на исходные учебники остаются у их правообладателей — см. выше.',
+        termsEn: 'The English lesson text is a translation made for this project from ' +
+                 'the project’s own Russian text. It is not an official edition of ' +
+                 'either textbook, and the rights holders neither produced nor ' +
+                 'endorsed it. Rights to the source textbooks remain with their ' +
+                 'holders — see above.',
+        url: null
     }
 ];
