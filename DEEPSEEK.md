@@ -513,6 +513,10 @@ language card in settings, stored under `app_lang`.
   forms at the intersections are studied-language text and never go through it.
   `tests/i18n.test.js` walks every paradigm of both courses and fails on a Cyrillic
   label missing from `UI_EN`.
+- **A drill's word gloss comes from the dictionary**, not from a second list:
+  `drillGloss()` looks the headword up in the English vocabulary of the course
+  (via `headwordChip`, so `οὗτος, αὕτη, τοῦτο` and `ἀπέρχομαι (dep.)` match their
+  bare form), and only paradigm-only words fall back to `UI_EN`.
 - **Alphabet labels follow the English material**: `UI_EN` maps the pools' Russian
   readings to what the grammar prints (`aleph`, `khet`, `patach`, `qamets`) and to
   its sound column (`[a]`, `[kh]`, `b / v`) — no invented diacritics. `silent` is

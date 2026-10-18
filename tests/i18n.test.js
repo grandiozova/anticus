@@ -464,3 +464,42 @@ test('письмо буквы и огласовки называют букву 
     assert.ok(!CYR.test(card), 'русская огласовка на карточке: ' + around(card));
     app.close();
 });
+
+// ------------------------------------------------------------ греческая грамматика
+
+// Именной строй греческого: падеж и число, формы слова, согласование,
+// атрибут/предикатив, субстантивация, артикль. Варианты этих видов — русские
+// подписи из данных, поэтому проверяется отрисовка каждого вопроса всех уроков.
+test('вопросы греческой грамматики рисуются без русского текста', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const kinds = ['declension_fill', 'case_number', 'agreement', 'attribute_vs_predicate',
+        'substantivation', 'article_fill'];
+    app.window.applyCourse('greek');
+    app.window.lessonNumbers().forEach(lesson => {
+        app.window.openLesson(lesson);
+        const data = app.window.getLessonData(lesson);
+        kinds.forEach(kind => {
+            ((data.exercises && data.exercises[kind]) || []).forEach(q => {
+                const text = app.window.choiceQuestionHtml(kind, q, 'answerOpt').replace(/<[^>]+>/g, ' ');
+                assert.ok(!CYR.test(text),
+                    'русский текст в греческом уроке ' + lesson + ', ' + kind + ': ' + around(text));
+            });
+        });
+    });
+    app.close();
+});
+
+// Подсказка о слове в вопросе о форме берётся из английского словаря курса, а
+// не из русского поля данных: иначе в скобках стоял бы русский перевод при
+// английском словаре на соседнем экране.
+test('значение слова в вопросе о форме совпадает со словарём', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.applyCourse('greek');
+    app.window.openLesson(3);
+    const q = { case: 'gen_sg', word: 'λύω', translation: 'развязываю' };
+    const html = app.get('EXERCISE_TYPES').declension_fill.prompt(q);
+    assert.ok(!CYR.test(html), 'русская подсказка в вопросе о форме: ' + around(html));
+    assert.ok(html.includes('I untie, set free'),
+        'подсказка не совпадает со словарной статьёй: ' + html);
+    app.close();
+});

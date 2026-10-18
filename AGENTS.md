@@ -362,6 +362,14 @@ English is an overlay on top of it. The switch is a card in the settings screen
   map exists because a Greek headword itself carries a Russian label
   (`διώξω (Fut. от διώκω)`); the overlay rewrites the label and leaves the Greek
   word untouched.
+- **A word gloss inside a drill comes from the dictionary, not from a second
+  list.** `drillGloss()` (`js/exercises.js`) looks the headword up in the English
+  vocabulary of the course (through `headwordChip()`, so `οὗτος, αὕτη, τοῦτο` and
+  `ἀπέρχομαι (dep.)` match their bare form), which is what keeps the hint in
+  «insert the form … for the word λύω (…)» identical to the dictionary article.
+  Paradigm-only words (`λύομαι`, `λείπομαι`) are not in any dictionary and fall
+  back to `UI_EN`, whose wording is taken from the same lessons' paradigm
+  captions. Do not hand-write a third list of glosses.
 - **Alphabet and reading labels follow the English lesson material, not a
   transliteration scheme of their own.** The pools hold the Russian reading and
   sound (`а́леф`, `б / в`); `UI_EN` maps them to exactly what the English grammar

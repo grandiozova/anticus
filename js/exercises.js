@@ -99,6 +99,24 @@ function getCaseName(caseKey) {
 // Ключ вида, общего для курсов, языка не называет (translate_*, agreement,
 // article_fill). Виды, которых за пределами еврейского курса не бывает,
 // начинаются с heb_. Это соглашение об именах: префикс код не разбирает.
+// Значение слова в вопросе о форме («вставьте форму … для слова λύω
+// (развязываю)»). Английское берётся из словаря курса, а не из отдельного
+// списка: подсказка обязана совпадать со статьёй, которую ученик видит в
+// словаре. Слово-парадигма (λύομαι), которого в словаре нет, остаётся подписью
+// UI_EN — как и подписи падежей.
+function drillGloss(word, translation) {
+    if (!isEnglish()) return translation;
+    const key = headwordChip(word);
+    if (key) {
+        for (let n of lessonNumbers()) {
+            const data = getLessonData(n);
+            const hit = ((data && data.vocabulary) || []).find(w => headwordChip(w.greek) === key);
+            if (hit) return hit.translation;
+        }
+    }
+    return t(translation);
+}
+
 const EXERCISE_TYPES = {
     // --- алфавит и чтение: уроки 1–2 в обоих курсах ---
     // Здесь спрашивают не о слове, а о букве. Вопросы берутся из пула букв
@@ -225,7 +243,7 @@ const EXERCISE_TYPES = {
     // --- греческий именной строй ---
     declension_fill: {
         prompt: q => t('Вставьте форму для <b>') + getCaseName(q.case) + t('</b> для слова ') +
-            sc(q.word ? q.word + ' (' + q.translation + ')' : ''),
+            sc(q.word ? q.word + ' (' + drillGloss(q.word, q.translation) + ')' : ''),
         script: true
     },
     case_number: {
