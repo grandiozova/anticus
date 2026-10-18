@@ -99,14 +99,14 @@ function applyCourse(id) {
     // Клавиатура словаря набрана буквами курса: без сброса на экране словаря
     // остались бы буквы прошлого курса.
     resetVocabKeyboard();
-    allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all' };
-    flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
-    vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
-    vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
-    testState = { questions: [], index: 0, correct: 0, total: 10, answered: false };
-    exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0 };
-    translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
-    prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
+    allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all', mistakes: [] };
+    flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
+    vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
+    vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
+    testState = { questions: [], index: 0, correct: 0, total: 10, answered: false, mistakes: [] };
+    exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, mistakes: [] };
+    translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
+    prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
     currentDrill = null;
     currentLessonPart = 'material';
     lessonsReturnSection = 'mainMenu';

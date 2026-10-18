@@ -32,15 +32,30 @@ function collectTestQuestions(data) {
 
 function countTestQuestions(data) { return collectTestQuestions(data).length; }
 
-function startTest() {
+// questions — необязательный набор: «Повторить ошибки» передаёт сюда только
+// вопросы, на которые в прошлом заходе ответили неверно.
+function startTest(questions) {
     let data = getLessonData(currentLesson);
     if (!data) return;
-    let all = collectTestQuestions(data);
-    if (all.length === 0) { showToast('Для этого урока вопросов пока нет', 'info'); return; }
-    let picked = shuffle(all).slice(0, 10);
-    testState = { questions: picked, index: 0, correct: 0, total: picked.length, answered: false };
+    let picked;
+    if (Array.isArray(questions)) {
+        picked = questions.slice();
+    } else {
+        let all = collectTestQuestions(data);
+        if (all.length === 0) { showToast('Для этого урока вопросов пока нет', 'info'); return; }
+        picked = shuffle(all).slice(0, 10);
+    }
+    testState = { questions: picked, index: 0, correct: 0, total: picked.length, answered: false, mistakes: [] };
     showSection('testSection');
     showTest();
+}
+
+// Повтор только тех вопросов, где ответ был неверным.
+function retryTestMistakes() {
+    const s = testState;
+    if (!s || !Array.isArray(s.mistakes) || s.mistakes.length === 0) return;
+    const questions = s.mistakes.map(m => m.q).filter(Boolean);
+    if (questions.length) startTest(questions);
 }
 
 function cancelTest() {
@@ -54,6 +69,7 @@ function showTest() {
     if (s.index >= s.total) {
         document.getElementById('testContainer').innerHTML =
             resultBlock(s.correct, s.total, 'Тест завершён') +
+            drillReviewHtml(s.mistakes, 'retryTestMistakes()') +
             '<div class="md-button-row">' +
             '<button class="menu-btn primary" onclick="startTest()"><span class="msym">restart_alt</span>Повторить</button>' +
             '<button class="menu-btn outlined" onclick="cancelTest()"><span class="msym">arrow_back</span>К уроку</button></div>';
@@ -101,7 +117,9 @@ function testAnswer(sel, corr) {
         stats.totalWrong++;
         let lesson = currentLesson;
         let q = testState.questions[testState.index];
-        recordError(lesson, { word: questionSubject(q, q._type), correct: corr, your: sel });
+        let subject = questionSubject(q, q._type);
+        recordError(lesson, { word: subject, correct: corr, your: sel });
+        noteDrillMistake(testState, { word: subject, correct: corr, your: sel, q: q });
     }
     stats.totalCorrect += ok ? 1 : 0;
     saveStats();
@@ -137,6 +155,7 @@ function testTranslation() {
         stats.totalWrong++;
         let lesson = currentLesson;
         recordError(lesson, { word: q.greek, correct: q.keywords.join(', '), your: ans });
+        noteDrillMistake(testState, { word: q.greek, correct: q.keywords.join(', '), your: ans, q: q });
     }
     saveStats();
     testState.answered = true;
@@ -181,6 +200,7 @@ function testTranslationRu() {
         stats.totalWrong++;
         let lesson = currentLesson;
         recordError(lesson, { word: q.russian, correct: corr.join(' '), your: chosen.join(' ') });
+        noteDrillMistake(testState, { word: q.russian, correct: corr.join(' '), your: chosen.join(' '), q: q });
     }
     saveStats();
     testState.answered = true;

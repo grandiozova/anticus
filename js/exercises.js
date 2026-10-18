@@ -15,7 +15,7 @@ function startExercise(type) {
     if (exerciseWritingStyle(type) && courseCursiveWriting()) {
         // Начертание ещё не выбрано, и вопросов в состоянии тоже нет: экран
         // выбора — не вопрос, и заполнять состояние половиной нечего.
-        exerciseState = { type: type, questions: [], index: 0, correct: 0, total: 0 };
+        exerciseState = { type: type, questions: [], index: 0, correct: 0, total: 0, mistakes: [] };
         showLetterWriteChoice();
         return;
     }
@@ -24,14 +24,27 @@ function startExercise(type) {
 
 // Прогон вопросов, начиная с первого. Отдельно от startExercise: письмо сперва
 // показывает выбор начертания, и к прогону возвращаются уже после выбора.
-function beginExercise(type, style) {
-    let questions = shuffle(getExercises(currentLesson, type));
-    exerciseState = { type: type, questions: questions, index: 0, correct: 0, total: questions.length };
+// questions — необязательный набор: «Повторить ошибки» передаёт сюда только
+// те вопросы, где ответ был неверным, и заход идёт по ним, а не по всему виду.
+function beginExercise(type, style, questions) {
+    let source = Array.isArray(questions) ? questions.slice() : getExercises(currentLesson, type);
+    let shuffled = shuffle(source);
+    exerciseState = { type: type, questions: shuffled, index: 0, correct: 0, total: shuffled.length, mistakes: [] };
     // Начертание вида — печатное или выбранное на экране выбора. У остальных
     // видов его нет, и letterWriteStyle остаётся нетронутым: его читает только
     // показ письма.
     if (style) letterWriteStyle = style;
     showExercise();
+}
+
+// «Повторить ошибки»: новый заход только по вопросам с неверным ответом.
+// Начертание письма заново не спрашиваем — оно уже выбрано в этом заходе.
+function retryExerciseMistakes() {
+    const s = exerciseState;
+    if (!s || !Array.isArray(s.mistakes) || s.mistakes.length === 0) return;
+    const questions = s.mistakes.map(m => m.q).filter(Boolean);
+    if (!questions.length) return;
+    beginExercise(s.type, exerciseWritingStyle(s.type) ? letterWriteStyle : null, questions);
 }
 
 function getCaseName(caseKey) {
@@ -674,6 +687,16 @@ function backToLetterWriteCanvas() {
     if (stats.totalCorrect > 0) stats.totalCorrect--;
     if (exerciseState.correct > 0) exerciseState.correct--;
     saveStats();
+    // Возврат к холсту — единственный признак, что начертание не совпало с
+    // показанным: ответ в письме не проверяется, и «Назад» жмут именно тогда,
+    // когда буква написана не так. Такой вопрос попадёт в разбор захода.
+    const q = exerciseState.questions[exerciseState.index];
+    if (q) noteDrillMistake(exerciseState, {
+        word: q.ru || q.name,
+        correct: letterWriteRevealForms(q).join(' '),
+        your: 'вернулись переписать',
+        q: q
+    });
     showExercise();
 }
 
@@ -915,6 +938,7 @@ function showExercise() {
     if (s.index >= s.total) {
         document.getElementById('exerciseQuestion').innerHTML =
             resultBlock(s.correct, s.total, 'Упражнение завершено') +
+            drillReviewHtml(s.mistakes, 'retryExerciseMistakes()') +
             '<div class="md-button-row">' +
             '<button class="menu-btn primary" onclick="startExercise(\'' + s.type + '\')"><span class="msym">restart_alt</span>Ещё раз</button>' +
             '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
@@ -977,16 +1001,26 @@ function showExercise() {
 // разных знака, и глазами в редакторе их не различить.
 const VOWEL_CARRIER = '\u05D1\u05BC';
 
-function startVowelWrite() {
-    const vowels = (courseAlphabet().vowels || []).slice();
+// deck — необязательный набор знаков: «Повторить ошибки» передаёт сюда только
+// те огласовки, к которым возвращались кнопкой «Назад».
+function startVowelWrite(deck) {
+    const vowels = Array.isArray(deck) ? deck.slice() : (courseAlphabet().vowels || []).slice();
     if (vowels.length === 0) {
         document.getElementById('exerciseQuestion').innerHTML = '<p>Нет огласовок.</p>';
         return;
     }
     vowelWriteState = {
-        words: shuffle(vowels), index: 0, revealed: false, correct: 0, total: vowels.length
+        words: shuffle(vowels), index: 0, revealed: false, correct: 0, total: vowels.length, mistakes: []
     };
     showVowelWrite();
+}
+
+// Повтор только тех знаков, к которым возвращались при письме.
+function retryVowelWriteMistakes() {
+    const s = vowelWriteState;
+    if (!s || !Array.isArray(s.mistakes) || s.mistakes.length === 0) return;
+    const words = s.mistakes.map(m => m.q).filter(Boolean);
+    if (words.length) startVowelWrite(words);
 }
 
 function showVowelWrite() {
@@ -995,6 +1029,7 @@ function showVowelWrite() {
     if (!box) return;
     if (s.index >= s.total) {
         box.innerHTML = resultBlock(s.correct, s.total, 'Огласовки завершены') +
+            drillReviewHtml(s.mistakes, 'retryVowelWriteMistakes()') +
             '<div class="md-button-row">' +
             '<button class="menu-btn primary" onclick="startVowelWrite()"><span class="msym">restart_alt</span>Ещё раз</button>' +
             '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
@@ -1061,6 +1096,15 @@ function backToVowelWriteCanvas() {
     if (stats.totalCorrect > 0) stats.totalCorrect--;
     if (s.correct > 0) s.correct--;
     saveStats();
+    // Как и у письма буквы, «Назад» — единственный признак того, что знак
+    // нарисован неверно: рисунок не проверяется, его сверяют глазами.
+    const v = s.words[s.index];
+    if (v) noteDrillMistake(s, {
+        word: v.name,
+        correct: v.sign,
+        your: 'вернулись переписать',
+        q: v
+    });
     s.revealed = false;
     showVowelWrite();
 }
@@ -1080,7 +1124,9 @@ function answerOpt(sel, corr) {
         stats.totalWrong++;
         let lesson = currentLesson;
         let q = exerciseState.questions[exerciseState.index];
-        recordError(lesson, { word: questionSubject(q, exerciseState.type), correct: corr, your: sel });
+        let subject = questionSubject(q, exerciseState.type);
+        recordError(lesson, { word: subject, correct: corr, your: sel });
+        noteDrillMistake(exerciseState, { word: subject, correct: corr, your: sel, q: q });
     }
     saveStats();
     exerciseState.index++;
@@ -1136,6 +1182,7 @@ function checkTranslationRu() {
         stats.totalWrong++;
         let lesson = currentLesson;
         recordError(lesson, { word: q.russian, correct: corr.join(' '), your: chosen.join(' ') });
+        noteDrillMistake(exerciseState, { word: q.russian, correct: corr.join(' '), your: chosen.join(' '), q: q });
         container.innerHTML = `
             <div class="feedback fail"><span>Неверно. Правильный порядок: <strong class="script">${corr.join(' ')}</strong></span></div>
             <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>

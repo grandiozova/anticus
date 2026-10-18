@@ -117,7 +117,7 @@ function startPrayerFill() {
             russian: verse.russian
         });
     });
-    prayerExerciseState = { type: 'fill', questions: shuffle(questions), index: 0, correct: 0, total: questions.length };
+    prayerExerciseState = { type: 'fill', questions: shuffle(questions), index: 0, correct: 0, total: questions.length, mistakes: [] };
     showPrayerExerciseQuestion();
 }
 
@@ -143,7 +143,7 @@ function startPrayerTranslate() {
             });
         });
     });
-    prayerExerciseState = { type: 'translate', questions: shuffle(questions), index: 0, correct: 0, total: questions.length, chosen: [] };
+    prayerExerciseState = { type: 'translate', questions: shuffle(questions), index: 0, correct: 0, total: questions.length, chosen: [], mistakes: [] };
     showPrayerExerciseQuestion();
 }
 
@@ -152,6 +152,7 @@ function showPrayerExerciseQuestion() {
     const container = document.getElementById('prayerExerciseQuestion');
     if (state.index >= state.total) {
         container.innerHTML = resultBlock(state.correct, state.total, 'Упражнение завершено') +
+            drillReviewHtml(state.mistakes, 'retryPrayerMistakes()') +
             `<button class="menu-btn primary" onclick="startPrayer${state.type==='fill'?'Fill':'Translate'}()"><span class="msym">restart_alt</span>Ещё раз</button>`;
         return;
     }
@@ -207,6 +208,8 @@ function prayerFillAnswer(selected, correct) {
         stats.totalCorrect++;
     } else {
         stats.totalWrong++;
+        const q = state.questions[state.index];
+        noteDrillMistake(state, { word: q.russian, correct: correct, your: selected, q: q });
     }
     saveStats();
     state.index++;
@@ -244,6 +247,7 @@ function prayerCheckTranslate() {
         container.innerHTML = '<div class="feedback ok"><span>Верно!</span></div>';
     } else {
         stats.totalWrong++;
+        noteDrillMistake(state, { word: q.russian, correct: correct.join(' '), your: chosen.join(' '), q: q });
         // Порядок слов — текст изучаемого языка: без .script иврит остался бы
         // в интерфейсной гарнитуре и слева направо.
         container.innerHTML = `<div class="feedback fail"><span>Неверно. Правильный порядок: <strong class="script">${correct.join(' ')}</strong></span></div>`;
@@ -264,3 +268,17 @@ document.addEventListener('click', function(e) {
     // Иначе – закрываем все окна
     closeAllAnalysis();
 });
+
+// «Повторить ошибки» в упражнениях молитвы: новый заход по тем же вопросам,
+// что были решены неверно, — в том же виде задания (пропуски или перевод).
+function retryPrayerMistakes() {
+    const s = prayerExerciseState;
+    if (!s || !Array.isArray(s.mistakes) || s.mistakes.length === 0) return;
+    const questions = s.mistakes.map(m => m.q).filter(Boolean);
+    if (!questions.length) return;
+    prayerExerciseState = {
+        type: s.type, questions: questions, index: 0, correct: 0,
+        total: questions.length, chosen: [], mistakes: []
+    };
+    showPrayerExerciseQuestion();
+}

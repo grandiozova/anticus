@@ -93,3 +93,35 @@ function resultBlock(correct, total, title) {
         '<br>Результат: ' + correct + ' из ' + total + ' (' + p + '%)</span></div>';
 }
 
+// Разбор ошибок текущего захода. Список лежит в состоянии самого упражнения
+// (state.mistakes) и обнуляется вместе с ним, поэтому показывает только этот
+// прогон: общий разбор на экране статистики остаётся отдельным и никуда не
+// девается. Строка та же, что в статистике (errorText метит изучаемое письмо),
+// чтобы два экрана не разошлись. retry — готовый вызов JS, например
+// "retryCardMistakes('lesson')"; без него остаётся только список.
+function drillReviewHtml(mistakes, retry) {
+    if (!Array.isArray(mistakes) || mistakes.length === 0) return '';
+    let html = '<div class="md-subhead">Разбор ошибок</div>';
+    for (let e of mistakes) {
+        html += '<div class="error-item"><span class="msym sm">error</span><span>' + errorText(e.word) +
+            ' → правильно: <strong>' + errorText(e.correct) + '</strong>' +
+            (e.your ? '<br>ваш ответ: ' + errorText(e.your) : '') + '</span></div>';
+    }
+    if (retry) {
+        html += '<div class="md-button-row"><button class="menu-btn elevated" onclick="' + retry + '">' +
+            '<span class="msym">restart_alt</span>Повторить ошибки (' + mistakes.length + ')</button></div>';
+    }
+    return html;
+}
+
+// Ошибка захода — в собственный список упражнения, рядом с записью в общую
+// статистику. q — исходный вопрос или слово: по нему «Повторить ошибки»
+// собирает новую колоду. Совпадение по ссылке не даёт одному и тому же
+// вопросу попасть в разбор дважды: в письме к холсту возвращаются несколько раз.
+function noteDrillMistake(state, mistake) {
+    if (!state || !mistake || !mistake.correct) return;
+    if (!Array.isArray(state.mistakes)) state.mistakes = [];
+    if (mistake.q && state.mistakes.some(m => m.q === mistake.q)) return;
+    state.mistakes.push(mistake);
+}
+

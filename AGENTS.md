@@ -83,7 +83,7 @@ online test. When you add:
 | a file in `styles/`, `data/`, `js/` | its tag in `index.html` **in the right place** (see load order) + `CORE_ASSETS` in `sw.js` + bump `CACHE_VERSION` |
 | an icon | `icon_names=` on the fonts `<link>` |
 | a screen | markup + `SCREEN_META` / `DEST_SECTION` / `FAB_CONFIG` |
-| an exercise kind | `EXERCISE_TYPES` + `LESSON_DRILL_GROUPS` and/or `TEST_TYPES` |
+| an exercise kind | `EXERCISE_TYPES` + `LESSON_DRILL_GROUPS` and/or `TEST_TYPES`, and, if it has its own state, `mistakes: []` plus `drillReviewHtml` on its result screen — see "Разбор ошибок в упражнении" |
 | a colour role | `:root`, `[data-theme="dark"]` **and** `[data-theme="sepia"]` |
 | a `font-size` on studied-language text | `* var(--md-ref-script-scale)` on it, plus `* var(--md-ref-script-size)` where it is the subject — see "Text size" |
 | a part-of-speech `type` | `VOCAB_TYPE_ORDER` + `TYPE_LABELS` |
@@ -744,6 +744,37 @@ own answer handler. A new kind is an entry in that table, not a branch.
 - **Do not put the answer in the question.** `heb_construct` and `heb_suffix_type` carry
   a translation in the data and deliberately do not show it: «его кони» announces the
   number, «(этот) голос (этого) человека» announces the definiteness.
+
+## Разбор ошибок в упражнении
+
+Every drill ends on a result screen built by `resultBlock()`, and each one follows it
+with `drillReviewHtml(state.mistakes, retryCall)`: what was wrong **in this run**, with
+«Повторить ошибки (N)» when the drill can be restarted from that subset. It is
+deliberately separate from the global `stats.errors` («Статистика → Ошибки»): that one
+spans lessons and is cleared by hand, this one lives in the drill's own state and
+disappears with it. Both are filled from the same answer handlers, and the review row
+reuses `.error-item` and `errorText()`, so the two screens cannot drift.
+
+- **Every drill state carries `mistakes: []`** — `exerciseState`, `translationState`,
+  `flashcardState`, `allFlashcardState`, `vowelFlashcardState`, `vowelWriteState`,
+  `testState`, `prayerExerciseState` — and it is reset in `applyCourse()` and
+  `resetLessonDrill()` along with the rest of the state. `noteDrillMistake(state,
+  {word, correct, your, q})` appends one entry and refuses a second one with the same
+  `q`, so returning to the canvas twice does not duplicate a letter.
+- **Retry is the same drill with a smaller deck, not a second mode.**
+  `beginExercise(type, style, questions)`, `startTranslation(type, questions)`,
+  `startFlashcards(deck)`, `startAllFlashcards(type, deck)`,
+  `startVowelFlashcards(deck)`, `startVowelWrite(deck)` and `startTest(questions)` all
+  take an optional subset; `retry*Mistakes()` read it out of `state.mistakes` and call
+  them. The drill catalogue, `SCREEN_META` and the screen ids are untouched.
+- **Writing is not graded, so the review takes the only signal there is.**
+  `letter_write` and `vowel_write` credit «Готово» whatever is drawn; «Назад» is the
+  moment the person sees the reveal and decides the shape is wrong.
+  `backToLetterWriteCanvas()` / `backToVowelWriteCanvas()` therefore record the item
+  (`your` reads «вернулись переписать»), and the retry reopens the canvas for exactly
+  those letters or signs. Do not invent a "mistake" for the form drill on the back of
+  a card: the card itself is already in the deck, and that drill is not part of the
+  run's score.
 
 ## Alphabet and reading
 

@@ -188,9 +188,9 @@ function resetLessonDrill() {
         let el = document.getElementById(DRILL_BOXES[kind]);
         if (el) { el.innerHTML = ''; el.classList.add('hidden'); }
     });
-    flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
-    vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
-    vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
+    flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
+    vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
+    vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
 }
 
 // Упражнение — отдельный экран: список выбора остаётся нетронутым позади,

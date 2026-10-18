@@ -7,16 +7,16 @@ let currentLesson = 3;
 let currentLessonPart = 'material';
 let lessonsReturnSection = 'mainMenu'; // какой экран показывать при возврате на вкладку «Уроки»
 let stats = { totalCorrect: 0, totalWrong: 0, errors: {} };
-let testState = { questions: [], index: 0, correct: 0, total: 10, answered: false };
-let flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
+let testState = { questions: [], index: 0, correct: 0, total: 10, answered: false, mistakes: [] };
+let flashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
 // Колода карточек огласовок (еврейский курс). Отдельно от flashcardState: там
 // слова урока, здесь — знаки из пула курса, и смешивать их нельзя.
-let vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
+let vowelFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
 // Написание огласовки (еврейский курс): ту же колоду знаков дорисовывают к
 // носителю на холсте. Ход другой, чем у карточек, поэтому и состояние своё, а
 // не общее с vowelFlashcardState.
-let vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0 };
-let exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0 };
+let vowelWriteState = { words: [], index: 0, revealed: false, correct: 0, total: 0, mistakes: [] };
+let exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, mistakes: [] };
 // Начертание показа в упражнении письма: 'print' или 'cursive'. Лежит рядом
 // с состоянием упражнения, но не внутри: начертание — это только то, как
 // рисуется показ, а сами вопросы, их порядок и счёт одни и те же.
@@ -24,9 +24,9 @@ let exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0 
 // начертание экраном выбора до первой буквы, и каждый заход начинает с ответа
 // ученика, а не с прошлого раза.
 let letterWriteStyle = 'print';
-let allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all' };
-let translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
-let prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [] };
+let allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all', mistakes: [] };
+let translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
+let prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
 let allVocabCache = null;
 
 // ============================================================

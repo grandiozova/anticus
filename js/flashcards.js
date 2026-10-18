@@ -4,17 +4,19 @@
 // Колода — словарь целиком либо одна часть речи: type это ключ из
 // VOCAB_TYPE_ORDER либо 'all'. Без аргумента повторяем текущий набор,
 // поэтому «Заново» и «Повторить» не сбрасывают выбранный фильтр.
-function startAllFlashcards(type) {
+// deck — необязательный набор слов: «Повторить ошибки» передаёт сюда только
+// карточки, отмеченные «Не знаю» в прошлом заходе.
+function startAllFlashcards(type, deck) {
     if (type === undefined || type === null) type = allFlashcardState.type || 'all';
     showSection('allFlashcardsSection');
     var container = document.getElementById('allFlashcardContainer');
-    var allWords = filterVocabByType(getAllVocab(), type);
+    var allWords = Array.isArray(deck) ? deck.slice() : filterVocabByType(getAllVocab(), type);
     renderTypeChips('flashcardTypeChips', type, 'startAllFlashcards');
     var titleEl = document.getElementById('allFlashcardTitle');
     if (titleEl) titleEl.textContent = type === 'all' ? 'Проверка всех слов' : TYPE_LABELS[type];
     allFlashcardState = {
         words: [], index: 0, revealed: false, correct: 0, total: 0, type: type,
-        flipped: false, flipAnim: false, declension: null
+        flipped: false, flipAnim: false, declension: null, mistakes: []
     };
     if (allWords.length === 0) {
         container.innerHTML = emptyState('inbox', 'Слов пока нет');
@@ -31,6 +33,7 @@ function showAllFlashcard() {
     var container = document.getElementById('allFlashcardContainer');
     if (s.index >= s.total) {
         container.innerHTML = resultBlock(s.correct, s.total, 'Проверка завершена') +
+            drillReviewHtml(s.mistakes, "retryCardMistakes('all')") +
             '<div class="md-button-row" style="justify-content:center;">' +
             '<button class="menu-btn primary" onclick="startAllFlashcards()"><span class="msym">restart_alt</span>Повторить</button>' +
             '<button class="menu-btn outlined" onclick="goToMain()"><span class="msym">home</span>К урокам</button></div>';
@@ -64,6 +67,7 @@ function allFlashcardAnswer(know) {
         stats.totalWrong++;
         var w = s.words[s.index];
         recordError('all', { word: w.greek, correct: w.translation, your: 'не знал' });
+        noteDrillMistake(s, { word: w.greek, correct: w.translation, your: 'не знал', q: w });
     }
     saveStats();
     s.index++;
@@ -75,23 +79,31 @@ function allFlashcardAnswer(know) {
 // ============================================================
 // КАРТОЧКИ (урока)
 // ============================================================
-function startFlashcards() {
+// deck — необязательный набор готовых карточек (они же объекты словаря,
+// см. buildAllVocabCache): «Повторить ошибки» передаёт сюда отмеченные
+// «Не знаю» в прошлом заходе.
+function startFlashcards(deck) {
     let data = getLessonData(currentLesson);
-    if (!data || !data.vocabulary || data.vocabulary.length === 0) {
-        document.getElementById('flashcardContainer').innerHTML = '<p>Нет слов.</p>';
-        return;
+    let words;
+    if (Array.isArray(deck)) {
+        words = shuffle(deck.slice());
+    } else {
+        if (!data || !data.vocabulary || data.vocabulary.length === 0) {
+            document.getElementById('flashcardContainer').innerHTML = '<p>Нет слов.</p>';
+            return;
+        }
+        words = shuffle(data.vocabulary.map(item => {
+            return {
+                greek: item.greek,
+                article: item.article || '',
+                translation: item.translation,
+                declension_forms: item.declension_forms || null,
+                lesson: currentLesson
+            };
+        }));
     }
-    let words = shuffle(data.vocabulary.map(item => {
-        return {
-            greek: item.greek,
-            article: item.article || '',
-            translation: item.translation,
-            declension_forms: item.declension_forms || null,
-            lesson: currentLesson
-        };
-    }));
     flashcardState = { words: words, index: 0, revealed: false, correct: 0, total: words.length,
-        flipped: false, flipAnim: false, declension: null };
+        flipped: false, flipAnim: false, declension: null, mistakes: [] };
     showFlashcard();
 }
 
@@ -100,6 +112,7 @@ function showFlashcard() {
     let container = document.getElementById('flashcardContainer');
     if (s.index >= s.total) {
         container.innerHTML = resultBlock(s.correct, s.total, 'Карточки завершены') +
+            drillReviewHtml(s.mistakes, "retryCardMistakes('lesson')") +
             '<div class="md-button-row">' +
             '<button class="menu-btn primary" onclick="startFlashcards()"><span class="msym">restart_alt</span>Повторить</button>' +
             '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
@@ -128,6 +141,7 @@ function flashAnswer(know) {
         let lesson = currentLesson;
         let w = s.words[s.index];
         recordError(lesson, { word: w.greek, correct: w.translation, your: 'не знал' });
+        noteDrillMistake(s, { word: w.greek, correct: w.translation, your: 'не знал', q: w });
     }
     saveStats();
     s.index++;
@@ -395,16 +409,17 @@ function answerCardDeclension(sel, corr, deck) {
 // Колода берётся из пула курса, а не из словаря урока: огласовка — не слово,
 // у неё нет ни перевода, ни парадигмы, и её карточка живёт на своём экране
 // (kind 'vowel_flashcards'), общий с карточками слов только контейнер.
-function startVowelFlashcards() {
+// deck — необязательный набор знаков для повтора только ошибок.
+function startVowelFlashcards(deck) {
     let container = document.getElementById('flashcardContainer');
     if (!container) return;
-    let vowels = (courseAlphabet().vowels || []).slice();
+    let vowels = Array.isArray(deck) ? deck.slice() : (courseAlphabet().vowels || []).slice();
     if (vowels.length === 0) {
         container.innerHTML = emptyState('label', 'Огласовок пока нет');
         return;
     }
     vowelFlashcardState = {
-        words: shuffle(vowels), index: 0, revealed: false, correct: 0, total: vowels.length
+        words: shuffle(vowels), index: 0, revealed: false, correct: 0, total: vowels.length, mistakes: []
     };
     showVowelFlashcard();
 }
@@ -415,6 +430,7 @@ function showVowelFlashcard() {
     if (!container) return;
     if (s.index >= s.total) {
         container.innerHTML = resultBlock(s.correct, s.total, 'Карточки завершены') +
+            drillReviewHtml(s.mistakes, "retryCardMistakes('vowel')") +
             '<div class="md-button-row">' +
             '<button class="menu-btn primary" onclick="startVowelFlashcards()"><span class="msym">restart_alt</span>Повторить</button>' +
             '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
@@ -452,9 +468,24 @@ function vowelFlashcardAnswer(know) {
     } else {
         stats.totalWrong++;
         recordError(currentLesson, { word: v.sign, correct: v.name, your: 'не знал' });
+        noteDrillMistake(s, { word: v.sign, correct: v.name, your: 'не знал', q: v });
     }
     saveStats();
     s.index++;
     s.revealed = false;
     showVowelFlashcard();
+}
+
+// «Повторить ошибки» на экране результата колоды. deck — 'lesson', 'all' или
+// 'vowel': у каждой колоды своё состояние и свой запуск, но разбор ошибок у
+// всех один. Повтор идёт по тем же объектам слов, поэтому карточка в нём —
+// та же статья словаря, что и в первом заходе.
+function retryCardMistakes(deck) {
+    let s = deck === 'vowel' ? vowelFlashcardState : deck === 'all' ? allFlashcardState : flashcardState;
+    if (!s || !Array.isArray(s.mistakes) || s.mistakes.length === 0) return;
+    let words = s.mistakes.map(m => m.q).filter(Boolean);
+    if (!words.length) return;
+    if (deck === 'vowel') startVowelFlashcards(words);
+    else if (deck === 'all') startAllFlashcards(s.type, words);
+    else startFlashcards(words);
 }

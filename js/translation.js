@@ -26,6 +26,7 @@ function checkTranslationBuild() {
         let lesson = currentLesson;
         if (!stats.errors[lesson]) stats.errors[lesson] = [];
         stats.errors[lesson].push({ word: q.source, correct: correct.join(' '), your: chosen.join(' ') });
+        noteDrillMistake(s, { word: q.source, correct: correct.join(' '), your: chosen.join(' '), q: q });
         container.innerHTML = `
             <div class="feedback fail"><span>Неверно. Правильный порядок: <strong${answerCls}>${correct.join(' ')}</strong></span></div>
             <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextTranslation()"><span class="msym">arrow_forward</span>Далее</button></div>
@@ -85,13 +86,15 @@ function translationExtraWords(lessonData, type, correctWords) {
     return out;
 }
 
-function startTranslation(type) {
+// questions — необязательный набор: «Повторить ошибки» передаёт сюда только
+// те предложения, где сборка была неверной.
+function startTranslation(type, questions) {
     let data = getLessonData(currentLesson);
     if (!data || !data.translation || !data.translation[type]) {
         document.getElementById('translationQuestion').innerHTML = '<p>Нет упражнений.</p>';
         return;
     }
-    let qs = data.translation[type].slice();
+    let qs = Array.isArray(questions) ? questions.slice() : data.translation[type].slice();
     translationState = {
         type: type,
         questions: shuffle(qs),
@@ -99,9 +102,18 @@ function startTranslation(type) {
         correct: 0,
         total: qs.length,
         chosen: [],
-        chosenIdx: []
+        chosenIdx: [],
+        mistakes: []
     };
     showTranslation();
+}
+
+// Повтор только тех предложений, где ответ был неверным.
+function retryTranslationMistakes() {
+    const s = translationState;
+    if (!s || !Array.isArray(s.mistakes) || s.mistakes.length === 0) return;
+    const questions = s.mistakes.map(m => m.q).filter(Boolean);
+    if (questions.length) startTranslation(s.type, questions);
 }
  
 function showTranslation() {
@@ -109,6 +121,7 @@ function showTranslation() {
     if (s.index >= s.total) {
         document.getElementById('translationQuestion').innerHTML =
             resultBlock(s.correct, s.total, 'Упражнение завершено') +
+            drillReviewHtml(s.mistakes, 'retryTranslationMistakes()') +
             '<div class="md-button-row">' +
             '<button class="menu-btn primary" onclick="startTranslation(\'' + s.type + '\')"><span class="msym">restart_alt</span>Ещё раз</button>' +
             '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
@@ -219,6 +232,7 @@ function checkExerciseTranslation(index) {
         stats.totalWrong++;
         let lesson = currentLesson;
         recordError(lesson, { word: q.greek, correct: q.keywords.join(', '), your: ans });
+        noteDrillMistake(exerciseState, { word: q.greek, correct: q.keywords.join(', '), your: ans, q: q });
         container.innerHTML = `
             <div class="feedback fail"><span>Неверно. Ключевые слова: <strong>${q.keywords.join(', ')}</strong></span></div>
             <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
