@@ -132,7 +132,7 @@ data/
   lessons.js         2,764  const LESSONS_DATA (греческий курс, уроки 1–16) и GREEK_ALPHABET — пул букв для уроков 1–2
   hebrew-lessons.js    872  const HEBREW_LESSONS_DATA — главы 1–11: грамматика, словарь, упражнения; HEBREW_ALPHABET — пул букв и огласовок
   prayer.js            142  const PRAYER_DATA — «Отче наш» (греческий)
-  hebrew-reading.js    106  const HEBREW_READING_DATA — Бытие 1:1–5 (иврит)
+  hebrew-reading.js    130  const HEBREW_READING_DATA — Бытие 1:1–5 (иврит)
   licenses.js           96  const LICENSES
   courses.js           119  const COURSES/COURSE_ORDER — реестр курсов, грузится последним из data/
 tests/                    jsdom-набор, `npm test` — см. tests/README.md
@@ -150,7 +150,7 @@ js/
   test.js              192  тест
   translation.js       230  перевод
   stats.js             107  статистика, ошибки, сброс прогресса
-  prayer.js            259  разбор текста: «Отче наш» и чтение Бытия, упражнения
+  prayer.js            266  разбор текста: «Отче наш» и чтение Бытия, упражнения
   vocab.js             693  общий словарь, поиск, фильтр по частям речи, клавиатура изучаемого языка
   settings.js           29  showSettings, renderLicenses
   boot.js               79  normalizeTranslationData, init*, глобальные слушатели
@@ -591,6 +591,17 @@ uses (`prayerSection`, `js/prayer.js`), so there is no second code path:
   it, and the translate drill opens without the «Соберите перевод на … из слов» line;
   the Greek prayer has no field and keeps the hint. `tests/prayer.test.js` holds both
   sides.
+- **The reading's translate drill asks phrases, not whole verses.** A Genesis verse is
+  10–12 chips, so «Соберите перевод» turned into a dictation of the entire verse. Each
+  verse therefore carries `segments: [{ from, to, russian }]` — `from`/`to` are indices
+  into that verse's `words`, inclusive, and `startPrayerTranslate()` builds one
+  question per segment from `words.slice(from, to + 1)`. The Hebrew is never typed into
+  `segments`; only the Russian prompt is authored, so a segment cannot drift from the
+  verse in the order of its niqqud. A verse without `segments` is still asked whole —
+  that is how the Greek prayer works, and it must stay that way unless it is cut up the
+  same way. Segments are non-overlapping and each is shorter than its verse;
+  `tests/prayer.test.js` checks both, that every question is exactly its segment's
+  words, and that the reading yields 8–10 questions.
 - **Hebrew word chips need a taller line box.** `.prayer-word` has `overflow: hidden`
   for its ripple, and the shared `1.75rem` line would clip the niqqud that hang below
   the letter. `:root[data-script="hebrew"] .prayer-word { line-height: 1.5 }` and the

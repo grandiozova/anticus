@@ -326,6 +326,54 @@ test('пропуск в еврейском стихе встаёт на слов
     app.close();
 });
 
+test('перевод еврейского чтения спрашивает куски стихов, а не стихи целиком', () => {
+    const app = loadApp(HEBREW);
+    app.window.showPrayer();
+    app.window.startPrayerTranslate();
+
+    const total = app.get('prayerExerciseState.total');
+    assert.ok(total >= 8 && total <= 10, 'упражнений должно быть 8–10, а их ' + total);
+
+    const data = JSON.parse(app.get('JSON.stringify(HEBREW_READING_DATA)'));
+    const segments = data.verses.flatMap((v, verse) =>
+        (v.segments || []).map(s => Object.assign({ verse: verse }, s)));
+    assert.strictEqual(total, segments.length, 'вопрос не на каждый кусок стиха');
+
+    // Вопрос — ровно слова своего куска, взятые из words стиха: кусок,
+    // набранный заново, разошёлся бы со стихом в порядке знаков огласовки.
+    const questions = JSON.parse(app.get('JSON.stringify(prayerExerciseState.questions)'));
+    const byRussian = new Map(segments.map(s => [s.russian, s]));
+    for (const q of questions) {
+        const segment = byRussian.get(q.russian);
+        assert.ok(segment, 'вопрос не из куска стиха: ' + q.russian);
+        const words = data.verses[segment.verse].words.slice(segment.from, segment.to + 1).map(w => w.text);
+        assert.deepStrictEqual(q.correct, words, 'фишки вопроса разошлись со стихом: ' + q.russian);
+    }
+    app.close();
+});
+
+test('куски стихов короче стиха и не налезают друг на друга', () => {
+    const app = loadApp(HEBREW);
+    const bad = app.get(`
+        HEBREW_READING_DATA.verses.map((v, vi) => {
+            const segs = v.segments || [];
+            const problems = [];
+            if (!segs.length) problems.push('нет кусков');
+            let prevTo = -1;
+            segs.forEach((s, si) => {
+                if (s.from < 0 || s.to >= v.words.length || s.from > s.to) problems.push('границы ' + si);
+                if (s.from <= prevTo) problems.push('налезает ' + si);
+                if (s.to - s.from + 1 >= v.words.length) problems.push('стих целиком ' + si);
+                if (!s.russian) problems.push('нет перевода ' + si);
+                prevTo = s.to;
+            });
+            return problems.length ? 'стих ' + (vi + 1) + ': ' + problems.join(', ') : null;
+        }).filter(Boolean).join('; ')
+    `);
+    assert.strictEqual(bad, '', bad);
+    app.close();
+});
+
 test('оба упражнения еврейского чтения проходятся до конца', () => {
     const app = loadApp(HEBREW);
     app.window.showPrayer();

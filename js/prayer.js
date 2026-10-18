@@ -125,15 +125,22 @@ function startPrayerTranslate() {
     let questions = [];
     const allWords = prayerWordPool();
     coursePrayer().verses.forEach(verse => {
-        // Правильные слова — как в стихе, с повторами: одно слово в стихе
-        // бывает дважды, и фишек для него нужно две. Без повторов — только лишние.
-        const correctWords = verse.words.map(prayerWordText);
-        const extras = shuffle(allWords.filter(w => !correctWords.includes(w))).slice(0, 3);
-        const pool = shuffle([...correctWords, ...extras]);
-        questions.push({
-            russian: verse.russian,
-            correct: correctWords,
-            pool: pool
+        // Стих спрашивается не целиком, а кусками из verse.segments, если они
+        // есть: в чтении Бытия целый стих — это 10–12 фишек, и упражнение
+        // превращалось в диктант. Куска нет — спрашивается стих, как раньше
+        // (греческий «Отче наш» живёт именно так).
+        const segments = verse.segments || [{ from: 0, to: verse.words.length - 1, russian: verse.russian }];
+        segments.forEach(segment => {
+            // Правильные слова — как в стихе, с повторами: одно слово в стихе
+            // бывает дважды, и фишек для него нужно две. Без повторов — только лишние.
+            const correctWords = verse.words.slice(segment.from, segment.to + 1).map(prayerWordText);
+            const extras = shuffle(allWords.filter(w => !correctWords.includes(w))).slice(0, 3);
+            const pool = shuffle([...correctWords, ...extras]);
+            questions.push({
+                russian: segment.russian,
+                correct: correctWords,
+                pool: pool
+            });
         });
     });
     prayerExerciseState = { type: 'translate', questions: shuffle(questions), index: 0, correct: 0, total: questions.length, chosen: [] };
