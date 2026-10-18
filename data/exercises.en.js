@@ -55,6 +55,40 @@ const EXERCISES_EN_GREEK = {
                     "he",
                     "unties"
                 ]
+            },
+            "translate_russian_to_greek": {
+                "я вижу": [
+                    "I",
+                    "see"
+                ],
+                "ты знаешь": [
+                    "you",
+                    "know"
+                ],
+                "он пишет": [
+                    "he",
+                    "writes"
+                ],
+                "мы говорим": [
+                    "we",
+                    "speak"
+                ],
+                "мы имеем": [
+                    "we",
+                    "have"
+                ],
+                "вы берёте": [
+                    "you",
+                    "take"
+                ],
+                "они учат": [
+                    "they",
+                    "teach"
+                ],
+                "я развязываю": [
+                    "I",
+                    "untie"
+                ]
             }
         }
     },
@@ -151,6 +185,72 @@ const EXERCISES_EN_GREEK = {
                     "the",
                     "temples"
                 ]
+            },
+            "translate_russian_to_greek": {
+                "слово": [
+                    "word"
+                ],
+                "человека (Gen.)": [
+                    "of",
+                    "the",
+                    "man"
+                ],
+                "сыну": [
+                    "to",
+                    "the",
+                    "son"
+                ],
+                "закон": [
+                    "law"
+                ],
+                "раба (Gen.)": [
+                    "of",
+                    "the",
+                    "slave"
+                ],
+                "брата (Acc.)": [
+                    "the",
+                    "brother"
+                ],
+                "храм (Nom.)": [
+                    "temple"
+                ],
+                "смерти (Dat.)": [
+                    "to",
+                    "death"
+                ],
+                "сыны (Nom.)": [
+                    "sons"
+                ],
+                "апостолов (Gen.)": [
+                    "of",
+                    "the",
+                    "apostles"
+                ],
+                "Христу (Dat.)": [
+                    "to",
+                    "Christ"
+                ],
+                "Иисус (Nom.)": [
+                    "Jesus"
+                ],
+                "Иисуса (Acc.)": [
+                    "Jesus"
+                ],
+                "апостол и раб": [
+                    "an",
+                    "apostle",
+                    "and",
+                    "a",
+                    "slave"
+                ],
+                "дар и закон": [
+                    "a",
+                    "gift",
+                    "and",
+                    "a",
+                    "law"
+                ]
             }
         }
     },
@@ -209,6 +309,55 @@ const EXERCISES_EN_GREEK = {
                     "the",
                     "hour"
                 ]
+            },
+            "translate_russian_to_greek": {
+                "истина": [
+                    "truth"
+                ],
+                "славы (Gen.)": [
+                    "of",
+                    "the",
+                    "glory"
+                ],
+                "жизнь (Acc.)": [
+                    "life"
+                ],
+                "царство": [
+                    "kingdom"
+                ],
+                "день": [
+                    "day"
+                ],
+                "писание": [
+                    "writing"
+                ],
+                "сердце": [
+                    "heart"
+                ],
+                "слава": [
+                    "glory"
+                ],
+                "притча": [
+                    "parable"
+                ],
+                "мир": [
+                    "peace"
+                ],
+                "голос": [
+                    "voice"
+                ],
+                "церковь": [
+                    "church"
+                ],
+                "душа": [
+                    "soul"
+                ],
+                "заповедь": [
+                    "commandment"
+                ],
+                "час": [
+                    "hour"
+                ]
             }
         }
     },
@@ -261,6 +410,45 @@ const EXERCISES_EN_GREEK = {
                 "ἄλλη ὁδός": [
                     "another",
                     "road"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "хорошая дорога": [
+                    "the",
+                    "good",
+                    "road"
+                ],
+                "верная дева": [
+                    "the",
+                    "faithful",
+                    "virgin"
+                ],
+                "добрый Господь": [
+                    "the",
+                    "good",
+                    "Lord"
+                ],
+                "последняя пустыня": [
+                    "the",
+                    "last",
+                    "desert"
+                ],
+                "он воскрешает": [
+                    "he",
+                    "raises"
+                ],
+                "мы воскрешаем": [
+                    "we",
+                    "raise"
+                ],
+                "мёртвые (люди)": [
+                    "the",
+                    "dead"
+                ],
+                "маленькие дома": [
+                    "the",
+                    "small",
+                    "houses"
                 ]
             }
         }
@@ -371,6 +559,79 @@ const EXERCISES_EN_GREEK = {
                     "the",
                     "disciples"
                 ]
+            },
+            "translate_russian_to_greek": {
+                "пророк": [
+                    "prophet"
+                ],
+                "юноши (Gen.)": [
+                    "of",
+                    "the",
+                    "young",
+                    "man"
+                ],
+                "к Богу": [
+                    "to",
+                    "God"
+                ],
+                "ангел": [
+                    "angel"
+                ],
+                "креститель": [
+                    "baptist"
+                ],
+                "Бог": [
+                    "God"
+                ],
+                "мир": [
+                    "world"
+                ],
+                "камень": [
+                    "stone"
+                ],
+                "ученик": [
+                    "disciple"
+                ],
+                "юноша": [
+                    "young",
+                    "man"
+                ],
+                "небо": [
+                    "heaven"
+                ],
+                "дитя": [
+                    "child"
+                ],
+                "я веду": [
+                    "I",
+                    "lead"
+                ],
+                "я бросаю": [
+                    "I",
+                    "throw"
+                ],
+                "я остаюсь": [
+                    "I",
+                    "remain"
+                ],
+                "я посылаю": [
+                    "I",
+                    "send"
+                ],
+                "я несу (приношу)": [
+                    "I",
+                    "bring"
+                ],
+                "через мир": [
+                    "through",
+                    "the",
+                    "world"
+                ],
+                "с учениками": [
+                    "with",
+                    "the",
+                    "disciples"
+                ]
             }
         }
     },
@@ -456,6 +717,54 @@ const EXERCISES_EN_GREEK = {
                     "I",
                     "am",
                     "master"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "я есмь": [
+                    "I",
+                    "am"
+                ],
+                "ты еси": [
+                    "you",
+                    "are"
+                ],
+                "меня": [
+                    "of",
+                    "me"
+                ],
+                "тебе": [
+                    "to",
+                    "you"
+                ],
+                "его (Acc.)": [
+                    "him"
+                ],
+                "их (Gen.)": [
+                    "of",
+                    "them"
+                ],
+                "господин": [
+                    "the",
+                    "master"
+                ],
+                "судья": [
+                    "the",
+                    "judge"
+                ],
+                "мытарь": [
+                    "the",
+                    "tax",
+                    "collector"
+                ],
+                "господина (Gen.)": [
+                    "of",
+                    "the",
+                    "master"
+                ],
+                "судье (Dat.)": [
+                    "to",
+                    "the",
+                    "judge"
                 ]
             }
         }
@@ -546,6 +855,79 @@ const EXERCISES_EN_GREEK = {
                     "the",
                     "evil",
                     "man"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "этот человек": [
+                    "this",
+                    "man"
+                ],
+                "эта": [
+                    "this",
+                    "(f.)"
+                ],
+                "это": [
+                    "this",
+                    "(n.)"
+                ],
+                "тот": [
+                    "that",
+                    "(m.)"
+                ],
+                "те": [
+                    "those"
+                ],
+                "теперь (сейчас)": [
+                    "now"
+                ],
+                "так, таким образом": [
+                    "thus"
+                ],
+                "я крещу": [
+                    "I",
+                    "baptize"
+                ],
+                "он судит": [
+                    "he",
+                    "judges"
+                ],
+                "порочный учитель": [
+                    "the",
+                    "evil",
+                    "teacher"
+                ],
+                "любовь Господа": [
+                    "the",
+                    "love",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "грех и радость": [
+                    "sin",
+                    "and",
+                    "joy"
+                ],
+                "лицо учителя": [
+                    "the",
+                    "face",
+                    "of",
+                    "the",
+                    "teacher"
+                ],
+                "Евангелие Господа": [
+                    "the",
+                    "gospel",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "обещание Господа": [
+                    "the",
+                    "promise",
+                    "of",
+                    "the",
+                    "Lord"
                 ]
             }
         }
@@ -644,6 +1026,89 @@ const EXERCISES_EN_GREEK = {
                     "by",
                     "the",
                     "lord"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "я становлюсь": [
+                    "I",
+                    "become"
+                ],
+                "он спасается": [
+                    "he",
+                    "is",
+                    "saved"
+                ],
+                "я отвечаю": [
+                    "I",
+                    "answer"
+                ],
+                "я вхожу": [
+                    "I",
+                    "enter"
+                ],
+                "я выхожу": [
+                    "I",
+                    "go",
+                    "out"
+                ],
+                "я прихожу": [
+                    "I",
+                    "come"
+                ],
+                "я иду": [
+                    "I",
+                    "go"
+                ],
+                "я отхожу": [
+                    "I",
+                    "go",
+                    "away"
+                ],
+                "я прохожу": [
+                    "I",
+                    "pass",
+                    "through"
+                ],
+                "я начинаю": [
+                    "I",
+                    "begin"
+                ],
+                "я преследую": [
+                    "I",
+                    "pursue"
+                ],
+                "я слышу голос": [
+                    "I",
+                    "hear",
+                    "the",
+                    "voice"
+                ],
+                "я управляю миром": [
+                    "I",
+                    "rule",
+                    "the",
+                    "world"
+                ],
+                "грешник": [
+                    "the",
+                    "sinner"
+                ],
+                "разбойник": [
+                    "the",
+                    "robber"
+                ],
+                "он спасается Господом": [
+                    "he",
+                    "is",
+                    "saved",
+                    "by",
+                    "the",
+                    "Lord"
+                ],
+                "потому что мы знаем": [
+                    "because",
+                    "we",
+                    "know"
                 ]
             }
         }
@@ -747,6 +1212,79 @@ const EXERCISES_EN_GREEK = {
                 "ἤμην": [
                     "I",
                     "was"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "я убиваю": [
+                    "I",
+                    "kill"
+                ],
+                "я посылаю": [
+                    "I",
+                    "send"
+                ],
+                "хлеб": [
+                    "bread"
+                ],
+                "я иду": [
+                    "I",
+                    "go"
+                ],
+                "я ем": [
+                    "I",
+                    "eat"
+                ],
+                "я спускаюсь": [
+                    "I",
+                    "go",
+                    "down"
+                ],
+                "я получаю хлеб": [
+                    "I",
+                    "receive",
+                    "bread"
+                ],
+                "я собираю": [
+                    "I",
+                    "gather"
+                ],
+                "я поднимаю": [
+                    "I",
+                    "lift",
+                    "up"
+                ],
+                "я поднимаюсь": [
+                    "I",
+                    "go",
+                    "up"
+                ],
+                "я умираю": [
+                    "I",
+                    "die"
+                ],
+                "тогда": [
+                    "then"
+                ],
+                "уже не": [
+                    "no",
+                    "longer"
+                ],
+                "с (с Dat.)": [
+                    "with",
+                    "(with",
+                    "Dat.)"
+                ],
+                "против (с Gen.)": [
+                    "against",
+                    "(with",
+                    "Gen.)"
+                ],
+                "от (с Gen., о людях)": [
+                    "from",
+                    "(with",
+                    "Gen.,",
+                    "of",
+                    "persons)"
                 ]
             }
         }
@@ -931,6 +1469,68 @@ const EXERCISES_EN_GREEK = {
                     "still",
                     "evil"
                 ]
+            },
+            "translate_russian_to_greek": {
+                "я принимаю": [
+                    "I",
+                    "receive"
+                ],
+                "я выхожу": [
+                    "I",
+                    "go",
+                    "out"
+                ],
+                "я иду вместе": [
+                    "I",
+                    "come",
+                    "together"
+                ],
+                "я спускаюсь": [
+                    "I",
+                    "go",
+                    "down"
+                ],
+                "книга": [
+                    "book"
+                ],
+                "лодка": [
+                    "boat"
+                ],
+                "дело": [
+                    "work"
+                ],
+                "море": [
+                    "sea"
+                ],
+                "бес": [
+                    "demon"
+                ],
+                "ещё не": [
+                    "not",
+                    "yet"
+                ],
+                "ещё": [
+                    "still"
+                ],
+                "и не, даже не": [
+                    "and",
+                    "not,",
+                    "not",
+                    "even"
+                ],
+                "к морю": [
+                    "to",
+                    "the",
+                    "sea"
+                ],
+                "в книге Господа": [
+                    "in",
+                    "the",
+                    "book",
+                    "of",
+                    "the",
+                    "Lord"
+                ]
             }
         }
     },
@@ -1056,6 +1656,74 @@ const EXERCISES_EN_GREEK = {
                     "the",
                     "sea"
                 ]
+            },
+            "translate_russian_to_greek": {
+                "я буду преследовать": [
+                    "I",
+                    "shall",
+                    "pursue"
+                ],
+                "я буду иметь": [
+                    "I",
+                    "shall",
+                    "have"
+                ],
+                "я буду знать": [
+                    "I",
+                    "shall",
+                    "know"
+                ],
+                "я буду учить": [
+                    "I",
+                    "shall",
+                    "teach"
+                ],
+                "я буду брать": [
+                    "I",
+                    "shall",
+                    "take"
+                ],
+                "я буду молиться": [
+                    "I",
+                    "shall",
+                    "pray"
+                ],
+                "я приду": [
+                    "I",
+                    "shall",
+                    "come"
+                ],
+                "я стану": [
+                    "I",
+                    "shall",
+                    "become"
+                ],
+                "я буду ходить": [
+                    "I",
+                    "shall",
+                    "go"
+                ],
+                "слепой": [
+                    "blind"
+                ],
+                "ты освободишь рабов": [
+                    "you",
+                    "will",
+                    "set",
+                    "the",
+                    "slaves",
+                    "free"
+                ],
+                "вы возьмёте лодки из моря": [
+                    "you",
+                    "will",
+                    "take",
+                    "the",
+                    "boats",
+                    "from",
+                    "the",
+                    "sea"
+                ]
             }
         }
     },
@@ -1157,6 +1825,66 @@ const EXERCISES_EN_GREEK = {
                     "him",
                     "and",
                     "marvelled"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "я освободил": [
+                    "I",
+                    "set",
+                    "free"
+                ],
+                "я уверовал": [
+                    "I",
+                    "believed"
+                ],
+                "я проповедовал": [
+                    "I",
+                    "proclaimed"
+                ],
+                "я убедил": [
+                    "I",
+                    "persuaded"
+                ],
+                "я приготовил": [
+                    "I",
+                    "prepared"
+                ],
+                "я исцелил": [
+                    "I",
+                    "healed"
+                ],
+                "я удивился": [
+                    "I",
+                    "marvelled"
+                ],
+                "я возвратился": [
+                    "I",
+                    "returned"
+                ],
+                "я прозрел": [
+                    "I",
+                    "regained",
+                    "sight"
+                ],
+                "мы уверовали в Господа": [
+                    "we",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord"
+                ],
+                "вы обратились к Господу": [
+                    "you",
+                    "turned",
+                    "to",
+                    "the",
+                    "Lord"
+                ],
+                "слепые прозрели": [
+                    "the",
+                    "blind",
+                    "regained",
+                    "sight"
                 ]
             }
         }
@@ -1265,6 +1993,51 @@ const EXERCISES_EN_GREEK = {
                     "remain",
                     "in",
                     "him"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "я увидел": [
+                    "I",
+                    "saw"
+                ],
+                "я сказал": [
+                    "I",
+                    "said"
+                ],
+                "я взял": [
+                    "I",
+                    "took"
+                ],
+                "я привёл": [
+                    "I",
+                    "led"
+                ],
+                "я пришёл": [
+                    "I",
+                    "came"
+                ],
+                "я принёс": [
+                    "I",
+                    "brought"
+                ],
+                "я бросил": [
+                    "I",
+                    "threw"
+                ],
+                "я покинул": [
+                    "I",
+                    "left"
+                ],
+                "я упал": [
+                    "I",
+                    "fell"
+                ],
+                "мы уверовали в Господа": [
+                    "we",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord"
                 ]
             }
         }
@@ -1405,6 +2178,63 @@ const EXERCISES_EN_GREEK = {
                     "to",
                     "the",
                     "lord"
+                ]
+            },
+            "translate_russian_to_greek": {
+                "я был послан": [
+                    "I",
+                    "was",
+                    "sent"
+                ],
+                "я был брошен": [
+                    "I",
+                    "was",
+                    "thrown"
+                ],
+                "я был взят": [
+                    "I",
+                    "was",
+                    "taken"
+                ],
+                "я был научен": [
+                    "I",
+                    "was",
+                    "taught"
+                ],
+                "я был услышан": [
+                    "I",
+                    "was",
+                    "heard"
+                ],
+                "я был увиден": [
+                    "I",
+                    "was",
+                    "seen"
+                ],
+                "я был приведён": [
+                    "I",
+                    "was",
+                    "led"
+                ],
+                "я пошёл": [
+                    "I",
+                    "went"
+                ],
+                "мы уверовали в Господа": [
+                    "we",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord"
+                ],
+                "дети были принесены Господу": [
+                    "the",
+                    "children",
+                    "were",
+                    "brought",
+                    "to",
+                    "the",
+                    "Lord"
                 ]
             }
         }

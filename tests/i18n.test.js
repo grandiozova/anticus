@@ -82,9 +82,9 @@ test('в английском режиме открыты только пере�
         .map(el => el.textContent);
     assert.ok(labels.includes('Phrases: Greek → English'),
         'нет переведённого перевода слов: ' + labels.join(' | '));
-    // Условия обратного перевода ещё русские — пункта быть не должно.
-    assert.ok(!labels.includes('Phrases: English → Greek'),
-        'показан непереведённый пункт: ' + labels.join(' | '));
+    assert.ok(labels.includes('Phrases: English → Greek'),
+        'нет переведённого обратного перевода: ' + labels.join(' | '));
+    // Предложения уроков ещё не переведены — пункта быть не должно.
     assert.ok(!labels.some(l => l.startsWith('Sentences:')),
         'показаны непереведённые предложения: ' + labels.join(' | '));
     app.close();
@@ -95,8 +95,8 @@ test('непереведённые упражнения не попадают и
     app.window.openLesson(3);
     const types = app.get('collectTestQuestions(getLessonData(3)).map(q => q._type).join(",")');
     assert.ok(types.includes('translate_greek_to_russian'), 'в тесте нет переведённого вида: ' + types);
-    assert.ok(!types.includes('translate_russian_to_greek'),
-        'в тест попал вид с русскими условиями: ' + types);
+    assert.ok(types.includes('translate_russian_to_greek'),
+        'в тесте нет обратного перевода: ' + types);
     app.close();
 });
 
@@ -568,5 +568,21 @@ test('вопросы еврейской грамматики рисуются б
             });
         });
     });
+    app.close();
+});
+
+
+test('обратный перевод собирается из английского условия', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.openLesson(3);
+    app.window.startExercise('translate_russian_to_greek');
+    const q = app.get('exerciseState.questions[exerciseState.index]');
+    const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-ru').textContent;
+    assert.ok(!CYR.test(prompt), 'русское условие обратного перевода: ' + around(prompt));
+    q.correct_sequence.forEach(word => app.window.pickWord(word));
+    app.window.checkTranslationRu();
+    const text = app.document.getElementById('exerciseQuestion').textContent;
+    assert.ok(text.includes('Correct'), 'ответ не засчитан: ' + text);
+    assert.ok(!CYR.test(text), 'русский текст в обратной связи: ' + around(text));
     app.close();
 });
