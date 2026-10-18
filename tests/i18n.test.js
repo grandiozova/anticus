@@ -586,3 +586,26 @@ test('обратный перевод собирается из английск
     assert.ok(!CYR.test(text), 'русский текст в обратной связи: ' + around(text));
     app.close();
 });
+
+// Еврейский курс: слова и условия перевода переведены, предложения — ещё нет.
+test('еврейские упражнения-переводы открыты, предложения — нет', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.applyCourse('hebrew');
+    app.window.openLesson(3);
+    app.window.renderLessonDrills(app.window.getLessonData(3));
+    const labels = Array.from(app.document.querySelectorAll('#drillGroups .lesson-item__headline'))
+        .map(el => el.textContent);
+    assert.ok(labels.includes('Phrases: Hebrew → English'), 'нет перевода слов: ' + labels.join(' | '));
+    assert.ok(labels.includes('Phrases: English → Hebrew'), 'нет обратного перевода: ' + labels.join(' | '));
+    assert.ok(!labels.some(l => l.startsWith('Sentences:')),
+        'показаны непереведённые предложения: ' + labels.join(' | '));
+
+    app.window.startExercise('translate_greek_to_russian');
+    const q = app.get('exerciseState.questions[exerciseState.index]');
+    app.document.getElementById('transInput').value = q.keywords.join(' ');
+    app.window.checkExerciseTranslation(app.get('exerciseState.index'));
+    const text = app.document.getElementById('exerciseQuestion').textContent;
+    assert.ok(text.includes('Correct'), 'еврейский ответ не засчитан: ' + text);
+    assert.ok(!CYR.test(text), 'русский текст в обратной связи: ' + around(text));
+    app.close();
+});
