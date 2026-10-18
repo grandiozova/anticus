@@ -13,13 +13,13 @@ function startAllFlashcards(type, deck) {
     var allWords = Array.isArray(deck) ? deck.slice() : filterVocabByType(getAllVocab(), type);
     renderTypeChips('flashcardTypeChips', type, 'startAllFlashcards');
     var titleEl = document.getElementById('allFlashcardTitle');
-    if (titleEl) titleEl.textContent = type === 'all' ? 'Проверка всех слов' : TYPE_LABELS[type];
+    if (titleEl) titleEl.textContent = type === 'all' ? t('Проверка всех слов') : t(TYPE_LABELS[type]);
     allFlashcardState = {
         words: [], index: 0, revealed: false, correct: 0, total: 0, type: type,
         flipped: false, flipAnim: false, declension: null, mistakes: []
     };
     if (allWords.length === 0) {
-        container.innerHTML = emptyState('inbox', 'Слов пока нет');
+        container.innerHTML = emptyState('inbox', t('Слов пока нет'));
         return;
     }
     var shuffled = shuffle(allWords);
@@ -32,22 +32,22 @@ function showAllFlashcard() {
     var s = allFlashcardState;
     var container = document.getElementById('allFlashcardContainer');
     if (s.index >= s.total) {
-        container.innerHTML = resultBlock(s.correct, s.total, 'Проверка завершена') +
+        container.innerHTML = resultBlock(s.correct, s.total, t('Проверка завершена')) +
             drillReviewHtml(s.mistakes, "retryCardMistakes('all')") +
             '<div class="md-button-row" style="justify-content:center;">' +
-            '<button class="menu-btn primary" onclick="startAllFlashcards()"><span class="msym">restart_alt</span>Повторить</button>' +
-            '<button class="menu-btn outlined" onclick="goToMain()"><span class="msym">home</span>К урокам</button></div>';
+            '<button class="menu-btn primary" onclick="startAllFlashcards()"><span class="msym">restart_alt</span>' + t('Повторить') + '</button>' +
+            '<button class="menu-btn outlined" onclick="goToMain()"><span class="msym">home</span>' + t('К урокам') + '</button></div>';
         return;
     }
     var w = s.words[s.index];
-    var html = progressHead('Слово ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    var html = progressHead(tProgress('Слово', s.index + 1, s.total), s.index, s.total);
     html += flashcardBodyHtml(w, s, 'all');
     if (s.revealed) {
         // Показываем пример сразу, без кнопки
         if (!s.flipped) html += flashcardContextBlockHtml(w);
-        html += '<div class="flashcard-buttons"><button class="know" onclick="allFlashcardAnswer(true)"><span class="msym">check</span>Знаю</button><button class="dontknow" onclick="allFlashcardAnswer(false)"><span class="msym">close</span>Не знаю</button></div>';
+        html += '<div class="flashcard-buttons"><button class="know" onclick="allFlashcardAnswer(true)"><span class="msym">check</span>' + t('Знаю') + '</button><button class="dontknow" onclick="allFlashcardAnswer(false)"><span class="msym">close</span>' + t('Не знаю') + '</button></div>';
     } else {
-        html += '<div class="flashcard-buttons"><button class="show" onclick="allFlashcardReveal()"><span class="msym">visibility</span>Показать перевод</button></div>';
+        html += '<div class="flashcard-buttons"><button class="show" onclick="allFlashcardReveal()"><span class="msym">visibility</span>' + t('Показать перевод') + '</button></div>';
     }
     container.innerHTML = html;
     if (s.flipped) renderCardDeclension('all');
@@ -66,8 +66,8 @@ function allFlashcardAnswer(know) {
     } else {
         stats.totalWrong++;
         var w = s.words[s.index];
-        recordError('all', { word: w.greek, correct: w.translation, your: 'не знал' });
-        noteDrillMistake(s, { word: w.greek, correct: w.translation, your: 'не знал', q: w });
+        recordError('all', { word: w.greek, correct: w.translation, your: t('не знал') });
+        noteDrillMistake(s, { word: w.greek, correct: w.translation, your: t('не знал'), q: w });
     }
     saveStats();
     s.index++;
@@ -89,7 +89,7 @@ function startFlashcards(deck) {
         words = shuffle(deck.slice());
     } else {
         if (!data || !data.vocabulary || data.vocabulary.length === 0) {
-            document.getElementById('flashcardContainer').innerHTML = '<p>Нет слов.</p>';
+            document.getElementById('flashcardContainer').innerHTML = '<p>' + t('Нет слов.') + '</p>';
             return;
         }
         words = shuffle(data.vocabulary.map(item => {
@@ -111,22 +111,22 @@ function showFlashcard() {
     let s = flashcardState;
     let container = document.getElementById('flashcardContainer');
     if (s.index >= s.total) {
-        container.innerHTML = resultBlock(s.correct, s.total, 'Карточки завершены') +
+        container.innerHTML = resultBlock(s.correct, s.total, t('Карточки завершены')) +
             drillReviewHtml(s.mistakes, "retryCardMistakes('lesson')") +
             '<div class="md-button-row">' +
-            '<button class="menu-btn primary" onclick="startFlashcards()"><span class="msym">restart_alt</span>Повторить</button>' +
-            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
+            '<button class="menu-btn primary" onclick="startFlashcards()"><span class="msym">restart_alt</span>' + t('Повторить') + '</button>' +
+            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>' + t('К упражнениям') + '</button></div>';
         return;
     }
     let w = s.words[s.index];
-    let html = progressHead('Карточка ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    let html = progressHead(tProgress('Карточка', s.index + 1, s.total), s.index, s.total);
     html += flashcardBodyHtml(w, s, 'lesson');
     if (s.revealed) {
         // Показываем пример сразу, без кнопки
         if (!s.flipped) html += flashcardContextBlockHtml(w);
-        html += '<div class="flashcard-buttons"><button class="know" onclick="flashAnswer(true)"><span class="msym">check</span>Знаю</button><button class="dontknow" onclick="flashAnswer(false)"><span class="msym">close</span>Не знаю</button></div>';
+        html += '<div class="flashcard-buttons"><button class="know" onclick="flashAnswer(true)"><span class="msym">check</span>' + t('Знаю') + '</button><button class="dontknow" onclick="flashAnswer(false)"><span class="msym">close</span>' + t('Не знаю') + '</button></div>';
     } else {
-        html += '<div class="flashcard-buttons"><button class="show" onclick="flashReveal()"><span class="msym">visibility</span>Показать перевод</button></div>';
+        html += '<div class="flashcard-buttons"><button class="show" onclick="flashReveal()"><span class="msym">visibility</span>' + t('Показать перевод') + '</button></div>';
     }
     container.innerHTML = html;
     if (s.flipped) renderCardDeclension('lesson');
@@ -140,8 +140,8 @@ function flashAnswer(know) {
         stats.totalWrong++;
         let lesson = currentLesson;
         let w = s.words[s.index];
-        recordError(lesson, { word: w.greek, correct: w.translation, your: 'не знал' });
-        noteDrillMistake(s, { word: w.greek, correct: w.translation, your: 'не знал', q: w });
+        recordError(lesson, { word: w.greek, correct: w.translation, your: t('не знал') });
+        noteDrillMistake(s, { word: w.greek, correct: w.translation, your: t('не знал'), q: w });
     }
     saveStats();
     s.index++;
@@ -316,7 +316,7 @@ function flashcardBodyHtml(word, s, deck) {
         }
     }
     if (hasDrill) {
-        let hint = flipped ? 'Вернуться к слову' : 'Тренировать формы слова';
+        let hint = flipped ? t('Вернуться к слову') : t('Тренировать формы слова');
         html += '<button type="button" class="flashcard-flip-btn" aria-label="' + hint + '" title="' + hint + '" ' +
             'onclick="flipFlashcard(\'' + deck + '\')"><span class="msym">flip</span></button>';
     }
@@ -350,14 +350,14 @@ function renderCardDeclension(deck) {
 
     if (d.index >= d.questions.length) {
         box.innerHTML = html +
-            '<div class="card-declension__done">Верно ' + d.correct + ' из ' + d.questions.length + '</div>' +
+            '<div class="card-declension__done">' + tProgress('Верно', d.correct, d.questions.length) + '</div>' +
             '<div class="md-button-row"><button class="menu-btn text" onclick="restartCardDeclension(\'' + deck + '\')">' +
-            '<span class="msym">restart_alt</span>Ещё раз</button></div>';
+            '<span class="msym">restart_alt</span>' + t('Ещё раз') + '</button></div>';
         return;
     }
 
     let q = d.questions[d.index];
-    html += '<div class="card-declension__progress">Форма ' + (d.index + 1) + ' из ' + d.questions.length + '</div>';
+    html += '<div class="card-declension__progress">' + tProgress('Форма', d.index + 1, d.questions.length) + '</div>';
     html += '<div class="card-declension__prompt">' + q.label + '</div>';
     html += '<div class="options options--script">';
     for (let o of shuffle([q.correct].concat(q.distractors))) {
@@ -415,7 +415,7 @@ function startVowelFlashcards(deck) {
     if (!container) return;
     let vowels = Array.isArray(deck) ? deck.slice() : (courseAlphabet().vowels || []).slice();
     if (vowels.length === 0) {
-        container.innerHTML = emptyState('label', 'Огласовок пока нет');
+        container.innerHTML = emptyState('label', t('Огласовок пока нет'));
         return;
     }
     vowelFlashcardState = {
@@ -429,15 +429,15 @@ function showVowelFlashcard() {
     let container = document.getElementById('flashcardContainer');
     if (!container) return;
     if (s.index >= s.total) {
-        container.innerHTML = resultBlock(s.correct, s.total, 'Карточки завершены') +
+        container.innerHTML = resultBlock(s.correct, s.total, t('Карточки завершены')) +
             drillReviewHtml(s.mistakes, "retryCardMistakes('vowel')") +
             '<div class="md-button-row">' +
-            '<button class="menu-btn primary" onclick="startVowelFlashcards()"><span class="msym">restart_alt</span>Повторить</button>' +
-            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
+            '<button class="menu-btn primary" onclick="startVowelFlashcards()"><span class="msym">restart_alt</span>' + t('Повторить') + '</button>' +
+            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>' + t('К упражнениям') + '</button></div>';
         return;
     }
     let v = s.words[s.index];
-    let html = progressHead('Карточка ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    let html = progressHead(tProgress('Карточка', s.index + 1, s.total), s.index, s.total);
     html += '<div class="flashcard-flip"><div class="md-flashcard">';
     html += '<div class="flashcard-word">' + v.sign + '</div>';
     if (s.revealed) {
@@ -446,10 +446,10 @@ function showVowelFlashcard() {
     }
     html += '</div></div>';
     if (s.revealed) {
-        html += '<div class="flashcard-buttons"><button class="know" onclick="vowelFlashcardAnswer(true)"><span class="msym">check</span>Знаю</button>' +
-            '<button class="dontknow" onclick="vowelFlashcardAnswer(false)"><span class="msym">close</span>Не знаю</button></div>';
+        html += '<div class="flashcard-buttons"><button class="know" onclick="vowelFlashcardAnswer(true)"><span class="msym">check</span>' + t('Знаю') + '</button>' +
+            '<button class="dontknow" onclick="vowelFlashcardAnswer(false)"><span class="msym">close</span>' + t('Не знаю') + '</button></div>';
     } else {
-        html += '<div class="flashcard-buttons"><button class="show" onclick="vowelFlashcardReveal()"><span class="msym">visibility</span>Показать ответ</button></div>';
+        html += '<div class="flashcard-buttons"><button class="show" onclick="vowelFlashcardReveal()"><span class="msym">visibility</span>' + t('Показать ответ') + '</button></div>';
     }
     container.innerHTML = html;
 }
@@ -467,8 +467,8 @@ function vowelFlashcardAnswer(know) {
         stats.totalCorrect++;
     } else {
         stats.totalWrong++;
-        recordError(currentLesson, { word: v.sign, correct: v.name, your: 'не знал' });
-        noteDrillMistake(s, { word: v.sign, correct: v.name, your: 'не знал', q: v });
+        recordError(currentLesson, { word: v.sign, correct: v.name, your: t('не знал') });
+        noteDrillMistake(s, { word: v.sign, correct: v.name, your: t('не знал'), q: v });
     }
     saveStats();
     s.index++;

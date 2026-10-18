@@ -306,3 +306,85 @@ test('запись об английском тексте видна в наст
         app.close();
     });
 });
+
+// ------------------------------------------------------------ упражнения
+
+// Оболочка упражнений: вопросы видов, постоянные наборы вариантов, список
+// упражнений урока. Сами данные (слова, формы, ключевые слова перевода)
+// переводятся отдельно, поэтому образец вопроса здесь пустой: проверяется
+// только текст, который написан в коде, а не пришёл из урока.
+test('вопросы видов упражнений переведены на английский', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const types = app.get('EXERCISE_TYPES');
+    const sample = {
+        case: 'gen_sg', word: '', translation: '', letter: '', upper: '', phrase: '',
+        adjective: '', article: '', noun: '', form: '', sign: '', diphthong: '',
+        name: '', sound: '', final: ''
+    };
+    Object.keys(types).forEach(key => {
+        const type = types[key];
+        if (typeof type.prompt !== 'function') return;
+        const text = type.prompt(sample);
+        assert.ok(!CYR.test(text), 'русский вопрос вида ' + key + ': ' + text);
+    });
+    app.close();
+});
+
+// Постоянные наборы вариантов записаны в таблице видов русскими строками, а
+// переводит их exerciseOptions(). Значит каждый обязан быть в словаре, иначе
+// вопрос останется с русскими кнопками посреди английского экрана.
+test('постоянные варианты видов есть в английском словаре', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const types = app.get('EXERCISE_TYPES');
+    const ui = app.get('UI_EN');
+    Object.keys(types).forEach(key => {
+        const options = types[key].options;
+        if (!Array.isArray(options)) return;
+        const translated = app.window.exerciseOptions(types[key], {});
+        translated.forEach(o => {
+            assert.ok(!CYR.test(o), 'вариант вида ' + key + ' остался русским: ' + o);
+        });
+        options.forEach(o => {
+            if (!CYR.test(o)) return;
+            assert.ok(Object.prototype.hasOwnProperty.call(ui, o),
+                'вариант вида ' + key + ' не переведён: ' + o);
+        });
+    });
+    app.close();
+});
+
+// Правильный ответ сверяется с текстом нажатой кнопки, поэтому переводиться
+// они обязаны одним словарём: русская подпись из данных — тот же ключ, что и
+// вариант. Здесь это проверено на виде с постоянным набором вариантов.
+test('правильный ответ переводится тем же словарём, что и варианты', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const type = app.get('EXERCISE_TYPES').heb_shva;
+    const q = { correct: '«Немое» шва' };
+    assert.strictEqual(app.window.exerciseCorrect(type, q), 'Silent shewa');
+    assert.ok(app.window.exerciseOptions(type, q).includes('Silent shewa'),
+        'английского правильного варианта нет среди кнопок');
+    app.close();
+});
+
+test('список упражнений урока переведён, направление — на английский', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    [['greek', 3], ['hebrew', 4]].forEach(([course, lesson]) => {
+        app.window.applyCourse(course);
+        const data = app.window.getLessonData(lesson);
+        app.window.renderLessonDrills(data);
+        const box = app.document.getElementById('drillGroups');
+        assert.ok(box.textContent.trim(), 'список упражнений пуст: ' + course + ' ' + lesson);
+        assert.ok(!CYR.test(box.textContent),
+            'русская подпись в списке упражнений ' + course + ': ' + around(box.textContent));
+        app.window.renderLessonTestEntry(data, false);
+        const entry = app.document.getElementById('lessonTestEntry');
+        assert.ok(!CYR.test(entry.textContent),
+            'русская подпись у теста ' + course + ': ' + around(entry.textContent));
+    });
+    app.window.applyCourse('greek');
+    const forward = app.window.findLessonDrill('exercise', 'translate_greek_to_russian');
+    assert.strictEqual(app.window.drillLabel(forward), 'Phrases: Greek → English');
+    const backward = app.window.findLessonDrill('exercise', 'translate_russian_to_greek');
+    assert.strictEqual(app.window.drillLabel(backward), 'Phrases: English → Greek');
+    app.close();
+});

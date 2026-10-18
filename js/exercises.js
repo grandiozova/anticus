@@ -4,7 +4,7 @@
 function startExercise(type) {
     let questions = getExercises(currentLesson, type);
     if (!questions || questions.length === 0) {
-        document.getElementById('exerciseQuestion').innerHTML = '<p>Нет вопросов.</p>';
+        document.getElementById('exerciseQuestion').innerHTML = '<p>' + t('Нет вопросов.') + '</p>';
         return;
     }
     // Письмо начинается с выбора начертания: он один на всё упражнение, поэтому
@@ -115,7 +115,7 @@ const EXERCISE_TYPES = {
     // кнопки, и две одинаковые кнопки дадут два верных ответа (в греческом
     // [эв] — это и ευ, и ηυ; в еврейском «х» — и хе, и хет).
     letter_name: {
-        prompt: () => 'Как называется эта буква?',
+        prompt: () => t('Как называется эта буква?'),
         subject: q => q.letter,
         correct: q => q.name,
         options: q => [q.name].concat(
@@ -143,7 +143,7 @@ const EXERCISE_TYPES = {
         custom: true
     },
     letter_from_name: {
-        prompt: () => 'Какая буква так называется?',
+        prompt: () => t('Какая буква так называется?'),
         subject: q => q.name,
         correct: q => q.letter,
         options: q => [q.letter].concat(
@@ -151,7 +151,7 @@ const EXERCISE_TYPES = {
         script: true
     },
     letter_sound: {
-        prompt: () => 'Как произносится эта буква?',
+        prompt: () => t('Как произносится эта буква?'),
         subject: q => q.letter,
         correct: q => q.sound,
         options: q => [q.sound].concat(
@@ -161,7 +161,7 @@ const EXERCISE_TYPES = {
     // стоит следом за буквой. Последняя буква алфавита в вопросы не входит —
     // ответа у неё нет, и в данных стоит .slice(0, -1).
     letter_order: {
-        prompt: () => 'Какая буква идёт следом?',
+        prompt: () => t('Какая буква идёт следом?'),
         subject: q => q.letter,
         correct: q => alphabetSuccessor(q.letter),
         options: q => {
@@ -174,7 +174,7 @@ const EXERCISE_TYPES = {
     // Регистр есть только в греческом: в иврите прописных нет, и поля upper
     // в данных курса тоже нет — вида в главе просто не окажется.
     letter_case_lower: {
-        prompt: () => 'Какая строчная буква соответствует прописной?',
+        prompt: () => t('Какая строчная буква соответствует прописной?'),
         subject: q => q.upper,
         correct: q => q.letter,
         options: q => [q.letter].concat(
@@ -182,7 +182,7 @@ const EXERCISE_TYPES = {
         script: true
     },
     letter_case_upper: {
-        prompt: () => 'Какая прописная буква соответствует строчной?',
+        prompt: () => t('Какая прописная буква соответствует строчной?'),
         subject: q => q.letter,
         correct: q => q.upper,
         options: q => [q.upper].concat(
@@ -190,7 +190,7 @@ const EXERCISE_TYPES = {
         script: true
     },
     diphthong_sound: {
-        prompt: () => 'Как произносится этот дифтонг?',
+        prompt: () => t('Как произносится этот дифтонг?'),
         subject: q => q.diphthong,
         correct: q => q.sound,
         options: q => [q.sound].concat(
@@ -201,12 +201,12 @@ const EXERCISE_TYPES = {
     // вопросе; правильный ответ приходит из данных (q.correct), и тест следит,
     // чтобы он совпадал с одним из этих трёх-двух.
     breathing_type: {
-        prompt: () => 'Какое придыхание при этой гласной?',
+        prompt: () => t('Какое придыхание при этой гласной?'),
         subject: q => q.sign,
         options: ['Густое (с [х])', 'Тонкое (не произносится)']
     },
     accent_type: {
-        prompt: () => 'Какое ударение на этой гласной?',
+        prompt: () => t('Какое ударение на этой гласной?'),
         subject: q => q.sign,
         options: ['Острое', 'Тупое', 'Облеченное']
     },
@@ -215,7 +215,7 @@ const EXERCISE_TYPES = {
     // свои обычные формы, поэтому в вариантах все пять, а не выборка: подсказкой
     // служит только начертание.
     heb_letter_final: {
-        prompt: () => 'Выберите конечную форму буквы',
+        prompt: () => t('Выберите конечную форму буквы'),
         subject: q => q.letter,
         correct: q => q.final,
         options: q => [q.final].concat(
@@ -224,30 +224,30 @@ const EXERCISE_TYPES = {
     },
     // --- греческий именной строй ---
     declension_fill: {
-        prompt: q => 'Вставьте форму для <b>' + getCaseName(q.case) + '</b> для слова ' +
+        prompt: q => t('Вставьте форму для <b>') + getCaseName(q.case) + t('</b> для слова ') +
             sc(q.word ? q.word + ' (' + q.translation + ')' : ''),
         script: true
     },
     case_number: {
-        prompt: q => 'Определите падеж и число для формы: ' + sc(q.form)
+        prompt: q => t('Определите падеж и число для формы: ') + sc(q.form)
     },
     agreement: {
-        prompt: q => 'Вставьте прилагательное ' + sc(q.adjective) + ' в правильной форме:<br>' +
+        prompt: q => t('Вставьте прилагательное ') + sc(q.adjective) + t(' в правильной форме:<br>') +
             sc(q.article + ' ____ ' + q.noun),
         script: true
     },
     attribute_vs_predicate: {
-        prompt: q => 'Определите, атрибутив или предикатив:<br>' + sc(q.phrase)
+        prompt: q => t('Определите, атрибутив или предикатив:<br>') + sc(q.phrase)
     },
     substantivation: {
-        prompt: q => 'Что означает:<br>' + sc(q.phrase)
+        prompt: q => t('Что означает:<br>') + sc(q.phrase)
     },
     // Артикль есть и там, и там: в греческом выбирают одну из форм ὁ/ἡ/τό, в
     // еврейском — огласовку ה перед первым согласным слова. Вопрос один и тот
     // же, поэтому вид общий и ключ без префикса. Пропуск стоит перед словом: в
     // тексте справа налево он окажется справа, где приставке и место.
     article_fill: {
-        prompt: q => 'Вставьте правильную форму артикля:<br>' + sc('____ ' + q.noun),
+        prompt: q => t('Вставьте правильную форму артикля:<br>') + sc('____ ' + q.noun),
         correct: q => q.correct_article,
         script: true
     },
@@ -257,38 +257,38 @@ const EXERCISE_TYPES = {
     // согласного. Поэтому в данных он лежит вместе с носителем, как в пособии
     // (בַּ), а не голым.
     heb_vowel_name: {
-        prompt: () => 'Как называется этот знак?',
+        prompt: () => t('Как называется этот знак?'),
         subject: q => q.sign
     },
     // Тот же знак, другой вопрос: не как знак называется, а какой звук он
     // обозначает. Вариантов ровно пять — по числу гласных, набор постоянный,
     // а ответ берётся у самого знака: в пуле курса он и лежит полем sound.
     heb_vowel_sound: {
-        prompt: () => 'Какой звук обозначает этот знак?',
+        prompt: () => t('Какой звук обозначает этот знак?'),
         subject: q => q.sign,
         correct: q => q.sound,
         options: ['[а]', '[э]', '[и]', '[о]', '[у]']
     },
     heb_vowel_fill: {
-        prompt: q => 'Какого знака огласовки не хватает?' +
+        prompt: q => t('Какого знака огласовки не хватает?') +
             (q.translation ? ' («' + q.translation + '»)' : ''),
         subject: q => q.word,
         script: true
     },
     heb_shva: {
-        prompt: q => 'Как читается шва' + (q.letter ? ' под буквой ' + sc(q.letter) : '') + '?',
+        prompt: q => t('Как читается шва') + (q.letter ? t(' под буквой ') + sc(q.letter) : '') + '?',
         subject: q => q.word,
         options: ['«Немое» шва', '«Произносимое» шва']
     },
     heb_dagesh: {
-        prompt: q => 'Какой дагеш стоит в букве ' + sc(q.letter) + '?',
+        prompt: q => t('Какой дагеш стоит в букве ') + sc(q.letter) + '?',
         subject: q => q.word,
         options: ['«Слабый» дагеш', '«Сильный» дагеш']
     },
     // Камец и камец хатуф выглядят одинаково, различает их только слог, —
     // поэтому в вопросе слово целиком, а не одна буква.
     heb_qamets: {
-        prompt: q => 'Камец или камец хатуф' + (q.letter ? ' под буквой ' + sc(q.letter) : '') + '?',
+        prompt: q => t('Камец или камец хатуф') + (q.letter ? t(' под буквой ') + sc(q.letter) : '') + '?',
         subject: q => q.word,
         options: ['Камец — долгий ā', 'Камец хатуф — краткий o']
     },
@@ -296,19 +296,19 @@ const EXERCISE_TYPES = {
     // иврите нет, а подпись того вида их называет. Отдельный вид, а не общий:
     // «Падеж и число» над еврейской главой было бы просто неверно.
     heb_gender_number: {
-        prompt: () => 'Определите род и число',
+        prompt: () => t('Определите род и число'),
         subject: q => q.word,
         options: ['Муж. р., ед. ч.', 'Муж. р., мн. ч.',
                   'Жен. р., ед. ч.', 'Жен. р., мн. ч.', 'Двойственное число']
     },
     heb_begadkefat: {
-        prompt: q => 'Как произносится буква ' + sc(q.letter) + '?',
+        prompt: q => t('Как произносится буква ') + sc(q.letter) + '?',
         subject: q => q.word
     },
     // Границу слога пособие метит вертикальной чертой (דְּ|בָ|רִים) — её же
     // ждём и в ответе, чтобы данные писались прямо из книги.
     heb_syllables: {
-        prompt: () => 'Разделите слово на слоги',
+        prompt: () => t('Разделите слово на слоги'),
         subject: q => q.word,
         script: true
     },
@@ -317,7 +317,7 @@ const EXERCISE_TYPES = {
     // Гортанные и ר не удваиваются, и вместо удвоения происходит одно из трёх.
     // Четвёртый вариант — обычное удвоение: без него выбирать было бы не из чего.
     heb_gutturals: {
-        prompt: () => 'Что произошло с артиклем?',
+        prompt: () => t('Что произошло с артиклем?'),
         subject: q => q.phrase,
         options: ['Обычное удвоение', 'Заместительное удлинение',
                   'Скрытое удвоение гортанного', 'Неправильный сегол']
@@ -325,12 +325,12 @@ const EXERCISE_TYPES = {
     // Перевод в вопросе не показываем: «этот голос этого человека» — это и есть
     // ответ. То же и у суффиксов: «его кони» выдало бы множественное число.
     heb_construct: {
-        prompt: () => 'Сочетание определённое или неопределённое?',
+        prompt: () => t('Сочетание определённое или неопределённое?'),
         subject: q => q.phrase,
         options: ['Определённое', 'Неопределённое']
     },
     heb_suffix_type: {
-        prompt: () => 'Суффикс какого типа?',
+        prompt: () => t('Суффикс какого типа?'),
         subject: q => q.word,
         options: ['Тип 1 — существительное ед. ч.', 'Тип 2 — существительное мн. ч.']
     },
@@ -343,14 +343,21 @@ const EXERCISE_TYPES = {
     translate_russian_to_greek: { custom: true }
 };
 
+// Подписи вариантов — русские строки: и постоянные наборы видов, и то, что
+// приходит из данных («2-е л. ед.ч.»). В английском режиме переводится и
+// вариант, и правильный ответ одним и тем же словарём: ответ сверяется с
+// текстом нажатой кнопки, поэтому разойтись они не могут. Строки изучаемого
+// языка в словаре отсутствуют, и t() возвращает их как есть.
 function exerciseCorrect(type, q) {
-    return type.correct ? type.correct(q) : q.correct;
+    return t(type.correct ? type.correct(q) : q.correct);
 }
 
 function exerciseOptions(type, q) {
-    if (Array.isArray(type.options)) return type.options;
-    if (typeof type.options === 'function') return type.options(q);
-    return [exerciseCorrect(type, q)].concat(q.distractors || []);
+    let options;
+    if (Array.isArray(type.options)) options = type.options;
+    else if (typeof type.options === 'function') options = type.options(q);
+    else options = [type.correct ? type.correct(q) : q.correct].concat(q.distractors || []);
+    return options.map(o => t(o));
 }
 
 // Неверные варианты из пула значений: буквы, звуки, транслитерация. Берём не
@@ -405,7 +412,7 @@ function alphabetSuccessor(letter) {
 // одно и то же — выбранный ответ и правильный.
 function choiceQuestionHtml(key, q, handler) {
     let type = EXERCISE_TYPES[key];
-    if (!type || !type.prompt) return '<p>Тип упражнения не поддерживается.</p>';
+    if (!type || !type.prompt) return '<p>' + t('Тип упражнения не поддерживается.') + '</p>';
     let corr = exerciseCorrect(type, q);
     let html = '<div class="question">' + type.prompt(q) + '</div>';
     // Строки с разбираемым словом может не быть: у бегадкефат главы 1 слово не
@@ -440,7 +447,7 @@ function questionSubject(q, key) {
         let sub = type.subject(q);
         if (sub) return sub;
     }
-    return q.word || q.phrase || q.form || q.sign || q.greek || q.letter || 'вопрос';
+    return q.word || q.phrase || q.form || q.sign || q.greek || q.letter || t('вопрос');
 }
 
 // Формы буквы для показа — в порядке чтения слева направо: сперва прописная,
@@ -506,12 +513,12 @@ function showLetterWriteChoice() {
     const box = document.getElementById('exerciseQuestion');
     if (!box) return;
     const stageTitle = document.getElementById('drillStageTitle');
-    if (stageTitle) stageTitle.textContent = 'Выберите стиль написания';
+    if (stageTitle) stageTitle.textContent = t('Выберите стиль написания');
     const rows = LETTER_WRITE_STYLES.map(o =>
         '<button class="lesson-item lesson-item--single" onclick="startLetterWrite(\'' + o.style + '\')">' +
             '<span class="lesson-item__text"><span class="lesson-item__headline">' +
                 '<span class="script' + (o.style === 'cursive' ? ' script--cursive' : '') + '">' +
-                    LETTER_WRITE_SAMPLE + '</span> ' + o.label +
+                    LETTER_WRITE_SAMPLE + '</span> ' + t(o.label) +
             '</span></span>' +
             '<span class="lesson-item__trailing msym">chevron_right</span>' +
         '</button>');
@@ -616,11 +623,11 @@ function completeLetterWritingPractice() {
     // — тогда ответ засчитан, а написать хочется. Кнопка стоит там же, где на
     // холсте стоит «Очистить»: слева, на своём месте между двумя шагами
     // (exercise-actions разводит обе кнопки по краям, styles/screens.css).
-    box.innerHTML = progressHead('Упражнение ' + (exerciseState.index + 1) + ' из ' + exerciseState.total, exerciseState.index, exerciseState.total) +
+    box.innerHTML = progressHead(tProgress('Упражнение', exerciseState.index + 1, exerciseState.total), exerciseState.index, exerciseState.total) +
         '<div class="flashcard-flip"><div class="' + writingCardClass + '">' +
         reveal +
         '</div></div>' +
-        '<div class="md-button-row exercise-actions"><button type="button" class="menu-btn outlined" onclick="backToLetterWriteCanvas()"><span class="msym">edit</span>Назад</button><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>';
+        '<div class="md-button-row exercise-actions"><button type="button" class="menu-btn outlined" onclick="backToLetterWriteCanvas()"><span class="msym">edit</span>' + t('Назад') + '</button><button type="button" class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>' + t('Далее') + '</button></div>';
 
     alignLetterReveal();
 }
@@ -694,7 +701,7 @@ function backToLetterWriteCanvas() {
     if (q) noteDrillMistake(exerciseState, {
         word: q.ru || q.name,
         correct: letterWriteRevealForms(q).join(' '),
-        your: 'вернулись переписать',
+        your: t('вернулись переписать'),
         q: q
     });
     showExercise();
@@ -937,25 +944,25 @@ function showExercise() {
     let s = exerciseState;
     if (s.index >= s.total) {
         document.getElementById('exerciseQuestion').innerHTML =
-            resultBlock(s.correct, s.total, 'Упражнение завершено') +
+            resultBlock(s.correct, s.total, t('Упражнение завершено')) +
             drillReviewHtml(s.mistakes, 'retryExerciseMistakes()') +
             '<div class="md-button-row">' +
-            '<button class="menu-btn primary" onclick="startExercise(\'' + s.type + '\')"><span class="msym">restart_alt</span>Ещё раз</button>' +
-            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
+            '<button class="menu-btn primary" onclick="startExercise(\'' + s.type + '\')"><span class="msym">restart_alt</span>' + t('Ещё раз') + '</button>' +
+            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>' + t('К упражнениям') + '</button></div>';
         return;
     }
     let q = s.questions[s.index];
     let container = document.getElementById('exerciseQuestion');
-    let html = progressHead('Упражнение ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    let html = progressHead(tProgress('Упражнение', s.index + 1, s.total), s.index, s.total);
 
     if (s.type === 'translate_greek_to_russian') {
         let idx = s.index;
-        html += '<div class="question">Переведите на русский</div><div class="md-prompt-strong">' + q.greek + '</div><div class="input-group"><input type="text" id="transInput" placeholder="Перевод" autocomplete="off" onkeydown="if(event.key===\'Enter\'){checkExerciseTranslation(' + idx + ');}"><button type="button" onclick="checkExerciseTranslation(' + idx + ')"><span class="msym">check</span>Проверить</button></div>';
+        html += '<div class="question">' + t('Переведите на русский') + '</div><div class="md-prompt-strong">' + q.greek + '</div><div class="input-group"><input type="text" id="transInput" placeholder="' + t('Перевод') + '" autocomplete="off" onkeydown="if(event.key===\'Enter\'){checkExerciseTranslation(' + idx + ');}"><button type="button" onclick="checkExerciseTranslation(' + idx + ')"><span class="msym">check</span>' + t('Проверить') + '</button></div>';
     } else if (s.type === 'translate_russian_to_greek') {
         let words = shuffle(q.all_words);
-        html += '<div class="question">Переведите на ' + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div><div class="build-area build-area--script" id="buildArea"></div><div class="word-bank word-bank--script" id="wordBank">';
+        html += '<div class="question">' + t('Переведите на ') + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div><div class="build-area build-area--script" id="buildArea"></div><div class="word-bank word-bank--script" id="wordBank">';
         for (let w of words) html += '<span class="chip" onclick="pickWord(\'' + escArg(w) + '\')">' + w + '</span>';
-        html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="clearChosen()"><span class="msym">undo</span>Очистить</button><button class="menu-btn primary" onclick="checkTranslationRu()"><span class="msym">check</span>Готово</button></div>';
+        html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="clearChosen()"><span class="msym">undo</span>' + t('Очистить') + '</button><button class="menu-btn primary" onclick="checkTranslationRu()"><span class="msym">check</span>' + t('Готово') + '</button></div>';
         window._trans_ru = q;
         window._chosen = [];
     } else if (exerciseWritingStyle(s.type)) {
@@ -966,11 +973,11 @@ function showExercise() {
         html += '<div class="' + promptClass + '">' + promptText + '</div>' +
             '<div class="writing-practice">' +
                 '<div class="writing-canvas-card ' + (isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew') + '">' +
-                    '<canvas id="letterWriteCanvas" class="writing-canvas" aria-label="Поле для письма буквы"></canvas>' +
+                    '<canvas id="letterWriteCanvas" class="writing-canvas" aria-label="' + t('Поле для письма буквы') + '"></canvas>' +
                 '</div>' +
                 '<div class="md-button-row">' +
-                    '<button type="button" class="menu-btn outlined" onclick="clearWritingCanvas(\'letterWriteCanvas\')"><span class="msym">delete</span>Очистить</button>' +
-                    '<button type="button" class="menu-btn primary" onclick="completeLetterWritingPractice()"><span class="msym">check</span>Готово</button>' +
+                    '<button type="button" class="menu-btn outlined" onclick="clearWritingCanvas(\'letterWriteCanvas\')"><span class="msym">delete</span>' + t('Очистить') + '</button>' +
+                    '<button type="button" class="menu-btn primary" onclick="completeLetterWritingPractice()"><span class="msym">check</span>' + t('Готово') + '</button>' +
                 '</div>' +
             '</div>';
     } else {
@@ -1006,7 +1013,7 @@ const VOWEL_CARRIER = '\u05D1\u05BC';
 function startVowelWrite(deck) {
     const vowels = Array.isArray(deck) ? deck.slice() : (courseAlphabet().vowels || []).slice();
     if (vowels.length === 0) {
-        document.getElementById('exerciseQuestion').innerHTML = '<p>Нет огласовок.</p>';
+        document.getElementById('exerciseQuestion').innerHTML = '<p>' + t('Нет огласовок.') + '</p>';
         return;
     }
     vowelWriteState = {
@@ -1028,15 +1035,15 @@ function showVowelWrite() {
     const box = document.getElementById('exerciseQuestion');
     if (!box) return;
     if (s.index >= s.total) {
-        box.innerHTML = resultBlock(s.correct, s.total, 'Огласовки завершены') +
+        box.innerHTML = resultBlock(s.correct, s.total, t('Огласовки завершены')) +
             drillReviewHtml(s.mistakes, 'retryVowelWriteMistakes()') +
             '<div class="md-button-row">' +
-            '<button class="menu-btn primary" onclick="startVowelWrite()"><span class="msym">restart_alt</span>Ещё раз</button>' +
-            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
+            '<button class="menu-btn primary" onclick="startVowelWrite()"><span class="msym">restart_alt</span>' + t('Ещё раз') + '</button>' +
+            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>' + t('К упражнениям') + '</button></div>';
         return;
     }
     const v = s.words[s.index];
-    let html = progressHead('Огласовка ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    let html = progressHead(tProgress('Огласовка', s.index + 1, s.total), s.index, s.total);
     if (s.revealed) {
         // Показ — тот же знак с носителем, что на обороте карточки, и те же
         // название и звук: ученик проверяет себя и заодно доучивает знак.
@@ -1048,11 +1055,11 @@ function showVowelWrite() {
             '</div>' +
             '</div></div>' +
             '<div class="md-button-row exercise-actions">' +
-                '<button type="button" class="menu-btn outlined" onclick="backToVowelWriteCanvas()"><span class="msym">edit</span>Назад</button>' +
-                '<button type="button" class="menu-btn primary" onclick="nextVowelWrite()"><span class="msym">arrow_forward</span>Далее</button>' +
+                '<button type="button" class="menu-btn outlined" onclick="backToVowelWriteCanvas()"><span class="msym">edit</span>' + t('Назад') + '</button>' +
+                '<button type="button" class="menu-btn primary" onclick="nextVowelWrite()"><span class="msym">arrow_forward</span>' + t('Далее') + '</button>' +
             '</div>';
     } else {
-        html += '<div class="question">Нарисуйте знак огласовки</div>' +
+        html += '<div class="question">' + t('Нарисуйте знак огласовки') + '</div>' +
             '<div class="vowel-write-prompt">' +
                 '<span class="vowel-write-prompt__name">' + escHtml(v.name) + '</span>' +
                 '<span class="vowel-write-prompt__sound">' + escHtml(v.sound) + '</span>' +
@@ -1062,11 +1069,11 @@ function showVowelWrite() {
                     // Образец носителя — не текст для чтения, а подложка под
                     // штрих: от скринридера его прячем, вопрос и так назвал знак.
                     '<span class="vowel-write-form vowel-write-guide" aria-hidden="true">' + VOWEL_CARRIER + '</span>' +
-                    '<canvas id="vowelWriteCanvas" class="writing-canvas" aria-label="Поле для знака огласовки"></canvas>' +
+                    '<canvas id="vowelWriteCanvas" class="writing-canvas" aria-label="' + t('Поле для знака огласовки') + '"></canvas>' +
                 '</div>' +
                 '<div class="md-button-row">' +
-                    '<button type="button" class="menu-btn outlined" onclick="clearWritingCanvas(\'vowelWriteCanvas\')"><span class="msym">delete</span>Очистить</button>' +
-                    '<button type="button" class="menu-btn primary" onclick="completeVowelWritingPractice()"><span class="msym">check</span>Готово</button>' +
+                    '<button type="button" class="menu-btn outlined" onclick="clearWritingCanvas(\'vowelWriteCanvas\')"><span class="msym">delete</span>' + t('Очистить') + '</button>' +
+                    '<button type="button" class="menu-btn primary" onclick="completeVowelWritingPractice()"><span class="msym">check</span>' + t('Готово') + '</button>' +
                 '</div>' +
             '</div>';
     }
@@ -1102,7 +1109,7 @@ function backToVowelWriteCanvas() {
     if (v) noteDrillMistake(s, {
         word: v.name,
         correct: v.sign,
-        your: 'вернулись переписать',
+        your: t('вернулись переписать'),
         q: v
     });
     s.revealed = false;
@@ -1175,8 +1182,8 @@ function checkTranslationRu() {
         stats.totalCorrect++;
         exerciseState.correct++;
         container.innerHTML = `
-            <div class="feedback ok"><span>Верно! <strong class="script">${corr.join(' ')}</strong></span></div>
-            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
+            <div class="feedback ok"><span>${t('Верно!')} <strong class="script">${corr.join(' ')}</strong></span></div>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>${t('Далее')}</button></div>
         `;
     } else {
         stats.totalWrong++;
@@ -1184,8 +1191,8 @@ function checkTranslationRu() {
         recordError(lesson, { word: q.russian, correct: corr.join(' '), your: chosen.join(' ') });
         noteDrillMistake(exerciseState, { word: q.russian, correct: corr.join(' '), your: chosen.join(' '), q: q });
         container.innerHTML = `
-            <div class="feedback fail"><span>Неверно. Правильный порядок: <strong class="script">${corr.join(' ')}</strong></span></div>
-            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
+            <div class="feedback fail"><span>${t('Неверно. Правильный порядок: ')}<strong class="script">${corr.join(' ')}</strong></span></div>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>${t('Далее')}</button></div>
         `;
     }
     saveStats();

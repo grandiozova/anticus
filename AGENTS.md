@@ -337,6 +337,15 @@ English is an overlay on top of it. The switch is a card in the settings screen
 - **Generated strings are wrapped where they are built**, not translated in the
   DOM. Strings with a number are composed by `tLessonNumber`, `tLessonRange`,
   `tMatches`, `tOf`, `tCountLabel` — an exact-match key cannot match `Урок 5`.
+  Exercise progress lines use `tProgress(noun, value, total)` for the same reason.
+- **An exercise option and its correct answer are translated by the same call.**
+  The answer is compared with the text of the pressed button, so a translated
+  option beside a Russian `correct` would grade every answer wrong. Both go
+  through `t()` inside `exerciseOptions()`/`exerciseCorrect()`
+  (`js/exercises.js`); the data stays Russian. Strings of the studied language
+  are not in `UI_EN`, so `t()` returns them unchanged. That is why a fixed
+  option set in `EXERCISE_TYPES` may stay written in Russian: it is a dictionary
+  key, and `tests/i18n.test.js` fails if one of them is missing.
 - **Course facts live in the registry, not in the dictionary**: `nameEn`,
   `taglineEn`, `langEn`, `searchPlaceholderEn`, `prayerCardEn` in
   `data/courses.js`; the licence statements carry `nameEn`/`termsEn` in
@@ -369,10 +378,12 @@ English is an overlay on top of it. The switch is a card in the settings screen
   silently showing Russian would look like a bug.
 - **Exercises do not exist in English yet**, and that is a data fact, not a
   styling one: typed answers are checked by Russian keywords (`keywordsMatch`,
-  `js/core.js`), so an English drill would grade against the wrong language. The
-  exercise tab is hidden, `startLessonDrill()` returns early, the lesson FAB is
-  absent, the «Карточки» destination answers with a toast, and the prayer/reading
-  card is not shown at all. The dictionary keeps working and says, above the list,
+  `js/core.js`), so an English drill would grade against the wrong language.
+  The chrome is already translated (phase 1a: question prompts, fixed option
+  sets, the drill list, test and flashcard screens), but the data-derived labels
+  are not, so the exercise tab stays hidden, `startLessonDrill()` returns early,
+  the lesson FAB is absent, the «Карточки» destination answers with a toast, and
+  the prayer/reading card is not shown at all. The dictionary keeps working and says, above the list,
   that usage examples are still Russian — they are the lessons' own sentences, and
   the drills that would carry them are what has not been translated.
 - **A paradigm table is material, so its labels follow the language too.** The axis

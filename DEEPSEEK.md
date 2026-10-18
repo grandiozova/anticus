@@ -488,7 +488,13 @@ language card in settings, stored under `app_lang`.
   translator. `applyStaticI18n()` restores from that snapshot on the way back to
   Russian.
 - Generated strings are wrapped where they are built; strings with a number use
-  `tLessonNumber` / `tLessonRange` / `tMatches` / `tOf` / `tCountLabel`.
+  `tLessonNumber` / `tLessonRange` / `tMatches` / `tOf` / `tCountLabel`, and
+  exercise progress lines use `tProgress(noun, value, total)`.
+- **An exercise option and its correct answer go through `t()` together**
+  (`exerciseOptions()` / `exerciseCorrect()` in `js/exercises.js`): the answer is
+  compared with the text of the pressed button, so translating one and not the
+  other would grade every answer wrong. The data stays Russian; studied-language
+  strings are not `UI_EN` keys and come back unchanged.
 - Lesson text is a per-lesson overlay: `data/lessons.en.js` and
   `data/hebrew-lessons.en.js` hold **every lesson of both courses** (Greek 1–16,
   Hebrew 1–12), keyed by lesson number, with vocabulary keyed by headword and an
@@ -511,8 +517,10 @@ language card in settings, stored under `app_lang`.
   `displayTranslit()` keeps only the parenthesised textbook transliteration — the
   data keeps the full authored string.
 - **Exercises are unavailable in English on purpose**: answers are checked with
-  Russian keywords (`keywordsMatch`). The tab is hidden, `startLessonDrill()`
-  returns early, the lesson FAB is gone, the cards destination shows a toast.
+  Russian keywords (`keywordsMatch`). The chrome is translated already (phase 1a:
+  prompts, fixed option sets, the drill list, test and flashcard screens), but the
+  data-derived labels are not, so the tab is hidden, `startLessonDrill()` returns
+  early, the lesson FAB is gone, and the cards destination shows a toast.
   The dictionary keeps working and says above the list that usage examples are
   still Russian — they are the lessons' own sentences.
 - `setAppLang()` must reset every cross-screen cache (localized lessons,

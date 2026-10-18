@@ -95,7 +95,9 @@ const LESSON_DRILL_GROUPS = [
 // {lang} раскрывается при отрисовке. Читать drill.label напрямую нельзя —
 // в списке или в заголовке окажется «{lang}».
 function drillLabel(drill) {
-    return String(drill.label).replace('{lang}', courseLang());
+    // Сперва перевод, потом подстановка: ключ словаря содержит {lang}, и
+    // заменённое раньше времени имя курса уже не нашло бы свою подпись.
+    return t(String(drill.label)).replace('{lang}', courseLang());
 }
 
 // Контейнер на «сцене» под выбранное упражнение — по одному на вид.
@@ -155,9 +157,12 @@ function renderLessonTestEntry(data, intro) {
     card.classList.toggle('hidden', !count);
     if (!count) { box.innerHTML = ''; return; }
     let n = Math.min(10, count);
-    box.innerHTML = menuItemHtml('quiz', 'Тест',
-        n + ' ' + pluralRu(n, 'случайный вопрос', 'случайных вопроса', 'случайных вопросов') + ' по уроку',
-        'startTest()');
+    // Английское множественное число — s на конце, и склонять там нечего;
+    // русское берёт pluralRu() по тем же трём формам, что и раньше.
+    let hint = isEnglish()
+        ? n + ' ' + t(n === 1 ? 'случайный вопрос' : 'случайных вопросов') + t(' по уроку')
+        : n + ' ' + pluralRu(n, 'случайный вопрос', 'случайных вопроса', 'случайных вопросов') + ' по уроку';
+    box.innerHTML = menuItemHtml('quiz', t('Тест'), hint, 'startTest()');
 }
 
 // Список выбора: группа без единого доступного упражнения не показывается.
@@ -168,7 +173,7 @@ function renderLessonDrills(data) {
     LESSON_DRILL_GROUPS.forEach(group => {
         let available = group.drills.filter(d => lessonDrillAvailable(data, d));
         if (available.length === 0) return;
-        parts.push('<div class="drill-group"><h4 class="drill-group__label">', group.label, '</h4><div class="lesson-list">');
+        parts.push('<div class="drill-group"><h4 class="drill-group__label">', t(group.label), '</h4><div class="lesson-list">');
         available.forEach((d, i) => {
             if (i) parts.push('<hr class="md-divider">');
             parts.push(menuItemHtml(d.icon, drillLabel(d), null,
@@ -178,7 +183,7 @@ function renderLessonDrills(data) {
     });
     box.innerHTML = parts.length
         ? parts.join('')
-        : emptyState('edit_off', 'Упражнений нет', 'Для этого урока упражнения ещё не подготовлены');
+        : emptyState('edit_off', t('Упражнений нет'), t('Для этого урока упражнения ещё не подготовлены'));
 }
 
 // Экран упражнения пуст, пока упражнение не выбрано.

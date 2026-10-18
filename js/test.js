@@ -42,7 +42,7 @@ function startTest(questions) {
         picked = questions.slice();
     } else {
         let all = collectTestQuestions(data);
-        if (all.length === 0) { showToast('Для этого урока вопросов пока нет', 'info'); return; }
+        if (all.length === 0) { showToast(t('Для этого урока вопросов пока нет'), 'info'); return; }
         picked = shuffle(all).slice(0, 10);
     }
     testState = { questions: picked, index: 0, correct: 0, total: picked.length, answered: false, mistakes: [] };
@@ -68,36 +68,38 @@ function showTest() {
     let s = testState;
     if (s.index >= s.total) {
         document.getElementById('testContainer').innerHTML =
-            resultBlock(s.correct, s.total, 'Тест завершён') +
+            resultBlock(s.correct, s.total, t('Тест завершён')) +
             drillReviewHtml(s.mistakes, 'retryTestMistakes()') +
             '<div class="md-button-row">' +
-            '<button class="menu-btn primary" onclick="startTest()"><span class="msym">restart_alt</span>Повторить</button>' +
-            '<button class="menu-btn outlined" onclick="cancelTest()"><span class="msym">arrow_back</span>К уроку</button></div>';
+            '<button class="menu-btn primary" onclick="startTest()"><span class="msym">restart_alt</span>' + t('Повторить') + '</button>' +
+            '<button class="menu-btn outlined" onclick="cancelTest()"><span class="msym">arrow_back</span>' + t('К уроку') + '</button></div>';
         return;
     }
     let q = s.questions[s.index];
     let container = document.getElementById('testContainer');
-    let html = progressHead('Вопрос ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
-    let t = q._type;
+    let html = progressHead(tProgress('Вопрос', s.index + 1, s.total), s.index, s.total);
+    // Не t: этим именем названа функция перевода интерфейса, и локальная
+    // переменная вида упражнения заслонила бы её во всей функции.
+    let qtype = q._type;
 
     // Вопрос с выбором варианта рисует общий с упражнением урока код: текст
     // вопроса и набор вариантов у вида один, отличается только обработчик.
-    if (EXERCISE_TYPES[t] && EXERCISE_TYPES[t].prompt) {
-        html += choiceQuestionHtml(t, q, 'testAnswer');
-    } else if (t === 'translate_greek_to_russian') {
-        html += '<div class="question">Переведите на русский</div><div class="md-prompt-strong">' + q.greek + '</div><div class="input-group"><input type="text" id="testTransInput" placeholder="Перевод" autocomplete="off" onkeydown="if(event.key===\'Enter\'){testTranslation();}"><button onclick="testTranslation()"><span class="msym">check</span>Проверить</button></div>';
+    if (EXERCISE_TYPES[qtype] && EXERCISE_TYPES[qtype].prompt) {
+        html += choiceQuestionHtml(qtype, q, 'testAnswer');
+    } else if (qtype === 'translate_greek_to_russian') {
+        html += '<div class="question">' + t('Переведите на русский') + '</div><div class="md-prompt-strong">' + q.greek + '</div><div class="input-group"><input type="text" id="testTransInput" placeholder="' + t('Перевод') + '" autocomplete="off" onkeydown="if(event.key===\'Enter\'){testTranslation();}"><button onclick="testTranslation()"><span class="msym">check</span>' + t('Проверить') + '</button></div>';
         window._test_q = q;
-    } else if (t === 'translate_russian_to_greek') {
+    } else if (qtype === 'translate_russian_to_greek') {
         let words = shuffle(q.all_words);
-        html += '<div class="question">Переведите на ' + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div>';
+        html += '<div class="question">' + t('Переведите на ') + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div>';
         html += '<div class="build-area build-area--script" id="testBuildArea"></div>' +
             '<div class="word-bank word-bank--script" id="testWordBank">';
         for (let w of words) html += '<span class="chip" onclick="testPickWord(\'' + escArg(w) + '\')">' + w + '</span>';
-        html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="testClearChosen()"><span class="msym">undo</span>Очистить</button><button class="menu-btn primary" onclick="testTranslationRu()"><span class="msym">check</span>Готово</button></div>';
+        html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="testClearChosen()"><span class="msym">undo</span>' + t('Очистить') + '</button><button class="menu-btn primary" onclick="testTranslationRu()"><span class="msym">check</span>' + t('Готово') + '</button></div>';
         window._test_ru = q;
         window._test_chosen = [];
     } else {
-        html += '<p>Неизвестный тип вопроса.</p>';
+        html += '<p>' + t('Неизвестный тип вопроса.') + '</p>';
     }
     container.innerHTML = html;
     s.answered = false;
@@ -131,11 +133,11 @@ function testAnswer(sel, corr) {
     let scriptAnswer = !!container.querySelector('.options--script');
     let strongCls = scriptAnswer ? ' class="script"' : '';
     let feedbackClass = ok ? 'ok' : 'fail';
-    let feedbackText = ok ? 'Верно!' : 'Неверно. Правильный ответ: <strong' + strongCls + '>' + corr + '</strong>';
+    let feedbackText = ok ? t('Верно!') : t('Неверно. Правильный ответ: ') + '<strong' + strongCls + '>' + corr + '</strong>';
     container.innerHTML = `
         <div class="feedback ${feedbackClass}"><span>${feedbackText}</span></div>
         <div class="md-button-row exercise-next-actions">
-            <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>Далее</button>
+            <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>${t('Далее')}</button>
         </div>
     `;
 }
@@ -150,7 +152,7 @@ function testTranslation() {
     let ok = keywordsMatch(ans, q.keywords);
     let container = document.getElementById('testContainer');
     let feedbackClass = ok ? 'ok' : 'fail';
-    let feedbackText = ok ? 'Верно!' : 'Неверно. Ключевые слова: ' + q.keywords.join(', ');
+    let feedbackText = ok ? t('Верно!') : t('Неверно. Ключевые слова: ') + q.keywords.join(', ');
     if (ok) { testState.correct++; stats.totalCorrect++; } else {
         stats.totalWrong++;
         let lesson = currentLesson;
@@ -162,7 +164,7 @@ function testTranslation() {
     container.innerHTML = `
         <div class="feedback ${feedbackClass}"><span>${feedbackText}</span></div>
         <div class="md-button-row exercise-next-actions">
-            <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>Далее</button>
+            <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>${t('Далее')}</button>
         </div>
     `;
 }
@@ -195,7 +197,7 @@ function testTranslationRu() {
     let ok = chosen.length === corr.length && chosen.every((w,i) => w === corr[i]);
     let container = document.getElementById('testContainer');
     let feedbackClass = ok ? 'ok' : 'fail';
-    let feedbackText = ok ? 'Верно!' : 'Неверно. Правильно: <strong class="script">' + corr.join(' ') + '</strong>';
+    let feedbackText = ok ? t('Верно!') : t('Неверно. Правильно: ') + '<strong class="script">' + corr.join(' ') + '</strong>';
     if (ok) { testState.correct++; stats.totalCorrect++; } else {
         stats.totalWrong++;
         let lesson = currentLesson;
@@ -207,7 +209,7 @@ function testTranslationRu() {
     container.innerHTML = `
         <div class="feedback ${feedbackClass}"><span>${feedbackText}</span></div>
         <div class="md-button-row exercise-next-actions">
-            <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>Далее</button>
+            <button class="menu-btn primary" onclick="nextTestQuestion()"><span class="msym">arrow_forward</span>${t('Далее')}</button>
         </div>
     `;
 }

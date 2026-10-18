@@ -18,8 +18,8 @@ function checkTranslationBuild() {
         s.correct++;
         stats.totalCorrect++;
         container.innerHTML = `
-            <div class="feedback ok"><span>Верно! <strong${answerCls}>${correct.join(' ')}</strong></span></div>
-            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextTranslation()"><span class="msym">arrow_forward</span>Далее</button></div>
+            <div class="feedback ok"><span>${t('Верно!')} <strong${answerCls}>${correct.join(' ')}</strong></span></div>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextTranslation()"><span class="msym">arrow_forward</span>${t('Далее')}</button></div>
         `;
     } else {
         stats.totalWrong++;
@@ -28,8 +28,8 @@ function checkTranslationBuild() {
         stats.errors[lesson].push({ word: q.source, correct: correct.join(' '), your: chosen.join(' ') });
         noteDrillMistake(s, { word: q.source, correct: correct.join(' '), your: chosen.join(' '), q: q });
         container.innerHTML = `
-            <div class="feedback fail"><span>Неверно. Правильный порядок: <strong${answerCls}>${correct.join(' ')}</strong></span></div>
-            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextTranslation()"><span class="msym">arrow_forward</span>Далее</button></div>
+            <div class="feedback fail"><span>${t('Неверно. Правильный порядок: ')}<strong${answerCls}>${correct.join(' ')}</strong></span></div>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextTranslation()"><span class="msym">arrow_forward</span>${t('Далее')}</button></div>
         `;
     }
     saveStats();
@@ -91,7 +91,7 @@ function translationExtraWords(lessonData, type, correctWords) {
 function startTranslation(type, questions) {
     let data = getLessonData(currentLesson);
     if (!data || !data.translation || !data.translation[type]) {
-        document.getElementById('translationQuestion').innerHTML = '<p>Нет упражнений.</p>';
+        document.getElementById('translationQuestion').innerHTML = '<p>' + t('Нет упражнений.') + '</p>';
         return;
     }
     let qs = Array.isArray(questions) ? questions.slice() : data.translation[type].slice();
@@ -120,16 +120,16 @@ function showTranslation() {
     let s = translationState;
     if (s.index >= s.total) {
         document.getElementById('translationQuestion').innerHTML =
-            resultBlock(s.correct, s.total, 'Упражнение завершено') +
+            resultBlock(s.correct, s.total, t('Упражнение завершено')) +
             drillReviewHtml(s.mistakes, 'retryTranslationMistakes()') +
             '<div class="md-button-row">' +
-            '<button class="menu-btn primary" onclick="startTranslation(\'' + s.type + '\')"><span class="msym">restart_alt</span>Ещё раз</button>' +
-            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>К упражнениям</button></div>';
+            '<button class="menu-btn primary" onclick="startTranslation(\'' + s.type + '\')"><span class="msym">restart_alt</span>' + t('Ещё раз') + '</button>' +
+            '<button class="menu-btn outlined" onclick="closeLessonDrill()"><span class="msym">arrow_back</span>' + t('К упражнениям') + '</button></div>';
         return;
     }
     let q = s.questions[s.index];
     let container = document.getElementById('translationQuestion');
-    let html = progressHead('Перевод ' + (s.index + 1) + ' из ' + s.total, s.index, s.total);
+    let html = progressHead(tProgress('Перевод', s.index + 1, s.total), s.index, s.total);
     // Направление перевода решает, на каком языке условие, а на каком фишки:
     // ru_to_el — русское условие и банк слов изучаемого языка, el_to_ru —
     // наоборот. Помечаем ту половину, которая на изучаемом языке.
@@ -152,8 +152,8 @@ function showTranslation() {
         html += '<span class="chip" data-chip-idx="' + idx + '" onclick="transPickWord(\'' + escArg(w) + '\', ' + idx + ')">' + w + '</span>';
     });
     html += '</div>';
-    html += '<div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="transClear()"><span class="msym">undo</span>Очистить</button>';
-    html += '<button class="menu-btn primary" onclick="checkTranslationBuild()"><span class="msym">check</span>Проверить</button></div>';
+    html += '<div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="transClear()"><span class="msym">undo</span>' + t('Очистить') + '</button>';
+    html += '<button class="menu-btn primary" onclick="checkTranslationBuild()"><span class="msym">check</span>' + t('Проверить') + '</button></div>';
  
     container.innerHTML = html;
     translationState.chosen = [];
@@ -174,16 +174,16 @@ function transPickWord(w, idx) {
     s.chosenIdx.push(idx);
  
     let area = document.getElementById('transBuildArea');
-    let t = document.createElement('span');
-    t.className = 'token';
-    t.textContent = w;
-    t.setAttribute('data-chip-idx', idx);
-    t.title = 'Нажмите, чтобы убрать слово';
-    t.setAttribute('role', 'button');
-    t.setAttribute('tabindex', '0');
-    t.onclick = function () { transRemoveToken(idx); };
-    t.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); transRemoveToken(idx); } };
-    area.appendChild(t);
+    let token = document.createElement('span');
+    token.className = 'token';
+    token.textContent = w;
+    token.setAttribute('data-chip-idx', idx);
+    token.title = t('Нажмите, чтобы убрать слово');
+    token.setAttribute('role', 'button');
+    token.setAttribute('tabindex', '0');
+    token.onclick = function () { transRemoveToken(idx); };
+    token.onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); transRemoveToken(idx); } };
+    area.appendChild(token);
 }
  
 // Убирает ровно то слово, по чипу которого кликнули — остальные токены не трогает.
@@ -216,7 +216,7 @@ function checkExerciseTranslation(index) {
     let ans = inp.value.trim().toLowerCase();
     let q = exerciseState.questions[index];
     if (!q) {
-        document.getElementById('exerciseQuestion').innerHTML = '<div class="feedback fail"><span>Что-то пошло не так. Начните упражнение заново.</span></div>';
+        document.getElementById('exerciseQuestion').innerHTML = '<div class="feedback fail"><span>' + t('Что-то пошло не так. Начните упражнение заново.') + '</span></div>';
         return;
     }
     let ok = keywordsMatch(ans, q.keywords);
@@ -225,8 +225,8 @@ function checkExerciseTranslation(index) {
         stats.totalCorrect++;
         exerciseState.correct++;
         container.innerHTML = `
-            <div class="feedback ok"><span>Верно! <strong>${q.keywords.join(', ')}</strong></span></div>
-            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
+            <div class="feedback ok"><span>${t('Верно!')} <strong>${q.keywords.join(', ')}</strong></span></div>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>${t('Далее')}</button></div>
         `;
     } else {
         stats.totalWrong++;
@@ -234,8 +234,8 @@ function checkExerciseTranslation(index) {
         recordError(lesson, { word: q.greek, correct: q.keywords.join(', '), your: ans });
         noteDrillMistake(exerciseState, { word: q.greek, correct: q.keywords.join(', '), your: ans, q: q });
         container.innerHTML = `
-            <div class="feedback fail"><span>Неверно. Ключевые слова: <strong>${q.keywords.join(', ')}</strong></span></div>
-            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>Далее</button></div>
+            <div class="feedback fail"><span>${t('Неверно. Ключевые слова: ')}<strong>${q.keywords.join(', ')}</strong></span></div>
+            <div class="md-button-row exercise-next-actions"><button class="menu-btn primary" onclick="nextExercise()"><span class="msym">arrow_forward</span>${t('Далее')}</button></div>
         `;
     }
     saveStats();
