@@ -196,6 +196,9 @@ function resetLessonDrill() {
 // Упражнение — отдельный экран: список выбора остаётся нетронутым позади,
 // «назад» из app bar возвращает к нему (SCREEN_META.drillSection).
 function startLessonDrill(kind, key) {
+    // Упражнения английская версия не поддерживает: ответы проверяются по
+    // русским ключевым словам (js/core.js, keywordsMatch).
+    if (isEnglish()) return;
     let data = getLessonData(currentLesson);
     let drill = findLessonDrill(kind, key);
     if (!data || !drill) return;
@@ -469,7 +472,7 @@ function renderAlphabetExtras() {
     document.querySelectorAll('.alphabet-toggle').forEach(btn => {
         btn.setAttribute('aria-expanded', on ? 'true' : 'false');
         let label = btn.querySelector('.alphabet-toggle__label');
-        if (label) label.textContent = on ? 'Скрыть всё' : 'Показать всё';
+        if (label) label.textContent = t(on ? 'Скрыть всё' : 'Показать всё');
         let icon = btn.querySelector('.msym');
         if (icon) icon.textContent = on ? 'visibility_off' : 'visibility';
     });
@@ -498,11 +501,27 @@ function openLesson(lesson) {
     // Вводные уроки (алфавит, правила чтения) тренировать нечем — остаётся
     // один материал, и вкладки не показываются. Какие именно, знает курс:
     // у греческого это уроки 1–2, у еврейского — главы 1–2.
+    // В английском режиме упражнений нет: они не переведены, а ответы
+    // проверяются по русским ключевым словам. Вкладка остаётся одна —
+    // «Материал», — и ряд вкладок прячется целиком (см. lessonSwipeTabs).
     let intro = isIntroLesson(lesson);
+    let materialOnly = intro || isEnglish();
     document.querySelectorAll('#lessonTabs button').forEach(btn => {
         let part = btn.getAttribute('data-part');
-        btn.style.display = (intro && part !== 'material') ? 'none' : '';
+        btn.style.display = (materialOnly && part !== 'material') ? 'none' : '';
     });
+
+    // Урок без английской версии открывается по-русски — и говорит об этом
+    // прямо на экране, а не оставляет читателя догадываться, почему текст
+    // русский при английском интерфейсе.
+    let note = document.getElementById('lessonLanguageNote');
+    let noteText = document.getElementById('lessonLanguageNoteText');
+    if (note) {
+        let englishMissing = isEnglish() && !hasEnglishLesson(currentCourseId, lesson);
+        note.classList.toggle('hidden', !englishMissing);
+        if (noteText) noteText.textContent = englishMissing
+            ? t('Английской версии этого урока пока нет — материал открыт по-русски.') : '';
+    }
 
     currentLessonPart = 'material';
     showSection('lessonSection');
@@ -596,6 +615,9 @@ function restoreLessonPart() {
 }
 
 function switchLessonPart(part) {
+    // Английский режим знает только материал: вкладки упражнений в нём нет,
+    // и сюда можно попасть разве что старым вызовом.
+    if (isEnglish() && part !== 'material') part = 'material';
     currentLessonPart = part;
     updateLessonTabsVisibility();
     document.querySelectorAll('#lessonTabs button').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
@@ -691,12 +713,12 @@ function nextTranslation() {
 function goToPrevLesson() {
     let prev = currentLesson - 1;
     if (prev < firstLessonNumber()) {
-        showToast('Это первый урок.');
+        showToast(t('Это первый урок.'));
         return;
     }
     let data = getLessonData(prev);
     if (!data) {
-        showToast('Урок ' + prev + ' ещё не добавлен.');
+        showToast(t('Урок ') + prev + t(' ещё не добавлен.'));
         return;
     }
     openLesson(prev);
@@ -707,12 +729,14 @@ function goToNextLesson() {
     let next = currentLesson + 1;
     let last = lastLessonNumber();
     if (next > last) {
-        showToast('Это последний урок (урок ' + last + ').');
+        showToast(isEnglish()
+        ? 'This is the last lesson (lesson ' + last + ').'
+        : 'Это последний урок (урок ' + last + ').');
         return;
     }
     let data = getLessonData(next);
     if (!data) {
-        showToast('Урок ' + next + ' ещё не добавлен.');
+        showToast(t('Урок ') + next + t(' ещё не добавлен.'));
         return;
     }
     openLesson(next);

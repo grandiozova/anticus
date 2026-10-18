@@ -23,6 +23,28 @@ function activeCourse() { return COURSES[currentCourseId] || COURSES.greek; }
 function courseLessons() { return activeCourse().lessons || {}; }
 function coursePrayer() { return activeCourse().prayer || null; }
 
+// Название и источник курса на языке приложения. Английские поля лежат в
+// реестре рядом с русскими (data/courses.js): это свойство курса, как tagline,
+// а не строка интерфейса, поэтому в словарь UI_EN они не попадают.
+function courseName(c) {
+    let course = c || activeCourse();
+    return isEnglish() && course.nameEn ? course.nameEn : course.name;
+}
+function courseTagline(c) {
+    let course = c || activeCourse();
+    return isEnglish() && course.taglineEn ? course.taglineEn : course.tagline;
+}
+function courseSearchPlaceholder() {
+    let course = activeCourse();
+    if (isEnglish() && course.searchPlaceholderEn) return course.searchPlaceholderEn;
+    return course.searchPlaceholder || 'Поиск';
+}
+function coursePrayerCard() {
+    let course = activeCourse();
+    if (isEnglish() && course.prayerCardEn) return course.prayerCardEn;
+    return course.prayerCard;
+}
+
 // Алфавит курса — пул букв для упражнений уроков 1–2 (GREEK_ALPHABET
 // в data/lessons.js, HEBREW_ALPHABET в data/hebrew-lessons.js). Виды letter_*
 // задают разные вопросы об одной и той же букве, поэтому список букв лежит
@@ -49,7 +71,11 @@ function courseDir() { return activeCourse().dir === 'rtl' ? 'rtl' : 'ltr'; }
 
 // Название изучаемого языка для подписей упражнений. Подставляется вместо
 // {lang} — держать в подписи «греческий» значит соврать в еврейском курсе.
-function courseLang() { return activeCourse().lang || 'язык курса'; }
+function courseLang() {
+    let course = activeCourse();
+    if (isEnglish() && course.langEn) return course.langEn;
+    return course.lang || 'язык курса';
+}
 
 // Ключ прогресса текущего курса: 'stats' -> 'greek_stats' / 'hebrew_stats'.
 function courseKey(name) { return currentCourseId + '_' + name; }
@@ -80,8 +106,10 @@ function setDefaultCourse(value) {
     writeStore('app_default_course', value);
     syncCourseControls();
     showToast(value === DEFAULT_COURSE_ASK
-        ? 'При запуске приложение будет спрашивать'
-        : 'При запуске откроется ' + COURSES[value].name.toLowerCase(), 'check');
+        ? t('При запуске приложение будет спрашивать')
+        : t('При запуске откроется ') + (isEnglish()
+            ? courseName(COURSES[value])
+            : COURSES[value].name.toLowerCase()), 'check');
 }
 
 // ------------------------------------------------------------ переключение
@@ -133,11 +161,11 @@ function applyCourseChrome() {
     // развернуть её целиком значило бы развернуть app bar, вкладки и меню.
     document.documentElement.setAttribute('data-script', course.script || 'greek');
     document.documentElement.setAttribute('data-script-dir', courseDir());
-    document.title = 'Anticus — ' + course.name;
+    document.title = 'Anticus — ' + courseName();
 
     let input = document.getElementById('vocabSearchInput');
     if (input) {
-        input.setAttribute('placeholder', course.searchPlaceholder || 'Поиск');
+        input.setAttribute('placeholder', courseSearchPlaceholder());
         // Поле поиска — единственное место, где изучаемый язык набирают
         // руками, поэтому его направление идёт за курсом: иврит набирается
         // справа налево, греческий остаётся слева направо. Атрибут ставим
@@ -150,13 +178,17 @@ function applyCourseChrome() {
     // чтение Бытия 1:1–5. У курса без разбора её нет.
     let card = document.getElementById('prayerFeatureCard');
     if (card) {
-        let has = !!(course.prayer && course.prayerCard);
+        // В английском режиме разбор текста не переведён и карточки нет:
+        // открывать русский текст под английской подписью хуже, чем не
+        // показывать её вовсе.
+        let has = !!(course.prayer && course.prayerCard) && !isEnglish();
         card.classList.toggle('hidden', !has);
         if (has) {
-            let t = document.getElementById('prayerFeatureTitle');
-            let b = document.getElementById('prayerFeatureBody');
-            if (t) t.textContent = course.prayerCard.title;
-            if (b) b.textContent = course.prayerCard.body;
+            let cardData = coursePrayerCard();
+            let titleEl = document.getElementById('prayerFeatureTitle');
+            let bodyEl = document.getElementById('prayerFeatureBody');
+            if (titleEl) titleEl.textContent = cardData.title;
+            if (bodyEl) bodyEl.textContent = cardData.body;
         }
     }
 }
@@ -181,16 +213,16 @@ function renderStartScreen() {
         if (!c) continue;
         let count = Object.keys(c.lessons || {}).length;
         let note = count
-            ? count + ' ' + pluralRu(count, 'урок', 'урока', 'уроков')
-            : 'Материал готовится';
+            ? tCountLabel(count, isEnglish() ? 'lesson' : 'урок')
+            : t('Материал готовится');
         let glyph = c.glyph || c.icon || '';
         let glyphClass = c.glyphClass ? ' ' + escHtml(c.glyphClass) : '';
         parts.push(
             '<button class="course-card" onclick="startCourse(\'' + escArg(id) + '\')">',
                 '<span class="course-card__icon"><span class="course-card__glyph' + glyphClass + '">', escHtml(glyph), '</span></span>',
                 '<span class="course-card__text">',
-                    '<span class="course-card__title">', escHtml(c.name), '</span>',
-                    '<span class="course-card__tagline">', escHtml(c.tagline), '</span>',
+                    '<span class="course-card__title">', escHtml(courseName(c)), '</span>',
+                    '<span class="course-card__tagline">', escHtml(courseTagline(c)), '</span>',
                     '<span class="course-card__note"><span class="msym sm">',
                         (count ? 'menu_book' : 'hourglass_top'), '</span>', escHtml(note), '</span>',
                 '</span>',
@@ -239,7 +271,9 @@ function switchCourse() {
     goToMain();
     // Короткое подтверждение: курс уже виден на экране, держать плашку
     // четыре секунды незачем (просьба владельца).
-    showToast('Открыт курс «' + COURSES[next].name + '»', 'swap_horiz', 2000);
+    showToast(isEnglish()
+        ? 'Course opened: ' + courseName(COURSES[next])
+        : 'Открыт курс «' + COURSES[next].name + '»', 'swap_horiz', 2000);
 }
 
 // ------------------------------------------------------------ настройки: вид
@@ -247,9 +281,9 @@ function switchCourse() {
 // Карточка курса в настройках: какой курс открыт и что делать при запуске.
 function syncCourseControls() {
     let nameEl = document.getElementById('currentCourseName');
-    if (nameEl) nameEl.textContent = activeCourse().name;
+    if (nameEl) nameEl.textContent = courseName();
     let taglineEl = document.getElementById('currentCourseTagline');
-    if (taglineEl) taglineEl.textContent = activeCourse().tagline;
+    if (taglineEl) taglineEl.textContent = courseTagline();
 
     let group = document.getElementById('defaultCourseSegmented');
     if (group) {

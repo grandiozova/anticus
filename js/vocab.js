@@ -95,12 +95,12 @@ function renderTypeChips(containerId, active, handler) {
     let counts = vocabTypeCounts();
     let types = ['all'].concat(VOCAB_TYPE_ORDER.filter(t => counts[t]));
     let total = getAllVocab().length;
-    box.innerHTML = types.map(t => {
-        let label = t === 'all' ? 'Все' : TYPE_LABELS[t];
-        let count = t === 'all' ? total : counts[t];
-        let on = (active || 'all') === t;
+    box.innerHTML = types.map(type => {
+        let label = type === 'all' ? t('Все') : t(TYPE_LABELS[type]);
+        let count = type === 'all' ? total : counts[type];
+        let on = (active || 'all') === type;
         return '<button type="button" class="filter-chip" aria-pressed="' + (on ? 'true' : 'false') + '"' +
-            ' onclick="' + handler + '(\'' + t + '\')">' +
+            ' onclick="' + handler + '(\'' + type + '\')">' +
             '<span class="filter-chip__body">' +
                 '<span class="msym filter-chip__check">check</span>' + label +
                 '<span class="filter-chip__count">' + count + '</span>' +
@@ -349,12 +349,12 @@ function generateFallbackExample(entry) {
 
     if (entry.type === 'adjective' && entry.declension_forms) {
         let form = tryGetForm(entry.declension_forms, ['masculine', 'singular', 'nom']);
-        if (form) return { greek: 'ὁ ἄνθρωπος ' + form + '.', russian: 'Человек ' + firstGloss + '.', generated: true };
+        if (form) return { greek: 'ὁ ἄνθρωπος ' + form + '.', russian: (isEnglish() ? 'The man is ' : 'Человек ') + firstGloss + '.', generated: true };
     }
 
     if (entry.type === 'verb' && entry.declension_forms) {
         let form = tryGetForm(entry.declension_forms, ['singular', '1']);
-        if (form) return { greek: 'ἐγώ ' + form + '.', russian: 'Я ' + firstGloss + '.', generated: true };
+        if (form) return { greek: 'ἐγώ ' + form + '.', russian: (isEnglish() ? 'I am ' : 'Я ') + firstGloss + '.', generated: true };
     }
 
     // Существительные и местоимения тут не обслуживаем: «артикль + слово» —
@@ -483,7 +483,7 @@ function renderVocabExamplesHtml(entry) {
         '<div class="vocab-example vocab-example--generated">' +
             '<div class="vocab-example__script">' + highlightWord(fallback.greek, entry) + '</div>' +
             '<div class="vocab-example__ru">' + fallback.russian + '</div>' +
-            '<div class="vocab-example__note">пример составлен автоматически</div>' +
+            '<div class="vocab-example__note">' + t('пример составлен автоматически') + '</div>' +
         '</div>' +
     '</div>';
 }
@@ -502,7 +502,7 @@ function renderVocabFormsHtml(entry) {
     return '<button type="button" class="menu-btn text vocab-forms-toggle" aria-expanded="false"' +
         ' onclick="toggleVocabForms(' + entry.id + ')">' +
         '<span class="msym">table_chart</span>' +
-        '<span class="vocab-forms-label">Показать формы</span></button>' +
+        '<span class="vocab-forms-label">' + t('Показать формы') + '</span></button>' +
         '<div class="md-table-scroll vocab-forms">' + table + '</div>';
 }
 
@@ -540,14 +540,14 @@ function toggleVocabForms(id) {
     if (details) details.classList.toggle('forms-open', opening);
     btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
     let label = btn.querySelector('.vocab-forms-label');
-    if (label) label.textContent = opening ? 'Скрыть формы' : 'Показать формы';
+    if (label) label.textContent = t(opening ? 'Скрыть формы' : 'Показать формы');
 }
 
 function renderVocabEntries(entries) {
     let container = document.getElementById('allVocabContent');
     if (!container) return;
     if (entries.length === 0) {
-        container.innerHTML = emptyState('search_off', 'Ничего не найдено', 'Попробуйте другое слово или его часть');
+        container.innerHTML = emptyState('search_off', t('Ничего не найдено'), t('Попробуйте другое слово или его часть'));
         return;
     }
     let byType = {};
@@ -558,7 +558,7 @@ function renderVocabEntries(entries) {
     let parts = [];
     VOCAB_TYPE_ORDER.forEach(type => {
         if (!byType[type] || byType[type].length === 0) return;
-        parts.push('<div class="vocab-section"><h4>', TYPE_LABELS[type] || type, '</h4>');
+        parts.push('<div class="vocab-section"><h4>', t(TYPE_LABELS[type] || type), '</h4>');
         byType[type].forEach(e => {
             // Артикль держится за слово неразрывным пробелом: обычный
             // пробел — точка переноса, и в тесной строке артикль уезжал на
@@ -582,7 +582,7 @@ function renderVocabEntries(entries) {
         parts.push('</div>');
     });
     let html = parts.join('');
-    container.innerHTML = html || emptyState('search_off', 'Ничего не найдено', 'Попробуйте другое слово или его часть');
+    container.innerHTML = html || emptyState('search_off', t('Ничего не найдено'), t('Попробуйте другое слово или его часть'));
 }
 function showAllVocab() {
     showSection('allVocabSection');
@@ -592,6 +592,15 @@ function showAllVocab() {
     let clearBtn = document.getElementById('vocabSearchClear');
     if (clearBtn) clearBtn.classList.remove('show');
     vocabTypeFilter = 'all';
+    let langNote = document.getElementById('vocabLanguageNote');
+    let langNoteText = document.getElementById('vocabLanguageNoteText');
+    if (langNote) {
+        langNote.classList.toggle('hidden', !isEnglish());
+        if (langNoteText) {
+            langNoteText.textContent = isEnglish()
+                ? t('Английские значения есть только у уроков 1–3; остальные слова пока по-русски.') : '';
+        }
+    }
     // Экран открывают заново — клавиатура снова убрана.
     resetVocabKeyboard();
     renderTypeChips('vocabTypeChips', vocabTypeFilter, 'setVocabType');
@@ -663,7 +672,7 @@ function renderVocabKeyboard() {
         '<button type="button" class="vocab-key" onclick="vocabKeyboardType(\'' + escArg(ch) + '\')">' + escHtml(ch) + '</button>'
     );
     // Стереть — не буква, и гарнитуру ему даёт .msym, а не письмо курса.
-    keys.push('<button type="button" class="vocab-key" onclick="vocabKeyboardBackspace()" aria-label="Стереть">' +
+    keys.push('<button type="button" class="vocab-key" onclick="vocabKeyboardBackspace()" aria-label="' + t('Стереть') + '">' +
         '<span class="msym sm">backspace</span></button>');
     grid.innerHTML = keys.join('');
 }

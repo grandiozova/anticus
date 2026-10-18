@@ -139,6 +139,8 @@ invisible until someone hits the specific path (offline load, one specific theme
 | a part-of-speech `type` value | `VOCAB_TYPE_ORDER` **+** `TYPE_LABELS` in `js/vocab.js` |
 | a cache that spans screens | a reset for it inside `applyCourse()` in `js/course.js` |
 | a new dependency/font/asset | an entry in `data/licenses.js` |
+| a user-facing string | `t('…')` at the call site **and** an entry in `UI_EN` (`js/i18n.js`); a missing entry stays Russian, and `tests/i18n.test.js` shows it as leftover Cyrillic in English mode |
+| an English lesson | `data/lessons.en.js` / `data/hebrew-lessons.en.js` — title, grammar **and every vocabulary meaning**; a lesson is translated whole or not at all |
 | a test file | a row in `tests/README.md` |
 
 ## Content accuracy (Greek & Hebrew text)
@@ -472,6 +474,35 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
   не сжимало поле в полоску, и
   `.writing-practice .flashcard-flip > .md-flashcard--writing` растягивается так
   же, чтобы переворот не прыгал.
+
+## English mode
+
+Russian is the source language; English is an overlay. The switch is the
+language card in settings, stored under `app_lang`.
+
+- `t('Уроки')` returns `Lessons`; **the key is the Russian string itself**, so a
+  missing translation stays Russian instead of going blank. `UI_EN` lives in
+  `js/i18n.js`.
+- Static markup is translated from a **snapshot taken at boot** (`snapshotStaticI18n`
+  before any render), so generated lesson content is never rewritten by the
+  translator. `applyStaticI18n()` restores from that snapshot on the way back to
+  Russian.
+- Generated strings are wrapped where they are built; strings with a number use
+  `tLessonNumber` / `tLessonRange` / `tMatches` / `tOf` / `tCountLabel`.
+- Lesson text is a per-lesson overlay: `data/lessons.en.js` and
+  `data/hebrew-lessons.en.js` hold lessons 1–3 of each course, keyed by lesson
+  number, with vocabulary keyed by headword. `getLessonData()` applies it, so
+  every screen sees the same lesson. These files were **generated**, not typed:
+  Greek and Hebrew forms are copied out of the Russian data, because a retyped
+  breathing or niqqud is a different string that looks identical.
+- A lesson without English opens in Russian and shows `#lessonLanguageNote`.
+- **Exercises are unavailable in English on purpose**: answers are checked with
+  Russian keywords (`keywordsMatch`). The tab is hidden, `startLessonDrill()`
+  returns early, the lesson FAB is gone, the cards destination shows a toast.
+  The dictionary keeps working and says English meanings cover lessons 1–3 only.
+- `setAppLang()` must reset every cross-screen cache (localized lessons,
+  `allVocabCache`, `lessonSearchIndex`, flashcard decks) — same rule as
+  `applyCourse()` — and re-render the current screen.
 
 ## Lesson & topic search (экран уроков)
 

@@ -92,6 +92,8 @@ online test. When you add:
 | a cache that spans screens | a reset in `applyCourse()` |
 | a dependency, font or asset | an entry in `data/licenses.js` |
 | a test file | a row in the `tests/README.md` table |
+| a user-facing string | `t('…')` at the site **and** an entry in `UI_EN` (`js/i18n.js`) — a missing entry stays Russian, which `tests/i18n.test.js` reports as leftover Cyrillic |
+| an English lesson | `data/lessons.en.js` / `data/hebrew-lessons.en.js` (title, grammar, every vocabulary meaning) — the lesson is translated whole or not at all |
 
 ### Content
 
@@ -314,6 +316,60 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
 - **Support the project** is the first card on the screen. It is one optional external link (`target="_blank" rel="noopener noreferrer"`) to a donation page, framed as voluntary support for the developer's time and hosting costs. Nothing is gated, no functionality depends on it, and the text names no textbook or rights holder.
 - **Licenses** come from the `LICENSES` array; add an entry when you add a dependency. Only the middle of that list is open licences: the app's own code is first and is all-rights-reserved (see `LICENSE`), and the course materials are last as their holders' copyright. Both are statements, not licences, and carry no `url`.
 - The nav bar now holds **five** destinations — the M3 maximum. A sixth needs a different pattern, not a sixth item. That is exactly why the course picker is a full-screen overlay rather than a destination.
+
+## English mode
+
+The app is **Russian-first**: Russian text stays in the markup and in the code, and
+English is an overlay on top of it. The switch is a card in the settings screen
+(`#appLangSegmented`), stored under the global `app_lang` key.
+
+- **The translation key is the Russian string itself.** `t('Уроки')` returns
+  `Lessons` in English and `Уроки` in Russian; a string missing from `UI_EN`
+  (`js/i18n.js`) comes back unchanged. No invented ids, so no second dictionary of
+  keys to keep in sync, and a forgotten string is visible rather than blank.
+- **Static markup is translated once, from a snapshot.** `initLanguage()` runs
+  before anything is rendered and records every Russian text node and
+  `placeholder`/`aria-label`/`title`/`content` value together with its key
+  (`snapshotStaticI18n`). Generated content therefore never passes through the
+  translator: lesson text, vocabulary and search results cannot be rewritten by
+  accident. `applyStaticI18n()` restores from the snapshot, which is what makes
+  switching back to Russian work.
+- **Generated strings are wrapped where they are built**, not translated in the
+  DOM. Strings with a number are composed by `tLessonNumber`, `tLessonRange`,
+  `tMatches`, `tOf`, `tCountLabel` — an exact-match key cannot match `Урок 5`.
+- **Course facts live in the registry, not in the dictionary**: `nameEn`,
+  `taglineEn`, `langEn`, `searchPlaceholderEn`, `prayerCardEn` in
+  `data/courses.js`; the licence statements carry `nameEn`/`termsEn` in
+  `data/licenses.js`. `courseName()`, `courseTagline()`, `courseSearchPlaceholder()`,
+  `coursePrayerCard()` and `courseLang()` (`js/course.js`) choose the field.
+- **Lesson text is a data overlay, keyed by lesson number and headword**:
+  `data/lessons.en.js` and `data/hebrew-lessons.en.js` hold `{ title, grammar,
+  vocabulary: { <headword>: <meaning> } }` for lessons 1–3 of each course.
+  `getLessonData()` (`js/core.js`) applies the overlay, so every screen — lesson,
+  search, dictionary — sees the same lesson without a single course branch.
+  A lesson is translated **whole or not at all**: a half-English lesson (English
+  grammar, Russian meanings) is worse than a Russian one.
+- **The English files are generated, never typed.** Greek and Hebrew forms are
+  copied out of the Russian data by a script that replaces only the Russian
+  segments between them; that is the same rule as `data/hebrew-lessons.js`, and for
+  the same reason (a retyped breathing or niqqud is a different string that looks
+  identical). `tests/i18n.test.js` fails if English grammar contains Cyrillic or if
+  a vocabulary entry of a translated lesson has no English meaning.
+- **A lesson without an English version opens in Russian and says so**
+  (`#lessonLanguageNote`). Hiding it would break the course for an English reader;
+  silently showing Russian would look like a bug.
+- **Exercises do not exist in English yet**, and that is a data fact, not a
+  styling one: typed answers are checked by Russian keywords (`keywordsMatch`,
+  `js/core.js`), so an English drill would grade against the wrong language. The
+  exercise tab is hidden, `startLessonDrill()` returns early, the lesson FAB is
+  absent, the «Карточки» destination answers with a toast, and the prayer/reading
+  card is not shown at all. The dictionary keeps working and marks that English
+  meanings exist for lessons 1–3 only.
+- **`setAppLang()` must reset every cache that spans screens** — localized lessons,
+  `allVocabCache`, `lessonSearchIndex`, the flashcard decks — for the same reason
+  `applyCourse()` does: a cache built in one language must not survive into the
+  other. It then re-renders the current screen, because `applyStaticI18n()` alone
+  would leave generated content in the old language.
 
 ## Поиск по урокам и темам
 

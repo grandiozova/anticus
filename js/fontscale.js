@@ -146,11 +146,11 @@ function fontScalePercent(value) { return Math.round(value * 100) + '%'; }
 // значений, а не берётся из FONT_SCALE_AUTO_BASE: у верхней границы её
 // срезает clampFontScale(), и обещать «+20%» там было бы неправдой.
 function fontScaleStateLabel(which) {
-    if (!isFontScaleAuto(which)) return 'задан отдельно';
+    if (!isFontScaleAuto(which)) return t('задан отдельно');
     let pct = Math.round(effectiveFontScale(which) / fontScales.general * 100) - 100;
-    if (pct === 0) return 'как общий';
+    if (pct === 0) return t('как общий');
     // Минус — типографский, как и везде в интерфейсе.
-    return 'как общий ' + (pct > 0 ? '+' : '−') + Math.abs(pct) + '%';
+    return t('как общий') + ' ' + (pct > 0 ? '+' : '−') + Math.abs(pct) + '%';
 }
 
 // Положение заливки дорожки в процентах: у input[type=range] нет своего

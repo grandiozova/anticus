@@ -24,7 +24,7 @@ const FONT_DEFAULT = 'system';
 // строки рядом с ним нет намеренно: имя набрано своей же гарнитурой, а всё
 // вокруг меняется сразу после нажатия — сравнивать больше нечего.
 const FONT_CHOICES = [
-    { id: 'system', label: 'Системный' },
+    { id: 'system', label: 'Системный', labelEn: 'System' },
     { id: 'pt-sans', label: 'PT Sans' },
     { id: 'noto-sans', label: 'Noto Sans' },
     { id: 'inter', label: 'Inter' },
@@ -79,7 +79,7 @@ function renderFontList() {
         let checked = c.id === fontChoice ? 'true' : 'false';
         return '<button type="button" class="font-option" role="radio" aria-checked="' + checked +
             '" data-font="' + escArg(c.id) + '" onclick="setFontChoice(\'' + escArg(c.id) + '\')">' +
-            '<span class="font-option__name">' + escHtml(c.label) + '</span>' +
+            '<span class="font-option__name">' + escHtml(isEnglish() && c.labelEn ? c.labelEn : c.label) + '</span>' +
             '<span class="msym font-option__check">check</span>' +
         '</button>';
     }).join('');

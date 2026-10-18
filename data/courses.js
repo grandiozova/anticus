@@ -49,17 +49,26 @@
 //                     «Фразы: … → русский». В русском у этих прилагательных
 //                     мужского рода винительный совпадает с именительным,
 //                     поэтому формы хватает одной.
+//   nameEn, taglineEn, langEn, searchPlaceholderEn, prayerCardEn
+//                     те же строки для английского режима (см. «English mode»
+//                     в AGENTS.md). Это свойства курса, как и русские поля,
+//                     поэтому лежат здесь, а не в словаре интерфейса UI_EN:
+//                     там ключ — сама русская строка, а курсовая подпись
+//                     выбирается по курсу.
 const COURSES = {
     greek: {
         id: 'greek',
         name: 'Древнегреческий',
+        nameEn: 'Ancient Greek',
         tagline: 'Новый Завет по учебнику Мейчена',
+        taglineEn: 'The New Testament with Machen’s textbook',
         icon: 'menu_book',
         glyph: 'Ω',
         glyphClass: 'greek',
         dir: 'ltr',
         script: 'greek',
         lang: 'греческий',
+        langEn: 'Greek',
         lessons: LESSONS_DATA,
         alphabet: GREEK_ALPHABET,
         prayer: PRAYER_DATA,
@@ -67,24 +76,32 @@ const COURSES = {
             title: 'Отче наш — Πάτερ ἡμῶν',
             body: 'Пословный разбор с транскрипцией'
         },
+        prayerCardEn: {
+            title: 'Our Father — Πάτερ ἡμῶν',
+            body: 'Word-by-word analysis with transcription'
+        },
         // Урок 1 — названия букв (ἄλφα, βῆτα…), а не лексика: в словарь он не идёт.
         vocabFirstLesson: 2,
         // Уроки 1–2 — алфавит и правила чтения. Раньше это были уроки «только
         // материал»: тренировать в них было нечего. Теперь есть что — буквы,
         // дифтонги, придыхания и ударения (GREEK_ALPHABET), поэтому список пуст.
         introLessons: [],
-        searchPlaceholder: 'Поиск по-гречески или по-русски'
+        searchPlaceholder: 'Поиск по-гречески или по-русски',
+        searchPlaceholderEn: 'Search in Greek or Russian'
     },
     hebrew: {
         id: 'hebrew',
         name: 'Древнееврейский',
+        nameEn: 'Biblical Hebrew',
         tagline: 'Пособие Новосибирской библейской семинарии',
+        taglineEn: 'The Novosibirsk Biblical Theological Seminary textbook',
         icon: 'menu_book',
         glyph: 'א',
         glyphClass: 'hebrew',
         dir: 'rtl',
         script: 'hebrew',
         lang: 'еврейский',
+        langEn: 'Hebrew',
         lessons: HEBREW_LESSONS_DATA,
         alphabet: HEBREW_ALPHABET,
         // Молитвы «Отче наш» в Ветхом Завете нет, поэтому у еврейского курса
@@ -95,6 +112,10 @@ const COURSES = {
         prayerCard: {
             title: 'Чтение — Берешит',
             body: 'Бытие 1:1–5: пословный разбор с транскрипцией'
+        },
+        prayerCardEn: {
+            title: 'Reading — Bereshit',
+            body: 'Genesis 1:1–5: word-by-word analysis with transcription'
         },
         // Главы 1–2 — алфавит и гласные, словарь начинается с главы 3.
         // Глав 1–2 в списке вводных больше нет: алфавит и огласовка
@@ -111,7 +132,8 @@ const COURSES = {
         // это надо у курса, а не выводить из данных (греческие буквы хранят
         // поле upper, еврейские нет — совпадение, а не признак).
         cursiveWriting: true,
-        searchPlaceholder: 'Поиск по-еврейски или по-русски'
+        searchPlaceholder: 'Поиск по-еврейски или по-русски',
+        searchPlaceholderEn: 'Search in Hebrew or Russian'
     }
 };
 

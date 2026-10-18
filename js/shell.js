@@ -65,10 +65,10 @@ function updateShell() {
     let titleEl = document.getElementById('appBarTitle');
     if (titleEl) {
         // На главном экране заголовок — название курса, а не строка в SCREEN_META.
-        let title = currentSectionId === 'mainMenu' ? activeCourse().name : meta.title;
+        let title = currentSectionId === 'mainMenu' ? courseName() : t(meta.title);
         if (currentSectionId === 'lessonSection') {
             let d = getLessonData(currentLesson);
-            title = d ? 'Урок ' + currentLesson : 'Урок';
+            title = d ? tLessonNumber(currentLesson) : t('Урок');
         }
         // На экране упражнения заголовок называет само упражнение — его карточка
         // единственная на экране, и повторять «Урок N» здесь нечем помочь.
@@ -93,7 +93,7 @@ function updateShell() {
     if (leading) {
         if (meta.back) {
             if (!leading.firstChild) {
-                leading.innerHTML = '<button class="md-icon-button" onclick="goBack()" aria-label="Назад"><span class="msym">arrow_back</span></button>';
+                leading.innerHTML = '<button class="md-icon-button" onclick="goBack()" aria-label="' + t('Назад') + '"><span class="msym">arrow_back</span></button>';
             }
         } else {
             leading.innerHTML = '';
@@ -111,14 +111,16 @@ function updateShell() {
     // На материале главное действие — перейти к упражнениям. В самом списке
     // упражнений выбирать нужно вручную, и подсказывать FAB нечего.
     if (currentSectionId === 'lessonSection' && currentLessonPart === 'exercise') cfg = null;
+    // В английском режиме упражнений нет — и подсказывать к ним переход нечего.
+    if (currentSectionId === 'lessonSection' && isEnglish()) cfg = null;
     // «Продолжить» нечему продолжать, пока в курсе нет ни одного урока.
     if (currentSectionId === 'mainMenu' && !courseHasLessons()) cfg = null;
     if (fab) {
         if (cfg && !(currentSectionId === 'lessonSection' && isIntroLesson(currentLesson))) {
             fab.classList.remove('hidden-fab');
             document.getElementById('mainFabIcon').textContent = cfg.icon;
-            document.getElementById('mainFabLabel').textContent = cfg.label;
-            fab.setAttribute('aria-label', cfg.label);
+            document.getElementById('mainFabLabel').textContent = t(cfg.label);
+            fab.setAttribute('aria-label', t(cfg.label));
         } else {
             fab.classList.add('hidden-fab');
         }
@@ -135,6 +137,11 @@ function navigateTo(dest) {
         // возвращаясь в словарь, сохраняем набранный запрос
         if (allVocabCache) { showSection(id); filterAllVocab(); }
         else showAllVocab();
+        return;
+    }
+    if (dest === 'cards' && isEnglish()) {
+        // Карточки — упражнение, а упражнения английская версия не поддерживает.
+        showToast(t('Карточки пока не переведены на английский.'), 'info');
         return;
     }
     if (dest === 'cards') {
@@ -253,7 +260,7 @@ function lessonSearchResults() {
     if (!words.length) return null;
     let out = [];
     lessonIndex().forEach(entry => {
-        let topics = entry.topics.filter(t => lessonTextMatches(t.text, words));
+        let topics = entry.topics.filter(topic => lessonTextMatches(topic.text, words));
         if (!topics.length && !lessonTextMatches(entry.title, words)) return;
         out.push({ number: entry.number, title: entry.title, topics: topics });
     });
@@ -293,9 +300,9 @@ function renderMainMenu() {
     // Курс может быть подключён раньше, чем наполнен: показываем это прямо,
     // а не пустой карточкой без объяснений.
     if (!lessonNumbers().length) {
-        grid.innerHTML = emptyState('hourglass_top', 'Уроки готовятся',
-            'Материал этого курса ещё не подключён. Курс можно сменить в настройках.');
-        if (heading) heading.textContent = 'Уроки';
+        grid.innerHTML = emptyState('hourglass_top', t('Уроки готовятся'),
+            t('Материал этого курса ещё не подключён. Курс можно сменить в настройках.'));
+        if (heading) heading.textContent = t('Уроки');
         return;
     }
     let last = 0;
@@ -304,9 +311,9 @@ function renderMainMenu() {
     // Поиск без совпадений — это ответ, а не пустой экран: говорим, по чему он
     // искал, и оставляем запрос в поле.
     if (results && !results.length) {
-        grid.innerHTML = emptyState('search_off', 'Ничего не найдено',
-            'Поиск идёт по названиям уроков и по темам внутри них.');
-        if (heading) heading.textContent = 'Поиск';
+        grid.innerHTML = emptyState('search_off', t('Ничего не найдено'),
+            t('Поиск идёт по названиям уроков и по темам внутри них.'));
+        if (heading) heading.textContent = t('Поиск');
         return;
     }
     let numbers = lessonNumbers();
@@ -319,15 +326,15 @@ function renderMainMenu() {
         if (entry.topics && entry.topics.length) {
             let box = document.createElement('div');
             box.className = 'lesson-topics';
-            entry.topics.forEach(t => box.appendChild(lessonTopicRow(entry.number, t)));
+            entry.topics.forEach(topic => box.appendChild(lessonTopicRow(entry.number, topic)));
             grid.appendChild(box);
         }
     });
     // Заголовок карточки называет реальный диапазон уроков в данных
     if (heading) {
         heading.textContent = results
-            ? 'Совпадения: ' + results.length
-            : 'Уроки ' + numbers[0] + '–' + numbers[numbers.length - 1];
+            ? tMatches(results.length)
+            : tLessonRange(numbers[0], numbers[numbers.length - 1]);
     }
 }
 

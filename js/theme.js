@@ -31,8 +31,8 @@ function syncThemeControls() {
     let hint = document.getElementById('themeHint');
     if (hint) {
         hint.textContent = themeMode === 'system'
-            ? 'Тема следует за настройкой системы: сейчас ' + (resolvedTheme() === 'dark' ? 'тёмная' : 'светлая') + '.'
-            : 'Тема выбрана вручную и не меняется вместе с системной.';
+            ? t('Тема следует за настройкой системы: сейчас ') + t(resolvedTheme() === 'dark' ? 'тёмная' : 'светлая') + '.'
+            : t('Тема выбрана вручную и не меняется вместе с системной.');
     }
 }
 

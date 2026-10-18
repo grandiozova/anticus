@@ -27,6 +27,11 @@ function normalizeTranslationData() {
 }
 
 normalizeTranslationData();
+// initLanguage — первым: снимок статической разметки делается до того, как
+// renderMainMenu и остальные положат в списки содержимое, и до того, как
+// заголовки начнут брать названия курсов. Ошибка порядка здесь видна как
+// русские подписи в английском режиме и наоборот.
+initLanguage();
 // initCourse — до loadStats и renderMainMenu: они уже читают ключи и уроки
 // выбранного курса.
 initCourse();

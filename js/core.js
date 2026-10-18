@@ -44,7 +44,10 @@ function shuffle(a) {
 
 // Уроки берём у текущего курса, а не из LESSONS_DATA напрямую: LESSONS_DATA —
 // это уроки ГРЕЧЕСКОГО курса, а не «уроки вообще». См. js/course.js.
-function getLessonData(l) { return courseLessons()[l]; }
+// Урок отдаётся через язык приложения: по-английски урок 1–3 приходят из
+// оверлея (js/i18n.js), остальные — как есть. Читать courseLessons() напрямую
+// значит обойти перевод, поэтому экраны ходят сюда.
+function getLessonData(l) { return localizedLesson(courseLessons()[l], l); }
 
 function getExercises(l, t) {
     let d = getLessonData(l);

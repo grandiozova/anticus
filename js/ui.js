@@ -55,7 +55,7 @@ function mdDialog(opts) {
         document.getElementById('dialogHeadline').textContent = opts.headline || '';
         document.getElementById('dialogBody').textContent = opts.body || '';
         let confirmBtn = document.getElementById('dialogConfirmBtn');
-        confirmBtn.textContent = opts.confirm || 'ОК';
+        confirmBtn.textContent = opts.confirm || t('ОК');
         confirmBtn.className = opts.danger === false ? 'menu-btn primary' : 'menu-btn danger';
         document.getElementById('dialogScrim').classList.add('show');
     });
@@ -90,7 +90,7 @@ function emptyState(icon, text, hint) {
 function resultBlock(correct, total, title) {
     let p = total ? Math.round((correct / total) * 100) : 0;
     return '<div class="feedback ' + (p >= 70 ? 'ok' : 'fail') + '"><span>' + title +
-        '<br>Результат: ' + correct + ' из ' + total + ' (' + p + '%)</span></div>';
+        '<br>' + t('Результат') + ': ' + correct + t(' из ') + total + ' (' + p + '%)</span></div>';
 }
 
 // Разбор ошибок текущего захода. Список лежит в состоянии самого упражнения
@@ -101,15 +101,15 @@ function resultBlock(correct, total, title) {
 // "retryCardMistakes('lesson')"; без него остаётся только список.
 function drillReviewHtml(mistakes, retry) {
     if (!Array.isArray(mistakes) || mistakes.length === 0) return '';
-    let html = '<div class="md-subhead">Разбор ошибок</div>';
+    let html = '<div class="md-subhead">' + t('Разбор ошибок') + '</div>';
     for (let e of mistakes) {
         html += '<div class="error-item"><span class="msym sm">error</span><span>' + errorText(e.word) +
-            ' → правильно: <strong>' + errorText(e.correct) + '</strong>' +
-            (e.your ? '<br>ваш ответ: ' + errorText(e.your) : '') + '</span></div>';
+            t(' → правильно: ') + '<strong>' + errorText(e.correct) + '</strong>' +
+            (e.your ? '<br>' + t('ваш ответ: ') + errorText(e.your) : '') + '</span></div>';
     }
     if (retry) {
         html += '<div class="md-button-row"><button class="menu-btn elevated" onclick="' + retry + '">' +
-            '<span class="msym">restart_alt</span>Повторить ошибки (' + mistakes.length + ')</button></div>';
+            '<span class="msym">restart_alt</span>' + t('Повторить ошибки') + ' (' + mistakes.length + ')</button></div>';
     }
     return html;
 }
