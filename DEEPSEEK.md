@@ -27,7 +27,7 @@ Published on GitHub Pages: https://grandiozova.github.io/anticus/
 |---|---|---|
 | HTML shell | `index.html` | New screens, script/style load order. No logic, no styles, no data belongs here. |
 | Styles | `styles/*.css` (7 files) | See "Styles" table below. |
-| Content | `data/lessons.js` (Greek), `data/hebrew-lessons.js` (Hebrew), `data/prayer.js`, `data/licenses.js`, `data/courses.js` | Vocabulary, grammar, exercises. **Only touch if the task is explicitly about content.** |
+| Content | `data/lessons.js` (Greek), `data/hebrew-lessons.js` (Hebrew), `data/hebrew-examples.js` (Bible examples), `data/prayer.js`, `data/hebrew-reading.js`, `data/licenses.js`, `data/courses.js` | Vocabulary, grammar, exercises. **Only touch if the task is explicitly about content.** |
 | Logic | `js/*.js` (17 files, one per feature) | See "Logic" table below. |
 | Offline | `sw.js`, `manifest.webmanifest`, `icon.svg`, `icon-dark.svg` | Rarely touched. See "Offline". |
 | Reference textbooks | `reference/machen-nt-greek/`, `reference/nbbs-hebrew/` | Read-only source material. Never loaded by the app, never referenced from code. |
@@ -183,14 +183,26 @@ invisible until someone hits the specific path (offline load, one specific theme
   flashcards show a sentence from `lesson.translation` that contains the word
   (`findUsageExamples()`, `js/vocab.js` — course-agnostic). To add one, add the
   *book's* sentence to a chapter's `translation`, copied verbatim from
-  `reference/nbbs-hebrew/`. A word the book never uses in a sentence gets no
-  example, and its dictionary row is simply not expandable — that is correct, not
-  a gap. `tests/hebrew-content.test.js` requires every example shown to occur as a
-  whole sentence in the reference. Coverage is 35 of 179 words; the chapters' phrase
-  tables hold more, and 16 of them were promoted on 2026-10-14. **Never retype the
-  Hebrew you insert** — mine it out of the reference and match by bare consonants,
-  or the combining-mark order differs and every added example fails the test at once.
-  Write the Russian with no inner punctuation: it is split into word-bank chips.
+  `reference/nbbs-hebrew/`. **Never retype the Hebrew you insert** — mine it out of
+  the reference and match by bare consonants, or the combining-mark order differs
+  and every added example fails the test at once. Write the Russian with no inner
+  punctuation: it is split into word-bank chips.
+- **Words the textbook never puts in a phrase get a Bible verse** from
+  `data/hebrew-examples.js`, keyed by the dictionary headword and generated from
+  `reference/oshb/verses.json` (OSHB Hebrew + Synodal Russian). The record carries
+  the exact word `form` to highlight, because the verse has an inflected form the
+  entry's search forms do not contain; `findUsageExamples()` therefore looks the
+  entry up by `entry.greek`, with no morphology at runtime. Coverage is 173 of 179
+  words; the six function words (`וְ`, `לְ`, `בְּ`, `כְּ`, `הֲ`, `עַל־דְּבַר`) stay
+  without an example because they cannot be highlighted as a word. Never retype a
+  verse or edit the Synodal text; choose another verse and regenerate both files.
+  `tests/hebrew-content.test.js` checks every example against its source verbatim.
+- **A word may carry `usage_forms`** — the exact forms in which the book prints it
+  (construct state, plural, with a preposition or article), copied verbatim from the
+  reference. `getWordSearchForms()` adds them, so `הַמַּיִם` finds `מַיִם` and
+  `דִּבְרֵי` finds `דָּבָר`. It is a search-form list, not a paradigm: nothing renders
+  it, `buildAllVocabCache()` copies it by name, and every form must actually produce
+  an example — `tests/hebrew-content.test.js` fails on a dead one.
 
 ## Design system: Material 3 — mandatory, always
 

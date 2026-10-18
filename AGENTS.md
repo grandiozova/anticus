@@ -133,6 +133,7 @@ data/
   hebrew-lessons.js    872  const HEBREW_LESSONS_DATA — главы 1–11: грамматика, словарь, упражнения; HEBREW_ALPHABET — пул букв и огласовок
   prayer.js            142  const PRAYER_DATA — «Отче наш» (греческий)
   hebrew-reading.js    130  const HEBREW_READING_DATA — Бытие 1:1–5 (иврит)
+  hebrew-examples.js   375  const HEBREW_EXAMPLES — 115 стихов OSHB для словаря: ключ — словарная форма
   licenses.js           96  const LICENSES
   courses.js           119  const COURSES/COURSE_ORDER — реестр курсов, грузится последним из data/
 tests/                    jsdom-набор, `npm test` — см. tests/README.md
@@ -220,7 +221,7 @@ Structural facts worth knowing before editing:
 - Functions call freely across files — they are all globals on `window`, and every file is loaded before anything runs. There is no import graph to keep in sync; the only ordering rule is the one about `boot.js` above.
 - Top-level `let` and `const` bindings — state (`stats`, `testState`, `allFlashcardState`, …) *and* the data (`LESSONS_DATA`, `PRAYER_DATA`, `LICENSES`) — are **not** on `window`; splitting the data into their own files did not change this, because `const` at the top level of a classic script never creates a window property. `function` declarations *are* on `window`. So a harness can call `window.openLesson(3)` but must reach data through `window.eval('LESSONS_DATA')`. Test through the DOM, not through `window.someState`.
 - **Формы слова тренируются на обороте карточки, а не отдельным упражнением.** `declension_fill` больше не значится в `LESSON_DRILL_GROUPS`: круглая кнопка в углу карточки (появляется только после «Показать перевод») переворачивает её и запускает тот же вопрос о форме с теми же `.option-btn`. Вопросы собирает `cardDeclensionQuestions()` (`js/flashcards.js`) из двух источников — авторских `exercises.declension_fill` урока про это же слово (их дистракторы продуманы вручную, и их же берёт «Тест», поэтому данные не осиротели) и остальной парадигмы из `declension_forms`. Ключи генерируемых форм намеренно совпадают с авторскими (`gen_sg`, `2pl`, `nom_pl_m`, `dat_sg_f`), иначе один и тот же падеж попадёт в колоду дважды. Результат кешируется в `word._declQuestions` — тем же приёмом, что `entry._examples`. Ответ перерисовывает только `#cardDeclension`, а не всю карточку: иначе анимация переворота проигрывалась бы на каждый вариант.
-- **The dictionary and the flashcards share one cache.** `buildAllVocabCache()` (`js/vocab.js`) collects the vocabulary of every lesson ≥ `VOCAB_FIRST_LESSON` (lesson 1 is the letter names, not words), de-duplicates it and serves both screens; `startAllFlashcards(type)` builds its deck from there, not from `LESSONS_DATA` directly. A card and a dictionary entry are therefore literally the same object — which is why `findUsageExamples()` caches the full set in `entry._examples` and slices it, instead of caching whatever count the first caller asked for. The example search is **course-agnostic**: it walks `lesson.translation` and the `translate_*` drills of whichever course is open, and matches the word through its own paradigm forms. The Greek-looking names of its helpers (`foldAccents`, `tokenizeGreek`, `GREEK_WORD_SOURCE`) are historical — they cut tokens at “letter + diacritic”, which is right for Hebrew too, and strip only Greek accents, so niqqud stays part of the compared word. Both courses' rows are expandable in place: `vocabEntryHasDetails()` gives the dictionary the same usage example the lesson's word list shows, and — behind a «Показать формы» button rather than shown with the example — the same paradigm table. That strip must stay a **direct child of `.word-details`**, because `.word-details > .md-table-scroll` is the rule that turns the table over with the script; `.vocab-forms` therefore rides on the strip itself, not on a wrapper. In Hebrew that is 35 of 179 words — the ones the chapters' own sentences and phrase tables happen to contain — and that is the point: examples are never written by hand, they are sentences the textbook prints. **A flashcard shows the word's reading too** (`.flashcard-translit`, `flashcardBodyHtml()`), between the word and the translation, and it appears with the answer rather than before it: the card checks whether the word is remembered, and the reading is part of the answer, not a hint to the question. Its size is in `rem`, not through the script multipliers — it is Russian letters and Latin, a hint *about* the word.
+- **The dictionary and the flashcards share one cache.** `buildAllVocabCache()` (`js/vocab.js`) collects the vocabulary of every lesson ≥ `VOCAB_FIRST_LESSON` (lesson 1 is the letter names, not words), de-duplicates it and serves both screens; `startAllFlashcards(type)` builds its deck from there, not from `LESSONS_DATA` directly. A card and a dictionary entry are therefore literally the same object — which is why `findUsageExamples()` caches the full set in `entry._examples` and slices it, instead of caching whatever count the first caller asked for. The example search is **course-agnostic**: it walks `lesson.translation` and the `translate_*` drills of whichever course is open, and matches the word through its own paradigm forms. The Greek-looking names of its helpers (`foldAccents`, `tokenizeGreek`, `GREEK_WORD_SOURCE`) are historical — they cut tokens at “letter + diacritic”, which is right for Hebrew too, and strip only Greek accents, so niqqud stays part of the compared word. Both courses' rows are expandable in place: `vocabEntryHasDetails()` gives the dictionary the same usage example the lesson's word list shows, and — behind a «Показать формы» button rather than shown with the example — the same paradigm table. That strip must stay a **direct child of `.word-details`**, because `.word-details > .md-table-scroll` is the rule that turns the table over with the script; `.vocab-forms` therefore rides on the strip itself, not on a wrapper. In Hebrew that is 173 of 179 words — the ones the chapters' own sentences and phrase tables happen to contain, plus the Bible verses in `data/hebrew-examples.js` for the rest — and that is the point: examples are never written by hand, they are the textbook's sentences or OSHB verses. **A flashcard shows the word's reading too** (`.flashcard-translit`, `flashcardBodyHtml()`), between the word and the translation, and it appears with the answer rather than before it: the card checks whether the word is remembered, and the reading is part of the answer, not a hint to the question. Its size is in `rem`, not through the script multipliers — it is Russian letters and Latin, a hint *about* the word.
 - **The lesson's word list and the dictionary are the same row.** `#vocabList` (`js/lesson.js`) and `#allVocabContent` (`js/vocab.js`) both emit `.word-item > .word-row > strong + span`, and one CSS rule sizes the headword for both — so the two screens cannot drift apart, and a change to `.word-item .word-row strong` shows up in the lesson's material tab as well as in Словарь. (That one rule is also why the fixed headword size of "Text size" applies to both lists at once.) Their `.word-details` block opens with the same two blocks — **the reading of the word under the word itself, then the meanings the row had no room for** — and only then diverge: the dictionary follows with the usage example and puts the paradigm behind a «Показать формы» toggle, the lesson holds its paradigm table unfolded with the row. Both blocks are built by `renderVocabEntryTopHtml()` (`js/vocab.js`) from the same data, so the two screens cannot show different readings either. That element is **not** `.script`: it is Russian letters and Latin transliteration, written left to right, and the studied-language multipliers do not apply to it — it is a hint *about* the word, not the word. The article and the word are joined in both builders by a non-breaking space (`\u00A0`), so a row too tight for the pair wraps the translation instead of splitting the headword into «ἡ» and «ὁδός»; `tests/vocab.test.js` holds that. One cascade trap lives in that row: the chevron of the dictionary is a `<span>` too (`<span class="msym vocab-chevron">`), so the translation's own rule — `.word-item .word-row > span` in `screens.css` — would style it as well; both selectors are (0,2,0) and `screens.css` loads after `components.css`, so the chevron silently took the translation's `margin-left: auto` and its font size, drifting away from the translation and drawing at 0.875rem instead of 20px. The translation selector therefore carries `:not(.vocab-chevron)`, and `tests/static.test.js` fails if that exclusion is dropped.
 - **How much translation a row shows is a course fact, not a course branch.** `vocabRowGloss()` splits the translation on commas *outside* brackets (`splitVocabGlosses()` — «имя (известность, слава), Сим» is two meanings, not three) and, only when the course sets `vocabShortGloss` in `data/courses.js`, keeps the first meaning plus the second if both are short (≤ 8 characters, no brackets). The rest are handed to `vocabExtraGlosses()` and shown in the opened entry as a «Ещё значения» list. Hebrew sets the flag because its translation is a bare list of synonyms; Greek does not, and the reason is worth keeping: its comma list also carries case government («в, во (куда; с Acc.)»), so shortening the row there would hide half the dictionary entry. `tests/vocab.test.js` holds that line for Greek, `tests/hebrew-content.test.js` for Hebrew.
 - **Part of speech is a filter, not just a heading.** `item.type` in `data/lessons.js` drives the dictionary's section headings, the `.filter-chip` row above both screens, and which words go into a flashcard deck. The permitted values are listed in `VOCAB_TYPE_ORDER` and `TYPE_LABELS` (`js/vocab.js`): `noun`, `verb`, `adjective`, `pronoun`, `adverb`, `preposition`, `conjunction`, `particle`, `article`, `other`. A new type must go into both lists, or its words fall into «Прочее» and get no chip.
@@ -368,9 +369,11 @@ Window size classes drive navigation: bottom **navigation bar** in compact, **na
 
 ## Source textbooks
 
-There are two, one per course. Both are **reference material only**: nothing under
-`reference/` is loaded by the app, precached by `sw.js`, or listed in `index.html` —
-do not wire it in.
+There are three: one textbook per course, and a small OSHB set that feeds the
+dictionary examples. All are **reference material only**: nothing under `reference/`
+is loaded by the app, precached by `sw.js`, or listed in `index.html` — do not wire
+it in. The app reads its own copy of the selected verses, `data/hebrew-examples.js`;
+`reference/oshb/verses.json` is that copy's source of truth.
 
 ### Greek — `reference/machen-nt-greek/`
 
@@ -462,6 +465,34 @@ Two things to know before copying:
   another. Verify against the Westminster Leningrad Codex anything that goes into
   a drill. See `reference/nbbs-hebrew/restoration-report.md`.
 
+### Bible examples — `reference/oshb/`
+
+The Hebrew dictionary shows a usage example for a word the textbook never uses in a
+phrase. That example is a verse from the **Open Scriptures Hebrew Bible** (WLC 4.20,
+`lemma` attributes are Strong's numbers) with the **Synodal** Russian translation;
+115 verses are committed to `reference/oshb/verses.json`, and
+`data/hebrew-examples.js` is the app's copy. The rules are in
+`reference/oshb/README.md`; the important ones:
+
+- **The Hebrew is machine-extracted, never typed.** `data/hebrew-examples.js` is
+  keyed by the dictionary headword and carries the exact word form to highlight
+  (`form`), because the verse has an inflected form the entry's search forms do not
+  contain. `findUsageExamples()` looks the entry up by `entry.greek` — no morphology
+  is guessed at runtime.
+- **The verse is chosen for the right word, not for the shortest string.** The part
+  of speech is checked against the OSHB morph code, the Russian verse must contain a
+  stem of one of the entry's meanings, and chapters whose Synodal verse count differs
+  from OSHB are excluded (Isaiah 9, Malachi, Joel; Psalms is excluded entirely) —
+  there the verse numbers diverge and the Russian would belong to a neighbouring
+  verse. Five words (`יְרוּשָׁלִַם`, `חַי`, `קָטֹן`, `מְעַט`, `שֶׁמֶן`) were pinned by
+  hand for the same reason.
+- **Six function words stay without an example**: `וְ`, `לְ`, `בְּ`, `כְּ`, `הֲ`,
+  `עַל־דְּבַר`. They are prefixes or parts of a phrase in the verse and cannot be
+  highlighted as a word. That is the correct end state, not a gap.
+- **Never retype a verse, and never edit the Russian.** If an example is wrong,
+  choose another verse and regenerate both files; `tests/hebrew-content.test.js`
+  holds every example to `reference/oshb/verses.json` verbatim.
+
 ## The Hebrew course
 
 Scope was a pilot of **chapters 1–11**, the nominal system; **chapter 12 (Глагол) was
@@ -526,24 +557,43 @@ occurs in the alphabet pool, so a substituted look-alike cannot slip in.
 
 **Usage examples for Hebrew are never authored — they are the book's own sentences.**
 The dictionary and the flashcards ask `findUsageExamples()` for a sentence a word
-appears in, and that search reads `lesson.translation`; so a Hebrew example exists
-exactly where a chapter already prints a sentence containing the word (35 of 179 words
-today, and every one of them comes from a `translation` item copied out of
-`reference/nbbs-hebrew/`). Two consequences: adding examples means adding the *book's*
-sentences to a chapter's `translation`, never writing Hebrew phrases by hand; and a word
-the book never uses in a sentence gets no example at all — the row still opens (for the
-reading and the remaining meanings), but it shows no example there, and that is correct,
-not a gap. `tests/hebrew-content.test.js` holds the
-line by requiring each shown example to occur **as a whole sentence** in the reference,
-which the token-by-token check cannot do: one valid niqqud sign substituted for another
-looks identical on screen.
+appears in. A Hebrew example comes from one of two copied sources. The first is
+`lesson.translation`: a chapter's own sentence or phrase, copied out of
+`reference/nbbs-hebrew/` (57 of 179 words today). The second is
+`data/hebrew-examples.js`: a Bible verse from `reference/oshb/`, used for the 116
+words the textbook never puts in a phrase (see the OSHB subsection under "Source
+textbooks"). Neither source is authored: a textbook example is added to a chapter's
+`translation`, a Bible example is chosen and both files are regenerated. A word that
+neither source can illustrate — today the six function words `וְ`, `לְ`, `בְּ`, `כְּ`,
+`הֲ`, `עַל־דְּבַר` — shows no example; the row still opens for the reading and the
+remaining meanings, and that is correct, not a gap. `tests/hebrew-content.test.js`
+holds the line by requiring each shown example to occur **as a whole sentence** in one
+of the two references, which the token-by-token check cannot do: one valid niqqud sign
+substituted for another looks identical on screen.
+
+**A form the book prints is a search form, not a paradigm (2026-10-18).** Until then
+the search forms of an entry were its headword plus `declension_forms`, and most Hebrew
+nouns have no paradigm — so phrases added on 2026-10-14 did not actually produce
+examples. `בֵּין הַמַּיִם` contains `הַמַּיִם`, not `מַיִם`; `דִּבְרֵי מֶלֶךְ הָאָרֶץ`
+contains `דִּבְרֵי`, not `דָּבָר`. The phrase sat in `translation` and the entry still
+showed nothing. `usage_forms` closes that gap: the exact forms in which the book prints
+the word — construct state, plural, with a preposition or the article — copied
+character-for-character out of `reference/nbbs-hebrew/` and read by
+`getWordSearchForms()` (`js/vocab.js`). It is a list of search forms, never a second
+paradigm: nothing renders it, and `buildAllVocabCache()` must copy it by name or the
+dictionary loses it while the lesson's own word list keeps it. A form that finds no
+example is dead weight, so `tests/hebrew-content.test.js` checks every `usage_forms`
+entry against the example it is supposed to produce, beside the coverage floor.
 
 **Where the extra phrases came from (2026-10-14).** Chapters 1–11 print far more
 two-word phrases than the four `translation` sections used to hold: the construct and
 preposition tables in chapters 6, 8, 10 and 11 are full of them (`אַחַר הַמַּבּוּל`
 «после потопа», `בֵּן אֶחָד` «один сын», `חֲכַם־לֵב` «мудрый сердцем»). Sixteen of those
 were promoted to `translation.el_to_ru`, which took example coverage from 17 to 35 of
-179 words. Three things to know before repeating this:
+179 words. A second pass on 2026-10-18 added the remaining sentences and the
+`usage_forms` described below, taking it to 57 of 179. The Bible source added on
+2026-10-18 took it to 173. Three things to know before
+repeating this:
 
 - **Never retype a phrase you are about to insert.** Take the Hebrew string out of
   `reference/nbbs-hebrew/` (in practice: mine the table cells and match them by their

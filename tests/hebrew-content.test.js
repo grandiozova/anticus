@@ -40,6 +40,15 @@ function corpus() {
     return text;
 }
 
+// Второй подлинный источник примеров — стихи OSHB, отобранные для слов,
+// которых пособие не употребляет в обороте (reference/oshb/verses.json).
+function oshbCorpus() {
+    const file = repoPath('reference', 'oshb', 'verses.json');
+    if (!fs.existsSync(file)) return '';
+    const data = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return (data.verses || []).map(v => v.he + '\n' + v.ru).join('\n');
+}
+
 // Слова курса: всё еврейское, что лежит в данных уроков, — в грамматике,
 // словаре, вопросах упражнений и в вариантах ответа.
 function hebrewTokens(value, out) {
@@ -143,7 +152,10 @@ test('примеры в еврейском словаре взяты из пос
     `));
 
     const withEx = rows.filter(r => r.ex);
-    assert.ok(withEx.length >= 10, 'примеров в еврейском словаре подозрительно мало: ' + withEx.length);
+    // 173 of 179: пособие плюс библейские примеры. Пустыми остаются только
+    // служебные слова (וְ, לְ, בְּ, כְּ, הֲ, עַל־דְּבַר) — их в стихе не
+    // подсветить как отдельное слово.
+    assert.ok(withEx.length >= 160, 'примеров в еврейском словаре подозрительно мало: ' + withEx.length);
 
     // Парадигма идёт на экран в полосе прокрутки — той же, что в словаре
     // урока: только она разворачивает таблицу вместе с письмом. Без полосы
@@ -187,7 +199,8 @@ test('примеры в еврейском словаре взяты из пос
 
     // Пробелы в справочнике переносятся по строкам, а знаков конца
     // предложения в нём нет вовсе: их дописывает asSentence()/endPunctFrom().
-    const text = corpus().replace(/\s+/g, ' ');
+    // Библейские примеры сверяются со своим источником — reference/oshb.
+    const text = (corpus() + '\n' + oshbCorpus()).replace(/\s+/g, ' ');
     const missing = [];
     for (const r of withEx) {
         const needle = String(r.ex).replace(/[.!?]+$/, '').replace(/\s+/g, ' ');
@@ -195,6 +208,100 @@ test('примеры в еврейском словаре взяты из пос
     }
     assert.deepStrictEqual(missing, [],
         'этих предложений нет в расшифрованном пособии дословно:\n  ' + missing.join('\n  '));
+
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('формы употребления находят слово в обороте пособия', () => {
+    // Парадигмы у большинства существительных нет, а в пособии слово стоит
+    // в сопряжённом состоянии или с артиклем: דִּבְרֵי, הַמַּיִם, בֵּית.
+    // Эти формы записаны в usage_forms, и поиск идёт по ним. Мёртвая форма —
+    // та, которая не находит ни одного оборота, — оставила бы слово без
+    // примера, поэтому проверяем не наличие поля, а его работу.
+    const app = loadApp(GREEK);
+    const w = app.window;
+    w.applyCourse('hebrew');
+    w.showAllVocab();
+    const rows = JSON.parse(app.get(`
+        JSON.stringify(getAllVocab().filter(function (e) {
+            return (e.usage_forms || []).length;
+        }).map(function (e) {
+            return {
+                word: e.greek,
+                forms: e.usage_forms,
+                examples: findUsageExamples(e, 3).map(function (x) { return x.greek; })
+            };
+        }))`));
+    assert.ok(rows.length >= 15, 'форм употребления подозрительно мало: ' + rows.length);
+    const dead = rows.filter(r => !r.examples.length).map(r => r.word);
+    assert.deepStrictEqual(dead, [], 'форма не нашла примера: ' + dead.join(', '));
+    const wrong = rows.filter(r => !r.examples.some(ex => r.forms.some(f => ex.indexOf(f) !== -1)))
+        .map(r => r.word + ' -> ' + r.forms.join(', '));
+    assert.deepStrictEqual(wrong, [], 'формы нет в найденном примере:\n  ' + wrong.join('\n  '));
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('библейские примеры скопированы из OSHB, а не набраны руками', () => {
+    // Второй источник — только для слов, которых нет в оборотах пособия.
+    // Проверяем не «поле заполнено», а дословность: стих совпадает с
+    // reference/oshb/verses.json, перевод — с Синодальным, а форма для
+    // подсветки действительно стоит в стихе.
+    const ref = JSON.parse(fs.readFileSync(repoPath('reference', 'oshb', 'verses.json'), 'utf8'));
+    const byText = new Map(ref.verses.map(v => [v.he, v]));
+
+    const app = loadApp(GREEK);
+    const w = app.window;
+    w.applyCourse('hebrew');
+    w.showAllVocab();
+
+    const rows = JSON.parse(app.get(`
+        JSON.stringify(getAllVocab().filter(function (e) {
+            return typeof HEBREW_EXAMPLES !== 'undefined' && HEBREW_EXAMPLES[e.greek];
+        }).map(function (e) {
+            return { word: e.greek, examples: HEBREW_EXAMPLES[e.greek] };
+        }))`));
+    assert.ok(rows.length >= 100, 'библейских примеров подозрительно мало: ' + rows.length);
+
+    // Ключ — ровно словарная статья, иначе пример повис бы в файле без адресата.
+    const orphans = JSON.parse(app.get(`
+        JSON.stringify(Object.keys(HEBREW_EXAMPLES).filter(function (k) {
+            return !getAllVocab().some(function (e) { return e.greek === k; });
+        }))`));
+    assert.deepStrictEqual(orphans, [], 'примеры без словарной статьи: ' + orphans.join(', '));
+
+    const bad = [];
+    for (const r of rows) {
+        for (const ex of r.examples) {
+            const src = byText.get(ex.text);
+            if (!src) bad.push(r.word + ': стиха нет в reference/oshb — ' + ex.text);
+            else if (src.ru !== ex.russian) bad.push(r.word + ': перевод разошёлся со справочником');
+            if (!ex.form || ex.text.indexOf(ex.form) === -1) bad.push(r.word + ': формы нет в стихе');
+            if (!ex.ref) bad.push(r.word + ': нет ссылки на стих');
+        }
+    }
+    assert.deepStrictEqual(bad.slice(0, 10), [], 'библейские примеры повреждены:\n  ' + bad.slice(0, 10).join('\n  '));
+
+    // Подсветка идёт по форме из примера, а не по словарной статье — и у
+    // каждой формы, иначе стих показывался бы без выделенного слова.
+    const notHighlighted = [];
+    for (const r of rows) {
+        for (const ex of r.examples) {
+            const html = app.get('highlightWord(' + JSON.stringify(ex.text) + ', null, '
+                + JSON.stringify(ex.form) + ')');
+            if (html.indexOf('<strong>' + ex.form + '</strong>') === -1) notHighlighted.push(r.word);
+        }
+    }
+    assert.deepStrictEqual(notHighlighted.slice(0, 10), [],
+        'форма примера не подсвечена: ' + notHighlighted.slice(0, 10).join(', '));
+
+    // Словарь закрыт: без примера остаются только служебные слова.
+    const noEx = JSON.parse(app.get(`
+        JSON.stringify(getAllVocab().filter(function (e) {
+            return !findUsageExamples(e, 1).length;
+        }).map(function (e) { return e.greek; }))`));
+    assert.ok(noEx.length <= 6, 'без примера осталось слишком много слов: ' + noEx.join(' '));
 
     assert.deepStrictEqual(app.errors, []);
     app.close();

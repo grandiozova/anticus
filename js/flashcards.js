@@ -144,8 +144,9 @@ function flashcardContextBlockHtml(word) {
     let examples = findUsageExamples(word, 1);
     if (!examples.length) return '';
     return '<div class="vocab-example">' +
-        '<div class="vocab-example__script">' + highlightWord(examples[0].greek, word) + '</div>' +
+        '<div class="vocab-example__script">' + highlightWord(examples[0].greek, word, examples[0].form) + '</div>' +
         '<div class="vocab-example__ru">' + examples[0].russian + '</div>' +
+        (examples[0].ref ? '<div class="vocab-example__ref">' + examples[0].ref + '</div>' : '') +
     '</div>';
 }
 

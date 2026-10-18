@@ -38,7 +38,10 @@ function buildAllVocabCache() {
                 translation: item.translation,
                 type: item.type || 'other',
                 lesson: l,
-                declension_forms: item.declension_forms || null
+                declension_forms: item.declension_forms || null,
+                // Формы, в которых слово встречается в оборотах пособия:
+                // по ним findUsageExamples находит пример и в словаре, и в уроке.
+                usage_forms: item.usage_forms || null
             };
             entries.push(entry);
             vocabById.set(entry.id, entry);
@@ -169,9 +172,14 @@ function addSearchForm(form, out) {
 }
 
 // Базовая форма + все словоформы слова — по ним ищем совпадения в предложениях.
+// usage_forms — формы, в которых слово напечатано в оборотах пособия
+// (сопряжённое состояние, множественное число, форма с предлогом или артиклем):
+// парадигмы у этих слов нет, а пример употребления есть, и найти его можно
+// только по той форме, которая реально стоит в предложении.
 function getWordSearchForms(entry) {
     let forms = new Set();
     addSearchForm((entry.greek || '').split(',')[0].split('(')[0].trim(), forms);
+    (entry.usage_forms || []).forEach(f => addSearchForm(f, forms));
     if (entry.declension_forms && entry.declension_forms.tables) {
         // У парадигмы, описанной осями, подписи строк и колонок лежат в тех же
         // данных, что и формы («1 общ. ед.», «Тип 1»). Обход всех строк подряд
@@ -192,9 +200,24 @@ function getWordSearchForms(entry) {
     return forms;
 }
 
-// Выделяем найденную форму слова жирным прямо в тексте примера.
-function highlightWord(sentence, entry) {
+// Выделяем найденную форму слова жирным прямо в тексте примера. Если пример
+// пришёл из библейского списка, форма для подсветки известна заранее: в стихе
+// стоит словоформа, которой нет ни в словарной статье, ни в парадигме.
+function highlightWord(sentence, entry, form) {
     if (!sentence) return sentence;
+    if (form) {
+        // Форма из библейского примера — целое слово стиха. Проверяем границы,
+        // чтобы короткая форма не подсветила кусок другого слова.
+        let at = sentence.indexOf(form);
+        while (at !== -1) {
+            let before = at ? sentence[at - 1] : '';
+            let after = sentence[at + form.length] || '';
+            if (!/[\p{L}\p{M}]/u.test(before) && !/[\p{L}\p{M}]/u.test(after)) {
+                return sentence.slice(0, at) + '<strong>' + form + '</strong>' + sentence.slice(at + form.length);
+            }
+            at = sentence.indexOf(form, at + 1);
+        }
+    }
     let forms = getWordSearchForms(entry);
     let re = new RegExp(GREEK_WORD_SOURCE, 'gu');
     let m;
@@ -262,15 +285,20 @@ function findUsageExamples(entry, maxCount) {
     let examples = [];
     let forms = getWordSearchForms(entry);
     let seen = new Set();
+    function push(greek, russian, form, ref) {
+        if (!greek || !russian || examples.length >= cap) return;
+        let tokens = tokenizeGreek(greek);
+        let key = tokens.join(' ');
+        if (seen.has(key)) return;
+        seen.add(key);
+        examples.push({ greek: greek, russian: russian, form: form || '', ref: ref || '' });
+    }
     function tryAdd(greek, russian) {
         if (!greek || !russian || examples.length >= cap) return;
         let tokens = tokenizeGreek(greek);
         if (!tokens.some(t => forms.has(t))) return;
         if (isTrivialExample(greek, entry)) return;
-        let key = tokens.join(' ');
-        if (seen.has(key)) return;
-        seen.add(key);
-        examples.push({ greek: greek, russian: russian });
+        push(greek, russian);
     }
     let rest = Object.keys(courseLessons()).map(Number).sort((a, b) => a - b).filter(n => n !== entry.lesson);
     let lessons = [entry.lesson].concat(rest);
@@ -290,6 +318,14 @@ function findUsageExamples(entry, maxCount) {
             tryAdd(q.greek, asSentence(q.keywords));
         });
     });
+    // Библейские примеры — второй подлинный источник (data/hebrew-examples.js),
+    // только для слов, которые пособие ни разу не употребило в обороте. Здесь
+    // нечего искать по формам: статья уже названа ключом, а словоформа для
+    // подсветки лежит рядом с текстом. Стих берётся из OSHB, перевод —
+    // Синодальный; оба скопированы машинно (см. reference/oshb/README.md).
+    if (typeof HEBREW_EXAMPLES !== 'undefined' && entry.greek) {
+        (HEBREW_EXAMPLES[entry.greek] || []).forEach(ex => push(ex.text, ex.russian, ex.form, ex.ref));
+    }
     entry._examples = examples;
     return examples;
 }
@@ -434,8 +470,9 @@ function renderVocabExamplesHtml(entry) {
     if (examples.length) {
         return '<div class="vocab-examples">' + examples.map(ex =>
             '<div class="vocab-example">' +
-                '<div class="vocab-example__script">' + highlightWord(ex.greek, entry) + '</div>' +
+                '<div class="vocab-example__script">' + highlightWord(ex.greek, entry, ex.form) + '</div>' +
                 '<div class="vocab-example__ru">' + ex.russian + '</div>' +
+                (ex.ref ? '<div class="vocab-example__ref">' + ex.ref + '</div>' : '') +
             '</div>').join('') + '</div>';
     }
     if (entry.declension_forms) return '';

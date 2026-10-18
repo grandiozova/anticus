@@ -45,6 +45,13 @@
 //                   статье (js/vocab.js)
 //     type        — часть речи из VOCAB_TYPE_ORDER
 //     freq        — частота в еврейской Библии, из словаря справочника
+//     usage_forms — необязательный список форм, в которых слово напечатано
+//                   в оборотах пособия: сопряжённое состояние, множественное
+//                   число, форма с предлогом или артиклем (דִּבְרֵי, הַמַּיִם,
+//                   בֵּית). По ним findUsageExamples находит пример, когда
+//                   словарной формы в предложении нет. Каждая форма копируется
+//                   из справочника дословно; на экран они не выводятся — это не
+//                   парадигма, а адреса словоформ в примерах.
 
 // ============================================================
 // АЛФАВИТ ЕВРЕЙСКОГО КУРСА
@@ -260,9 +267,9 @@ const HEBREW_LESSONS_DATA = {
             {greek:"יִשְׂרָאֵל", translit:"Исраэ́ль (yiśrāʾēl)", translation:"Израиль", type:"noun", freq:2507},
             {greek:"אֶ֫רֶץ", translit:"э́рэц (ʾereṣ)", translation:"земля, страна", type:"noun", freq:2505},
             {greek:"יוֹם", translit:"йом (yôm)", translation:"день, сегодня, время", type:"noun", freq:2301},
-            {greek:"בַּ֫יִת", translit:"ба́йит (bayiṯ)", translation:"дом", type:"noun", freq:2047},
-            {greek:"דָּבָר", translit:"давáр (dāḇār)", translation:"слово, дело, вещь", type:"noun", freq:1454},
-            {greek:"אָב", translit:"ав (ʾāḇ)", translation:"отец, праотец", type:"noun", freq:1211},
+            {greek:"בַּ֫יִת", translit:"ба́йит (bayiṯ)", translation:"дом", type:"noun", freq:2047, usage_forms:["בֵּית","בְּבֵית"]},
+            {greek:"דָּבָר", translit:"давáр (dāḇār)", translation:"слово, дело, вещь", type:"noun", freq:1454, usage_forms:["דִּבְרֵי","דְּבַר"]},
+            {greek:"אָב", translit:"ав (ʾāḇ)", translation:"отец, праотец", type:"noun", freq:1211, usage_forms:["אֲבִי","אָבִ֫יהוּ"]},
             {greek:"שָׁנָה", translit:"шана́ (šānāh)", translation:"год, ежегодный", type:"noun", freq:878},
             {greek:"שֵׁם", translit:"шэм (šēm)", translation:"имя (известность, слава), Сим", type:"noun", freq:864},
             {greek:"עֶ֫בֶד", translit:"э́вэд (ʿeḇeḏ)", translation:"слуга, раб", type:"noun", freq:803},
@@ -274,6 +281,11 @@ const HEBREW_LESSONS_DATA = {
             {greek:"פַּרְעֹה", translit:"паро́ (parʿōh)", translation:"фараон", type:"noun", freq:274},
             {greek:"סוּס", translit:"сус (sûs)", translation:"лошадь, конь, наездник", type:"noun", freq:138},
         ],
+        translation: {
+            el_to_ru: [
+                {source:"הַלְלוּ־יָהּ כִּי־טוֹב", correct:"Славьте Господа ибо Он благ"},
+            ]
+        },
         exercises: {
             heb_vowel_name: [
                 {sign:"בַּ", correct:"патах", distractors:["сегол","хирек","киббуц"]},
@@ -367,7 +379,7 @@ const HEBREW_LESSONS_DATA = {
         grammar: `<b>1. Род и число</b><br>У существительного есть род и число. Род всегда один из двух — мужской или женский; среднего рода нет. Чисел три: единственное, множественное и <b>двойственное</b>.<br><br><b>2. Окончания</b><br>• Мужской род ед. числа окончания не имеет: <span class="script">סוּס</span> «конь»<br>• Мужской род мн. числа — <span class="script">יִם</span>: <span class="script">סוּסִים</span><br>• Женский род ед. числа чаще всего <span class="script">הָ</span>: <span class="script">תּוֹרָה</span> «закон»; известны и другие окончания<br>• Женский род мн. числа — <span class="script">וֹת</span>: <span class="script">תּוֹרוֹת</span><br>• Двойственное число — <span class="script">יִַם</span>: <span class="script">מַ֫יִם</span> «вода», <span class="script">שָׁמַיִם</span> «небеса»<br><br><b>3. Словарная форма</b><br>В словаре существительное стоит в единственном числе. Форму множественного числа приходится запоминать: основа при этом нередко меняется.<br><br><b>4. Исключения</b><br>Правила не покрывают всего. Встречаются существительные женского рода без женского окончания (<span class="script">אֶ֫רֶץ</span> «земля», <span class="script">נֶ֫פֶשׁ</span> «душа»), слова, заимствующие окончание другого рода, особые формы двойственного числа и неправильное изменение основы.`,
         vocabulary: [
             {greek:"אִישׁ", translit:"иш (ʾîš)", translation:"человек, мужчина, муж", type:"noun", freq:2198},
-            {greek:"עִיר", translit:"ир (ʿîr)", translation:"город", type:"noun", freq:1095},
+            {greek:"עִיר", translit:"ир (ʿîr)", translation:"город", type:"noun", freq:1095, usage_forms:["בָּעִיר"]},
             {greek:"עַ֫יִן", translit:"а́йин (ʿayin)", translation:"глаз, зрение", type:"noun", freq:900},
             {greek:"לֵב", translit:"лэв (lēḇ)", translation:"сердце", type:"noun", freq:854},
             {greek:"אִשָּׁה", translit:"иша́ (ʾiššāh)", translation:"женщина, жена", type:"noun", freq:779},
@@ -375,12 +387,12 @@ const HEBREW_LESSONS_DATA = {
             {greek:"נֶ֫פֶשׁ", translit:"нэ́фэш (nep̄eš)", translation:"жизнь, душа", type:"noun", freq:757},
             {greek:"כֹּהֵן", translit:"кохэ́н (kōhēn)", translation:"священник, жрец", type:"noun", freq:750},
             {greek:"דֶּ֫רֶךְ", translit:"дэ́рэх (dereḵ)", translation:"дорога, путь, путешествие", type:"noun", freq:712},
-            {greek:"אָח", translit:"ах (ʾāḥ)", translation:"брат", type:"noun", freq:629},
+            {greek:"אָח", translit:"ах (ʾāḥ)", translation:"брат", type:"noun", freq:629, usage_forms:["אַחִים","אֲחִי"]},
             {greek:"בַּת", translit:"бат (baṯ)", translation:"дочь", type:"noun", freq:603},
             {greek:"רֹאשׁ", translit:"рош (rōʾš)", translation:"голова, глава (предводитель)", type:"noun", freq:600},
-            {greek:"מַ֫יִם", translit:"ма́йим (mayim)", translation:"вода", type:"noun", freq:586},
+            {greek:"מַ֫יִם", translit:"ма́йим (mayim)", translation:"вода", type:"noun", freq:586, usage_forms:["הַמַּ֫יִם"]},
             {greek:"גּוֹי", translit:"гой (gôy)", translation:"народ", type:"noun", freq:560},
-            {greek:"הַר", translit:"хар (har)", translation:"гора, холм, нагорная страна", type:"noun", freq:558},
+            {greek:"הַר", translit:"хар (har)", translation:"гора, холм, нагорная страна", type:"noun", freq:558, usage_forms:["הֶהָרִים"]},
             {greek:"קוֹל", translit:"коль (qôl)", translation:"голос, звук, шум, гром", type:"noun", freq:505},
             {greek:"צָבָא", translit:"цава́ (ṣāḇāʾ)", translation:"войско, воинство, война", type:"noun", freq:486},
             {greek:"נָבִיא", translit:"нави́ (nāḇîʾ)", translation:"пророк", type:"noun", freq:317},
@@ -440,13 +452,13 @@ const HEBREW_LESSONS_DATA = {
             {greek:"עוֹלָם", translit:"ола́м (ʿôlām)", translation:"вечность, вечный, бесконечный", type:"noun", freq:439},
             {greek:"מִשְׁפָּט", translit:"мишпа́т (mišpāṭ)", translation:"правосудие, суд, приговор, справедливость", type:"noun", freq:425},
             {greek:"שַׂר", translit:"сар (śar)", translation:"вельможа, чиновник", type:"noun", freq:425},
-            {greek:"שָׁמַיִם", translit:"шама́йим (šāmayim)", translation:"небо, небеса, космос", type:"noun", freq:421},
+            {greek:"שָׁמַיִם", translit:"шама́йим (šāmayim)", translation:"небо, небеса, космос", type:"noun", freq:421, usage_forms:["הַשָּׁמַ֫יִם"]},
             {greek:"חֶרֶב", translit:"хэ́рэв (ḥereḇ)", translation:"меч", type:"noun", freq:413},
             {greek:"כֶּ֫סֶף", translit:"кэ́сэф (kesep̄)", translation:"серебро, деньги", type:"noun", freq:403},
             {greek:"מִזְבֵּחַ", translit:"мизбэ́ах (mizbēaḥ)", translation:"жертвенник", type:"noun", freq:403},
             {greek:"מָקוֹם", translit:"мако́м (māqôm)", translation:"место", type:"noun", freq:401},
             {greek:"יָם", translit:"ям (yām)", translation:"море, запад, берег моря", type:"noun", freq:396},
-            {greek:"זָהָב", translit:"заха́в (zāhāḇ)", translation:"золото, золотой", type:"noun", freq:392},
+            {greek:"זָהָב", translit:"заха́в (zāhāḇ)", translation:"золото, золотой", type:"noun", freq:392, usage_forms:["מִזָּהָב"]},
             {greek:"רוּחַ", translit:"ру́ах (rûaḥ)", translation:"ветер, дух, дыхание", type:"noun", freq:378},
             {greek:"אֵשׁ", translit:"эш (ʾēš)", translation:"огонь, пламя", type:"noun", freq:376},
             {greek:"נְאֻם", translit:"нэу́м (nǝʾum)", translation:"высказывание, изречение", type:"noun", freq:376},
@@ -456,6 +468,11 @@ const HEBREW_LESSONS_DATA = {
             {greek:"עָנָן", translit:"ана́н (ʿānān)", translation:"облако, облака", type:"noun", freq:87},
             {greek:"הֵיכָל", translit:"хэйха́ль (hêḵāl)", translation:"дворец, храм", type:"noun", freq:80},
         ],
+        translation: {
+            el_to_ru: [
+                {source:"הַטּוֹב וְהַיָּשָׁר", correct:"благой и честный"},
+            ]
+        },
         exercises: {
             article_fill: [
                 {noun:"מֶ֫לֶךְ", correct_article:"הַ", distractors:["הָ","הֶ"]},
@@ -517,7 +534,7 @@ const HEBREW_LESSONS_DATA = {
             {greek:"מִן", translit:"мин (min)", translation:"от, из", type:"preposition", freq:7592},
             {greek:"עַל", translit:"аль (ʿal)", translation:"на, над, около", type:"preposition", freq:5777},
             {greek:"אֶל", translit:"эль (ʾel)", translation:"к", type:"preposition", freq:5518},
-            {greek:"כֹּל", translit:"коль (kōl)", translation:"весь, целый", type:"noun", freq:5415},
+            {greek:"כֹּל", translit:"коль (kōl)", translation:"весь, целый", type:"noun", freq:5415, usage_forms:["מִכֹּל"]},
             {greek:"כְּ", translit:"кэ (kǝ)", translation:"как, подобно, в соответствии с", type:"preposition", freq:3053},
             {greek:"עַד", translit:"ад (ʿaḏ)", translation:"о пространстве: до, вплоть до", type:"preposition", freq:1263},
             {greek:"לִפְנֵי", translit:"лифнэ́ (lip̄nê)", translation:"перед, в присутствии", type:"preposition", freq:1102},
@@ -527,7 +544,7 @@ const HEBREW_LESSONS_DATA = {
             {greek:"פֶּה", translit:"пэ (peh)", translation:"рот, край, отверстие", type:"noun", freq:498},
             {greek:"בְּתוֹךְ", translit:"бэто́х (bǝṯôḵ)", translation:"среди, внутри", type:"preposition", freq:420},
             {greek:"בֵּין", translit:"бэн (bên)", translation:"между, среди", type:"preposition", freq:409},
-            {greek:"שָׂדֶה", translit:"садэ́ (śāḏeh)", translation:"поле, земля", type:"noun", freq:329},
+            {greek:"שָׂדֶה", translit:"садэ́ (śāḏeh)", translation:"поле, земля", type:"noun", freq:329, usage_forms:["הַשָּׂדֶה"]},
             {greek:"לְמַ֫עַן", translit:"лэма́ан (lǝmaʿan)", translation:"чтобы", type:"conjunction", freq:272},
             {greek:"מִצְוָה", translit:"мицва́ (miṣwāh)", translation:"приказ, заповедь", type:"noun", freq:184},
             {greek:"חָכְמָה", translit:"хохма́ (ḥoḵmāh)", translation:"мудрость", type:"noun", freq:153},
@@ -552,6 +569,10 @@ const HEBREW_LESSONS_DATA = {
         },
         translation: {
             el_to_ru: [
+                {source:"טוֹבָה חָכְמָה מִזָּהָב", correct:"Мудрость лучше золота"},
+                {source:"קָשָׁה הָעֲבוֹדָה מֵהָאֲנָשִׁים", correct:"Эта работа слишком трудна для людей"},
+                {source:"עָרוּם מִכֹּל חַיַּת הַשָּׂדֶה", correct:"Умнейший из всех живых существ полевых"},
+                {source:"כָּמוֹךָ מִי־אֵל", correct:"Кто из богов как Ты"},
                 {source:"לִפְנֵי הַמֶּ֫לֶךְ", correct:"пред царём"},
                 {source:"אַחַר הַמַּבּוּל", correct:"после потопа"},
                 {source:"בֵּין הַמַּ֫יִם", correct:"между водами"},
@@ -584,7 +605,7 @@ const HEBREW_LESSONS_DATA = {
             {greek:"כֵּן", translit:"кэн (kēn)", translation:"так, таким образом", type:"adverb", freq:741},
             {greek:"טוֹב", translit:"тов (ṭôḇ)", translation:"хороший, добрый", type:"adjective", freq:535, declension_forms:{tables:[{rows:{label:"",values:[["sg","Ед. число"],["pl","Множ. число"]]},cols:{values:[["m","Муж. род"],["f","Жен. род"]]},cells:{sg:{m:"טוֹב",f:"טוֹבָה"},pl:{m:"טוֹבִים",f:"טוֹבוֹת"}}}]}},
             {greek:"גָּדוֹל", translit:"гадо́ль (gāḏôl)", translation:"великий, большой", type:"adjective", freq:527},
-            {greek:"קֶ֫דֶשׁ", translit:"кэ́дэш (qeḏeš)", translation:"святыня, нечто священное", type:"noun", freq:470},
+            {greek:"קֶ֫דֶשׁ", translit:"кэ́дэш (qeḏeš)", translation:"святыня, нечто священное", type:"noun", freq:470, usage_forms:["קֹ֫דֶשׁ"]},
             {greek:"רַב", translit:"рав (raḇ)", translation:"многочисленный, изобилующий", type:"adjective", freq:439},
             {greek:"עַתָּה", translit:"ата́ (ʿattāh)", translation:"сейчас, теперь", type:"adverb", freq:435},
             {greek:"רַע", translit:"ра (raʿ)", translation:"плохой, нечестивый", type:"adjective", freq:331},
@@ -593,16 +614,16 @@ const HEBREW_LESSONS_DATA = {
             {greek:"צַדִּיק", translit:"цадди́к (ṣaddîq)", translation:"справедливый, праведный", type:"adjective", freq:206},
             {greek:"זָקֵן", translit:"закэ́н (zāqēn)", translation:"старый", type:"adjective", freq:180},
             {greek:"חָכָם", translit:"хаха́м (ḥāḵām)", translation:"мудрый, мудрец", type:"adjective", freq:138},
-            {greek:"יָשָׁר", translit:"яша́р (yāšār)", translation:"прямой, правый, справедливый", type:"adjective", freq:119},
-            {greek:"קָדוֹשׁ", translit:"кадо́ш (qāḏôš)", translation:"святой", type:"adjective", freq:117},
+            {greek:"יָשָׁר", translit:"яша́р (yāšār)", translation:"прямой, правый, справедливый", type:"adjective", freq:119, usage_forms:["וְהַיָּשָׁר"]},
+            {greek:"קָדוֹשׁ", translit:"кадо́ш (qāḏôš)", translation:"святой", type:"adjective", freq:117, usage_forms:["קְדוֹשׁ"]},
             {greek:"מְעַט", translit:"мэа́т (mǝʿaṭ)", translation:"мало, немного", type:"adverb", freq:101},
             {greek:"קָטֹן", translit:"като́н (qāṭōn)", translation:"маленький, младший, незначительный", type:"adjective", freq:86},
             {greek:"רָחוֹק", translit:"рахо́к (rāḥôq)", translation:"далёкий, отдалённый", type:"adjective", freq:84},
-            {greek:"שִׁיר", translit:"шир (šîr)", translation:"песня", type:"noun", freq:78},
+            {greek:"שִׁיר", translit:"шир (šîr)", translation:"песня", type:"noun", freq:78, usage_forms:["שִׁ֫יר","הַשִּׁירִים"]},
             {greek:"קָרוֹב", translit:"каро́в (qārōḇ)", translation:"близкий, надвигающийся", type:"adjective", freq:75},
             {greek:"דַּל", translit:"даль (dal)", translation:"бедный", type:"adjective", freq:48},
-            {greek:"יָפֶה", translit:"япэ́ (yāp̄eh)", translation:"красивый", type:"adjective", freq:43},
-            {greek:"קָשֶׁה", translit:"кашэ́ (qāšeh)", translation:"трудный, тяжёлый, суровый", type:"adjective", freq:36},
+            {greek:"יָפֶה", translit:"япэ́ (yāp̄eh)", translation:"красивый", type:"adjective", freq:43, usage_forms:["יְפַת"]},
+            {greek:"קָשֶׁה", translit:"кашэ́ (qāšeh)", translation:"трудный, тяжёлый, суровый", type:"adjective", freq:36, usage_forms:["קָשָׁה"]},
         ],
         exercises: {
             attribute_vs_predicate: [
@@ -642,6 +663,7 @@ const HEBREW_LESSONS_DATA = {
         },
         translation: {
             el_to_ru: [
+                {source:"סוּס טוֹב", correct:"хороший конь"},
                 {source:"אִישׁ טוֹב", correct:"добрый человек"},
                 {source:"הָאִשָּׁה הַטּוֹבָה", correct:"эта добрая женщина"},
                 {source:"אֲנָשִׁים טוֹבִים", correct:"добрые люди"},
@@ -675,7 +697,7 @@ const HEBREW_LESSONS_DATA = {
             {greek:"מָה", translit:"ма (māh)", translation:"что? почему? как?", type:"pronoun", freq:571},
             {greek:"הֲ", translit:"ха (hă)", translation:"ли (вопросительная частица)", type:"particle", freq:513},
             {greek:"כַּאֲשֶׁר", translit:"каашэ́р (kaʾăšer)", translation:"как, когда", type:"conjunction", freq:511},
-            {greek:"אֶ֫לֶף", translit:"э́лэф (ʾelep̄)", translation:"тысяча", type:"noun", freq:497},
+            {greek:"אֶ֫לֶף", translit:"э́лэф (ʾelep̄)", translation:"тысяча", type:"noun", freq:497, usage_forms:["אֲלָפִים"]},
             {greek:"מִי", translit:"ми (mî)", translation:"кто? кто бы ни (без различия рода)", type:"pronoun", freq:424},
             {greek:"דָּם", translit:"дам (dām)", translation:"кровь, кровопролитие", type:"noun", freq:361},
             {greek:"אֹ֫הֶל", translit:"о́хэль (ʾōhel)", translation:"палатка", type:"noun", freq:348},
@@ -718,6 +740,7 @@ const HEBREW_LESSONS_DATA = {
         },
         translation: {
             el_to_ru: [
+                {source:"אַתֶּם בָּעִיר הַגְּדוֹלָה", correct:"Вы в великом городе"},
                 {source:"הֶהָרִים אֲשֶׁר־תַּ֫חַת הַשָּׁמַ֫יִם", correct:"горы под небесами"},
                 {source:"הָעֵץ אֲשֶׁר בְּתוֹךְ־הַגָּן", correct:"дерево среди сада"},
                 {source:"מָה הַחֲלוֹם הַזֶה", correct:"что это за сон"},
@@ -836,6 +859,14 @@ const HEBREW_LESSONS_DATA = {
         },
         translation: {
             el_to_ru: [
+                {source:"אֲבִי אַבְרָהָם", correct:"отец Авраама"},
+                {source:"בֵּית מַלְכִּי", correct:"дом моего царя"},
+                {source:"עֶ֫בֶד אֲחִי הַמֶּ֫לֶךְ", correct:"слуга брата царя"},
+                {source:"דְּבַר הַמַּלְכָּה הַטּוֹב", correct:"доброе слово царицы"},
+                {source:"יְפַת מַרְאֶה", correct:"красивый видом"},
+                {source:"בְּבֵית דָּוִד", correct:"в доме Давида"},
+                {source:"קֹ֫דֶשׁ הַקֳּדָשִׁים", correct:"святое святых"},
+                {source:"שִׁ֫יר הַשִּׁירִים", correct:"песня песней"},
                 {source:"קְדוֹשׁ יִשְׂרָאֵל", correct:"Святой Израилев"},
                 {source:"סֵ֫פֶר אָבִ֫יהוּ", correct:"книга его отца"},
                 {source:"חֲכַם־לֵב", correct:"мудрый сердцем"},
@@ -924,6 +955,7 @@ const HEBREW_LESSONS_DATA = {
         },
         translation: {
             el_to_ru: [
+                {source:"שְׁלֹ֫שֶׁת אֲלָפִים", correct:"три тысячи"},
                 {source:"בֵּן אֶחָד", correct:"один сын"},
                 {source:"בַּת אַחַת", correct:"одна дочь"},
                 {source:"בִּשְׁלֹשִׁים וָשֶׁבַע שָׁנָה", correct:"в тридцать седьмой год"},

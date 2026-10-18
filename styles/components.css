@@ -967,6 +967,14 @@
     line-height: 1.25rem;
     color: var(--md-sys-color-on-surface-variant);
 }
+/* Ссылка на стих — только у примеров из Библии (data/hebrew-examples.js).
+   Мелкая и приглушённая: она объясняет, откуда пример, а не участвует в чтении. */
+.vocab-example__ref {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    margin-top: 2px;
+    color: var(--md-sys-color-on-surface-variant);
+}
 .vocab-examples-empty {
     padding: 4px 4px 14px;
     font-size: 0.875rem;
