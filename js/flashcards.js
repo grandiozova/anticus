@@ -441,8 +441,8 @@ function showVowelFlashcard() {
     html += '<div class="flashcard-flip"><div class="md-flashcard">';
     html += '<div class="flashcard-word">' + v.sign + '</div>';
     if (s.revealed) {
-        html += '<div class="flashcard-vowel-name">' + escHtml(v.name) + '</div>';
-        html += '<div class="flashcard-vowel-sound">' + escHtml(v.sound) + '</div>';
+        html += '<div class="flashcard-vowel-name">' + escHtml(t(v.name)) + '</div>';
+        html += '<div class="flashcard-vowel-sound">' + escHtml(t(v.sound)) + '</div>';
     }
     html += '</div></div>';
     if (s.revealed) {
@@ -467,8 +467,8 @@ function vowelFlashcardAnswer(know) {
         stats.totalCorrect++;
     } else {
         stats.totalWrong++;
-        recordError(currentLesson, { word: v.sign, correct: v.name, your: t('не знал') });
-        noteDrillMistake(s, { word: v.sign, correct: v.name, your: t('не знал'), q: v });
+        recordError(currentLesson, { word: v.sign, correct: t(v.name), your: t('не знал') });
+        noteDrillMistake(s, { word: v.sign, correct: t(v.name), your: t('не знал'), q: v });
     }
     saveStats();
     s.index++;

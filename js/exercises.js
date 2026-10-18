@@ -271,7 +271,7 @@ const EXERCISE_TYPES = {
     },
     heb_vowel_fill: {
         prompt: q => t('Какого знака огласовки не хватает?') +
-            (q.translation ? ' («' + q.translation + '»)' : ''),
+            (q.translation ? ' («' + t(q.translation) + '»)' : ''),
         subject: q => q.word,
         script: true
     },
@@ -418,7 +418,10 @@ function choiceQuestionHtml(key, q, handler) {
     // Строки с разбираемым словом может не быть: у бегадкефат главы 1 слово не
     // приводится, спрашивают о букве, и поля word в этих вопросах нет.
     if (type.subject) {
-        let sub = type.subject(q);
+        // Подпись переводится тем же словарём, что и варианты: имя буквы в
+        // данных русское («а́леф»), в английском режиме это «aleph». Строки
+        // изучаемого языка в словаре отсутствуют, и t() возвращает их как есть.
+        let sub = t(type.subject(q));
         // Шрифт строки — по самой строке: под вопросом о букве стоит то её
         // начертание (ἄλφα, בּ), то русское название (а́леф). Серифный шрифт со
         // скриптом курса русскому тексту противопоказан, и наоборот.
@@ -444,7 +447,7 @@ function choiceQuestionHtml(key, q, handler) {
 function questionSubject(q, key) {
     let type = EXERCISE_TYPES[key];
     if (type && type.subject) {
-        let sub = type.subject(q);
+        let sub = t(type.subject(q));
         if (sub) return sub;
     }
     return q.word || q.phrase || q.form || q.sign || q.greek || q.letter || t('вопрос');
@@ -551,7 +554,7 @@ function letterWritePracticeState() {
         // (греческий пул), иначе — само название (иврит уже назван
         // по-русски): рисовать букву надо по читаемому имени, а не по
         // греческому ἄλφα, которое в начале курса ещё не прочтёшь.
-        prompt: q.ru || q.name,
+        prompt: t(q.ru || q.name),
         cardClass: isGreek ? 'writing-canvas-card--greek' : 'writing-canvas-card--hebrew',
         canvasClass: 'writing-canvas'
     };
@@ -1050,8 +1053,8 @@ function showVowelWrite() {
         html += '<div class="flashcard-flip"><div class="md-flashcard md-flashcard--writing md-flashcard--back md-flashcard--has-flip md-flashcard--flip">' +
             '<div class="letter-write-reveal">' +
                 '<div class="vowel-write-form">' + v.sign + '</div>' +
-                '<div class="flashcard-vowel-name">' + escHtml(v.name) + '</div>' +
-                '<div class="flashcard-vowel-sound">' + escHtml(v.sound) + '</div>' +
+                '<div class="flashcard-vowel-name">' + escHtml(t(v.name)) + '</div>' +
+                '<div class="flashcard-vowel-sound">' + escHtml(t(v.sound)) + '</div>' +
             '</div>' +
             '</div></div>' +
             '<div class="md-button-row exercise-actions">' +
@@ -1061,8 +1064,8 @@ function showVowelWrite() {
     } else {
         html += '<div class="question">' + t('Нарисуйте знак огласовки') + '</div>' +
             '<div class="vowel-write-prompt">' +
-                '<span class="vowel-write-prompt__name">' + escHtml(v.name) + '</span>' +
-                '<span class="vowel-write-prompt__sound">' + escHtml(v.sound) + '</span>' +
+                '<span class="vowel-write-prompt__name">' + escHtml(t(v.name)) + '</span>' +
+                '<span class="vowel-write-prompt__sound">' + escHtml(t(v.sound)) + '</span>' +
             '</div>' +
             '<div class="writing-practice">' +
                 '<div class="writing-canvas-card writing-canvas-card--hebrew">' +
@@ -1107,7 +1110,7 @@ function backToVowelWriteCanvas() {
     // нарисован неверно: рисунок не проверяется, его сверяют глазами.
     const v = s.words[s.index];
     if (v) noteDrillMistake(s, {
-        word: v.name,
+        word: t(v.name),
         correct: v.sign,
         your: t('вернулись переписать'),
         q: v

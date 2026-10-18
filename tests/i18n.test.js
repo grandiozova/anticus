@@ -388,3 +388,79 @@ test('список упражнений урока переведён, напр�
     assert.strictEqual(app.window.drillLabel(backward), 'Phrases: English → Greek');
     app.close();
 });
+
+// ------------------------------------------------------------ алфавит и чтение
+
+// Пулы букв — единственный источник вариантов алфавитных упражнений: вопросы
+// собираются из них, а не из отдельного списка. Поэтому у каждой русской
+// подписи в пуле обязан быть английский ключ, иначе кнопка останется русской.
+test('подписи пулов букв и огласовок переведены', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const ui = app.get('UI_EN');
+    const missing = [];
+    const check = (place, value) => {
+        if (value && CYR.test(value) && !Object.prototype.hasOwnProperty.call(ui, value)) {
+            missing.push(place + ': ' + value);
+        }
+    };
+    app.get('COURSE_ORDER').forEach(courseId => {
+        app.window.applyCourse(courseId);
+        const pool = app.window.courseAlphabet();
+        (pool.letters || []).forEach(l => ['name', 'ru', 'sound'].forEach(f => check(courseId + '.' + f, l[f])));
+        (pool.diphthongs || []).forEach(d => check(courseId + '.diphthong', d.sound));
+        (pool.breathings || []).forEach(b => check(courseId + '.breathing', b.correct));
+        (pool.accents || []).forEach(a => check(courseId + '.accent', a.correct));
+        (pool.vowels || []).forEach(v => ['name', 'sound'].forEach(f => check(courseId + '.vowel.' + f, v[f])));
+    });
+    assert.deepStrictEqual(missing, [], 'нет перевода: ' + missing.join(' | '));
+    app.close();
+});
+
+// Алфавитные виды спрашивают не о слове, а о букве или знаке, и весь их текст
+// приходит из пула. Проверяем отрисовку каждого вопроса обоих курсов: так
+// ловится не только забытый словарь, но и забытый t() в самом виде.
+test('вопросы алфавита и чтения рисуются без русского текста', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const kinds = [
+        'letter_name', 'letter_from_name', 'letter_sound', 'letter_order',
+        'letter_case_lower', 'letter_case_upper', 'diphthong_sound',
+        'breathing_type', 'accent_type', 'heb_letter_final',
+        'heb_vowel_name', 'heb_vowel_sound', 'heb_vowel_fill', 'heb_shva',
+        'heb_dagesh', 'heb_qamets', 'heb_begadkefat', 'heb_syllables'
+    ];
+    [['greek', 1], ['greek', 2], ['hebrew', 1], ['hebrew', 2], ['hebrew', 3]].forEach(([course, lesson]) => {
+        app.window.applyCourse(course);
+        const data = app.window.getLessonData(lesson);
+        kinds.forEach(kind => {
+            ((data.exercises && data.exercises[kind]) || []).forEach(q => {
+                const text = app.window.choiceQuestionHtml(kind, q, 'answerOpt').replace(/<[^>]+>/g, ' ');
+                assert.ok(!CYR.test(text),
+                    'русский текст в ' + course + ' ' + lesson + ' ' + kind + ': ' + around(text));
+            });
+        });
+    });
+    app.close();
+});
+
+// Письмо буквы спрашивает имя буквы, а показ огласовки называет знак и звук.
+// Это те же строки пула, но их рисует не choiceQuestionHtml, а отдельные
+// экраны — поэтому проверяются они отдельно.
+test('письмо буквы и огласовки называют букву и знак по-английски', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.applyCourse('hebrew');
+    app.window.openLesson(1);
+    app.window.beginExercise('letter_write', 'print');
+    const write = app.document.getElementById('exerciseQuestion').textContent;
+    assert.ok(!CYR.test(write), 'русское имя буквы при письме: ' + around(write));
+
+    app.window.openLesson(2);
+    app.window.startVowelWrite();
+    const vowel = app.document.getElementById('exerciseQuestion').textContent;
+    assert.ok(!CYR.test(vowel), 'русская огласовка при письме: ' + around(vowel));
+
+    app.window.startVowelFlashcards();
+    app.window.vowelFlashcardReveal();
+    const card = app.document.getElementById('flashcardContainer').textContent;
+    assert.ok(!CYR.test(card), 'русская огласовка на карточке: ' + around(card));
+    app.close();
+});

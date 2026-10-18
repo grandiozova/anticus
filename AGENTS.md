@@ -362,6 +362,14 @@ English is an overlay on top of it. The switch is a card in the settings screen
   map exists because a Greek headword itself carries a Russian label
   (`διώξω (Fut. от διώκω)`); the overlay rewrites the label and leaves the Greek
   word untouched.
+- **Alphabet and reading labels follow the English lesson material, not a
+  transliteration scheme of their own.** The pools hold the Russian reading and
+  sound (`а́леф`, `б / в`); `UI_EN` maps them to exactly what the English grammar
+  prints — `aleph`, `khet`, `patach`, `qamets`, `shureq` — and to its sound column
+  (`[a]`, `[kh]`, `b / v`, `s / sh`). Do not add diacritics the material does not
+  use (`pataḥ`, `ʾālep̄`): the drill and the table would name the same letter
+  differently. The single exception is `silent` for א and ע — the table's cell is a
+  dash, and a drill needs a word.
 - **The English files are generated, never typed.** Greek and Hebrew forms are
   copied out of the Russian data by a script that replaces only the Russian
   segments between them; that is the same rule as `data/hebrew-lessons.js`, and for

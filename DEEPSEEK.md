@@ -513,6 +513,10 @@ language card in settings, stored under `app_lang`.
   forms at the intersections are studied-language text and never go through it.
   `tests/i18n.test.js` walks every paradigm of both courses and fails on a Cyrillic
   label missing from `UI_EN`.
+- **Alphabet labels follow the English material**: `UI_EN` maps the pools' Russian
+  readings to what the grammar prints (`aleph`, `khet`, `patach`, `qamets`) and to
+  its sound column (`[a]`, `[kh]`, `b / v`) — no invented diacritics. `silent` is
+  the one word the table lacks (its cell is a dash) and the drill needs.
 - **The Hebrew reading is `русскими (latin)`; English shows the Latin half.**
   `displayTranslit()` keeps only the parenthesised textbook transliteration — the
   data keeps the full authored string.
