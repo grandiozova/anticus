@@ -981,7 +981,7 @@ function showExercise() {
         html += '<div class="question">' + t('Переведите на русский') + '</div><div class="md-prompt-strong">' + q.greek + '</div><div class="input-group"><input type="text" id="transInput" placeholder="' + t('Перевод') + '" autocomplete="off" onkeydown="if(event.key===\'Enter\'){checkExerciseTranslation(' + idx + ');}"><button type="button" onclick="checkExerciseTranslation(' + idx + ')"><span class="msym">check</span>' + t('Проверить') + '</button></div>';
     } else if (s.type === 'translate_russian_to_greek') {
         let words = shuffle(q.all_words);
-        html += '<div class="question">' + t('Переведите на ') + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div><div class="build-area build-area--script" id="buildArea"></div><div class="word-bank word-bank--script" id="wordBank">';
+        html += '<div class="question">' + t('Переведите на ') + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div><div class="build-area build-area--script" id="buildArea" data-hint="' + escHtml(t('Выберите слова по порядку')) + '"></div><div class="word-bank word-bank--script" id="wordBank">';
         for (let w of words) html += '<span class="chip" onclick="pickWord(\'' + escArg(w) + '\')">' + w + '</span>';
         html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="clearChosen()"><span class="msym">undo</span>' + t('Очистить') + '</button><button class="menu-btn primary" onclick="checkTranslationRu()"><span class="msym">check</span>' + t('Готово') + '</button></div>';
         window._trans_ru = q;

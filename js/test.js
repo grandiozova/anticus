@@ -95,7 +95,7 @@ function showTest() {
     } else if (qtype === 'translate_russian_to_greek') {
         let words = shuffle(q.all_words);
         html += '<div class="question">' + t('Переведите на ') + courseLang() + '</div><div class="md-prompt-ru">' + q.russian + '</div>';
-        html += '<div class="build-area build-area--script" id="testBuildArea"></div>' +
+        html += '<div class="build-area build-area--script" id="testBuildArea" data-hint="' + escHtml(t('Выберите слова по порядку')) + '"></div>' +
             '<div class="word-bank word-bank--script" id="testWordBank">';
         for (let w of words) html += '<span class="chip" onclick="testPickWord(\'' + escArg(w) + '\')">' + w + '</span>';
         html += '</div><div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="testClearChosen()"><span class="msym">undo</span>' + t('Очистить') + '</button><button class="menu-btn primary" onclick="testTranslationRu()"><span class="msym">check</span>' + t('Готово') + '</button></div>';

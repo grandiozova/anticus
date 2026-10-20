@@ -595,10 +595,13 @@ function showAllVocab() {
     let langNote = document.getElementById('vocabLanguageNote');
     let langNoteText = document.getElementById('vocabLanguageNoteText');
     if (langNote) {
-        langNote.classList.toggle('hidden', !isEnglish());
+        // Примеры уроков переведены; по-русски остаются только стихи OSHB, и
+        // это признак курса, а не языка интерфейса (см. vocabExamplesRu).
+        let noteNeeded = isEnglish() && !!activeCourse().vocabExamplesRu;
+        langNote.classList.toggle('hidden', !noteNeeded);
         if (langNoteText) {
-            langNoteText.textContent = isEnglish()
-                ? t('Примеры употребления в словаре пока по-русски: это предложения из уроков.') : '';
+            langNoteText.textContent = noteNeeded
+                ? t('Библейские примеры в словаре даны с русским Синодальным переводом.') : '';
         }
     }
     // Экран открывают заново — клавиатура снова убрана.

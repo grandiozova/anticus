@@ -84,9 +84,11 @@ test('в английском режиме открыты только пере�
         'нет переведённого перевода слов: ' + labels.join(' | '));
     assert.ok(labels.includes('Phrases: English → Greek'),
         'нет переведённого обратного перевода: ' + labels.join(' | '));
-    // Предложения уроков ещё не переведены — пункта быть не должно.
-    assert.ok(!labels.some(l => l.startsWith('Sentences:')),
-        'показаны непереведённые предложения: ' + labels.join(' | '));
+    // Предложения уроков переведены целиком — пункты открыты в обе стороны.
+    assert.ok(labels.includes('Sentences: Greek → English'),
+        'нет перевода предложений: ' + labels.join(' | '));
+    assert.ok(labels.includes('Sentences: English → Greek'),
+        'нет обратного перевода предложений: ' + labels.join(' | '));
     app.close();
 });
 
@@ -579,6 +581,9 @@ test('обратный перевод собирается из английск
     const q = app.get('exerciseState.questions[exerciseState.index]');
     const prompt = app.document.querySelector('#exerciseQuestion .md-prompt-ru').textContent;
     assert.ok(!CYR.test(prompt), 'русское условие обратного перевода: ' + around(prompt));
+    // Подсказка поля сборки приходит из data-hint: в CSS её перевести нельзя.
+    const hint = app.document.getElementById('buildArea').getAttribute('data-hint');
+    assert.ok(hint && !CYR.test(hint), 'русская подсказка поля сборки: ' + hint);
     q.correct_sequence.forEach(word => app.window.pickWord(word));
     app.window.checkTranslationRu();
     const text = app.document.getElementById('exerciseQuestion').textContent;
@@ -587,8 +592,10 @@ test('обратный перевод собирается из английск
     app.close();
 });
 
-// Еврейский курс: слова и условия перевода переведены, предложения — ещё нет.
-test('еврейские упражнения-переводы открыты, предложения — нет', () => {
+// Еврейский курс: слова, условия перевода и предложения переведены.
+// В главе 3 предложения есть только в одну сторону, поэтому второй пункт
+// и не должен появиться — availability решает данные, а не курс.
+test('еврейские упражнения-переводы и предложения открыты', () => {
     const app = loadApp({ storage: { app_lang: 'en' } });
     app.window.applyCourse('hebrew');
     app.window.openLesson(3);
@@ -597,8 +604,10 @@ test('еврейские упражнения-переводы открыты, �
         .map(el => el.textContent);
     assert.ok(labels.includes('Phrases: Hebrew → English'), 'нет перевода слов: ' + labels.join(' | '));
     assert.ok(labels.includes('Phrases: English → Hebrew'), 'нет обратного перевода: ' + labels.join(' | '));
-    assert.ok(!labels.some(l => l.startsWith('Sentences:')),
-        'показаны непереведённые предложения: ' + labels.join(' | '));
+    assert.ok(labels.includes('Sentences: Hebrew → English'),
+        'нет перевода предложений: ' + labels.join(' | '));
+    assert.ok(!labels.includes('Sentences: English → Hebrew'),
+        'в главе нет обратных предложений, а пункт есть: ' + labels.join(' | '));
 
     app.window.startExercise('translate_greek_to_russian');
     const q = app.get('exerciseState.questions[exerciseState.index]');
@@ -607,5 +616,66 @@ test('еврейские упражнения-переводы открыты, �
     const text = app.document.getElementById('exerciseQuestion').textContent;
     assert.ok(text.includes('Correct'), 'еврейский ответ не засчитан: ' + text);
     assert.ok(!CYR.test(text), 'русский текст в обратной связи: ' + around(text));
+    app.close();
+});
+
+// Все проверяемые ответы обоих курсов переведены: слова, условия и предложения.
+// Условие — это текст на экране, поэтому оно обязано быть строкой, а не
+// массивом слов: массив в шаблоне склеивается запятыми («he,writes»), и именно
+// так выглядел английский обратный перевод до этой проверки.
+test('переводы обоих курсов переведены целиком и условие — строка', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const bad = [];
+    const checkText = (where, value) => {
+        if (typeof value !== 'string' || !value.trim()) {
+            bad.push(where + ': не строка (' + typeof value + ')');
+            return;
+        }
+        if (CYR.test(value)) bad.push(where + ': кириллица — ' + around(value));
+        if (/,\S/.test(value)) bad.push(where + ': слова склеены запятой — ' + value);
+    };
+    const checkWords = (where, words) => {
+        if (!Array.isArray(words) || !words.length) {
+            bad.push(where + ': не набор слов');
+            return;
+        }
+        words.forEach(w => {
+            if (typeof w !== 'string' || !w.trim()) bad.push(where + ': пустое слово');
+            else if (CYR.test(w)) bad.push(where + ': кириллица — ' + around(w));
+        });
+    };
+    app.get('COURSE_ORDER').forEach(course => {
+        app.window.applyCourse(course);
+        app.window.lessonNumbers().forEach(n => {
+            const lesson = app.window.getLessonData(n);
+            const ready = lesson._englishDrills || {};
+            const at = course + ' ' + n;
+            const tr = lesson.translation || {};
+            (tr.el_to_ru || []).forEach((q, i) => {
+                checkWords(at + ' el_to_ru ' + i, q.correct);
+                checkText(at + ' el_to_ru text ' + i, q.correctText);
+            });
+            (tr.ru_to_el || []).forEach((q, i) => {
+                checkText(at + ' ru_to_el ' + i, q.source);
+                checkWords(at + ' ru_to_el answer ' + i, q.correct);
+            });
+            ['translation:el_to_ru', 'translation:ru_to_el'].forEach(key => {
+                const dir = key.slice('translation:'.length);
+                if ((tr[dir] || []).length && ready[key] !== true) bad.push(at + ': не открыто ' + key);
+            });
+            const ex = lesson.exercises || {};
+            (ex.translate_greek_to_russian || []).forEach((q, i) => {
+                checkWords(at + ' words ' + i, q.keywords);
+            });
+            (ex.translate_russian_to_greek || []).forEach((q, i) => {
+                checkText(at + ' prompt ' + i, q.russian);
+            });
+            ['exercise:translate_greek_to_russian', 'exercise:translate_russian_to_greek'].forEach(key => {
+                const kind = key.slice('exercise:'.length);
+                if ((ex[kind] || []).length && ready[key] !== true) bad.push(at + ': не открыто ' + key);
+            });
+        });
+    });
+    assert.deepStrictEqual(bad, [], bad.slice(0, 12).join('\n'));
     app.close();
 });

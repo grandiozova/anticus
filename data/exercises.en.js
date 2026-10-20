@@ -90,6 +90,88 @@ const EXERCISES_EN_GREEK = {
                     "untie"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "βλέπεις": [
+                    "You",
+                    "see"
+                ],
+                "γινώσκετε": [
+                    "You",
+                    "know"
+                ],
+                "λέγετε": [
+                    "You",
+                    "say"
+                ],
+                "γράφει": [
+                    "He",
+                    "writes"
+                ],
+                "βλέπομεν": [
+                    "We",
+                    "see"
+                ],
+                "λαμβάνουσι(ν)": [
+                    "They",
+                    "take"
+                ],
+                "βλέπει": [
+                    "He",
+                    "sees"
+                ],
+                "ἔχει": [
+                    "He",
+                    "has"
+                ]
+            },
+            "ru_to_el": {
+                "мы знаем": [
+                    "We",
+                    "know."
+                ],
+                "мы видим": [
+                    "We",
+                    "see."
+                ],
+                "они развязывают": [
+                    "They",
+                    "untie."
+                ],
+                "он развязывает": [
+                    "He",
+                    "unties."
+                ],
+                "вы имеете": [
+                    "You",
+                    "have."
+                ],
+                "ты знаешь": [
+                    "You",
+                    "know."
+                ],
+                "я беру": [
+                    "I",
+                    "take."
+                ],
+                "они говорят": [
+                    "They",
+                    "say."
+                ],
+                "он имеет": [
+                    "He",
+                    "has."
+                ],
+                "мы пишем": [
+                    "We",
+                    "write."
+                ],
+                "они видят": [
+                    "They",
+                    "see."
+                ]
+            }
         }
     },
     "4": {
@@ -252,6 +334,272 @@ const EXERCISES_EN_GREEK = {
                     "law"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ὁ Χριστὸς λέγει τὸν λόγον τοῦ νόμου τοῖς ἀνθρώποις.": [
+                    "Christ",
+                    "says",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "law",
+                    "to",
+                    "the",
+                    "men"
+                ],
+                "οἱ ἀδελφοὶ λύουσι τοὺς δούλους.": [
+                    "The",
+                    "brothers",
+                    "untie",
+                    "the",
+                    "slaves"
+                ],
+                "οἱ ἀδελφοὶ λέγουσι τὸν λόγον τῷ δούλῳ.": [
+                    "The",
+                    "brothers",
+                    "say",
+                    "the",
+                    "word",
+                    "to",
+                    "the",
+                    "slave"
+                ],
+                "βλέπομεν τὰ δῶρα τῶν δούλων.": [
+                    "We",
+                    "see",
+                    "the",
+                    "gifts",
+                    "of",
+                    "the",
+                    "slaves"
+                ],
+                "γράφομεν τοῖς ἀδελφοῖς τοὺς λόγους τοῦ νόμου.": [
+                    "We",
+                    "write",
+                    "the",
+                    "words",
+                    "of",
+                    "the",
+                    "law",
+                    "to",
+                    "the",
+                    "brothers"
+                ],
+                "ὁ υἱὸς βλέπει τὰ ἱερὰ καὶ τοὺς οἴκους.": [
+                    "The",
+                    "son",
+                    "sees",
+                    "the",
+                    "temples",
+                    "and",
+                    "the",
+                    "houses"
+                ],
+                "λύω τοὺς δούλους καὶ λέγω λόγους τοῖς υἱοῖς καὶ τοῖς ἀδελφοῖς.": [
+                    "I",
+                    "untie",
+                    "the",
+                    "slaves",
+                    "and",
+                    "say",
+                    "words",
+                    "to",
+                    "the",
+                    "sons",
+                    "and",
+                    "to",
+                    "the",
+                    "brothers"
+                ],
+                "ὁ ἄνθρωπος βλέπει τὸν θάνατον.": [
+                    "The",
+                    "man",
+                    "sees",
+                    "death"
+                ],
+                "οἱ υἱοὶ λαμβάνουσι τὰ δῶρα.": [
+                    "The",
+                    "sons",
+                    "take",
+                    "the",
+                    "gifts"
+                ],
+                "γινώσκετε τὸν θάνατον.": [
+                    "You",
+                    "know",
+                    "death"
+                ],
+                "οἱ ἄνθρωποι βλέπουσι τοὺς οἴκους τοῦ θανάτου.": [
+                    "The",
+                    "men",
+                    "see",
+                    "the",
+                    "houses",
+                    "of",
+                    "death"
+                ],
+                "λαμβάνεις τὸ δῶρον τοῦ ἀποστόλου.": [
+                    "You",
+                    "take",
+                    "the",
+                    "gift",
+                    "of",
+                    "the",
+                    "apostle"
+                ],
+                "γινώσκουσι τοὺς νόμους καὶ διδάσκουσι τοὺς δούλους.": [
+                    "They",
+                    "know",
+                    "the",
+                    "laws",
+                    "and",
+                    "teach",
+                    "the",
+                    "slaves"
+                ],
+                "ὦ ἄνθρωπε, γινώσκεις τὸν νόμον.": [
+                    "O",
+                    "man,",
+                    "you",
+                    "know",
+                    "the",
+                    "law"
+                ]
+            },
+            "ru_to_el": {
+                "Христос говорит слово закона людям.": [
+                    "Christ",
+                    "says",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "law",
+                    "to",
+                    "the",
+                    "men."
+                ],
+                "Братья освобождают рабов.": [
+                    "The",
+                    "brothers",
+                    "untie",
+                    "the",
+                    "slaves."
+                ],
+                "Братья говорят слово рабу.": [
+                    "The",
+                    "brothers",
+                    "say",
+                    "the",
+                    "word",
+                    "to",
+                    "the",
+                    "slave."
+                ],
+                "Мы видим дары рабов.": [
+                    "We",
+                    "see",
+                    "the",
+                    "gifts",
+                    "of",
+                    "the",
+                    "slaves."
+                ],
+                "Мы пишем братьям слова закона.": [
+                    "We",
+                    "write",
+                    "the",
+                    "words",
+                    "of",
+                    "the",
+                    "law",
+                    "to",
+                    "the",
+                    "brothers."
+                ],
+                "Сын видит храмы и дома.": [
+                    "The",
+                    "son",
+                    "sees",
+                    "the",
+                    "temples",
+                    "and",
+                    "the",
+                    "houses."
+                ],
+                "Я освобождаю слуг и говорю слова сынам и братьям.": [
+                    "I",
+                    "untie",
+                    "the",
+                    "slaves",
+                    "and",
+                    "say",
+                    "words",
+                    "to",
+                    "the",
+                    "sons",
+                    "and",
+                    "to",
+                    "the",
+                    "brothers."
+                ],
+                "Человек видит смерть.": [
+                    "The",
+                    "man",
+                    "sees",
+                    "death."
+                ],
+                "Сыны берут дары.": [
+                    "The",
+                    "sons",
+                    "take",
+                    "the",
+                    "gifts."
+                ],
+                "Вы знаете смерть.": [
+                    "You",
+                    "know",
+                    "death."
+                ],
+                "Люди видят дома смерти.": [
+                    "The",
+                    "men",
+                    "see",
+                    "the",
+                    "houses",
+                    "of",
+                    "death."
+                ],
+                "Ты берёшь дар апостола.": [
+                    "You",
+                    "take",
+                    "the",
+                    "gift",
+                    "of",
+                    "the",
+                    "apostle."
+                ],
+                "Они знают законы и учат слуг.": [
+                    "They",
+                    "know",
+                    "the",
+                    "laws",
+                    "and",
+                    "teach",
+                    "the",
+                    "slaves."
+                ],
+                "О человек, ты знаешь закон.": [
+                    "O",
+                    "man,",
+                    "you",
+                    "know",
+                    "the",
+                    "law."
+                ]
+            }
         }
     },
     "5": {
@@ -359,6 +707,311 @@ const EXERCISES_EN_GREEK = {
                     "hour"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ψυχὴ βλέπει ζωήν.": [
+                    "A",
+                    "soul",
+                    "sees",
+                    "life"
+                ],
+                "βασιλεία γινώσκει ἀλήθειαν.": [
+                    "A",
+                    "kingdom",
+                    "knows",
+                    "the",
+                    "truth"
+                ],
+                "ἄνθρωπος γράφει ἐντολὰς καὶ νόμους.": [
+                    "A",
+                    "man",
+                    "writes",
+                    "commandments",
+                    "and",
+                    "laws"
+                ],
+                "ἀπόστολοι γινώσκουσι δούλους καὶ ἐκκλησίας.": [
+                    "Apostles",
+                    "know",
+                    "slaves",
+                    "and",
+                    "churches"
+                ],
+                "ἀπόστολοι καὶ ἐκκλησίαι βλέπουσι ζωὴν καὶ θάνατον.": [
+                    "Apostles",
+                    "and",
+                    "churches",
+                    "see",
+                    "life",
+                    "and",
+                    "death"
+                ],
+                "υἱὸς δούλου λέγει παραβολὴν ἐκκλησίᾳ.": [
+                    "A",
+                    "son",
+                    "of",
+                    "a",
+                    "slave",
+                    "says",
+                    "a",
+                    "parable",
+                    "to",
+                    "a",
+                    "church"
+                ],
+                "παραβολὴν λέγομεν καὶ ἐντολὴν καὶ νόμον.": [
+                    "We",
+                    "say",
+                    "a",
+                    "parable",
+                    "and",
+                    "a",
+                    "commandment",
+                    "and",
+                    "a",
+                    "law"
+                ],
+                "βασιλείας γινώσκετε καὶ ἐκκλησίας.": [
+                    "You",
+                    "know",
+                    "kingdoms",
+                    "and",
+                    "churches"
+                ],
+                "ἐκκλησίαν διδάσκει ἀπόστολος καὶ ἄνθρωπον.": [
+                    "An",
+                    "apostle",
+                    "teaches",
+                    "a",
+                    "church",
+                    "and",
+                    "a",
+                    "man"
+                ],
+                "νόμον καὶ παραβολὴν γράφει ἀδελφὸς ἐκκλησίᾳ.": [
+                    "A",
+                    "brother",
+                    "writes",
+                    "a",
+                    "law",
+                    "and",
+                    "a",
+                    "parable",
+                    "to",
+                    "a",
+                    "church"
+                ],
+                "καρδίαι ἀνθρώπων ἔχουσι ζωὴν καὶ εἰρήνην.": [
+                    "The",
+                    "hearts",
+                    "of",
+                    "men",
+                    "have",
+                    "life",
+                    "and",
+                    "peace"
+                ],
+                "φωνὴ ἀποστόλων διδάσκει ψυχὰς δούλων.": [
+                    "The",
+                    "voice",
+                    "of",
+                    "apostles",
+                    "teaches",
+                    "the",
+                    "souls",
+                    "of",
+                    "slaves"
+                ],
+                "ἱερὸν ἔχει δόξαν.": [
+                    "The",
+                    "temple",
+                    "has",
+                    "glory"
+                ],
+                "φωναὶ ἐκκλησιῶν διδάσκουσι βασιλείας καὶ ἀνθρώπους.": [
+                    "The",
+                    "voices",
+                    "of",
+                    "churches",
+                    "teach",
+                    "kingdoms",
+                    "and",
+                    "men"
+                ],
+                "βλέπεις δῶρα καὶ ἱερά.": [
+                    "You",
+                    "see",
+                    "gifts",
+                    "and",
+                    "temples"
+                ],
+                "γράφει ἐκκλησία λόγον ζωῆς.": [
+                    "A",
+                    "church",
+                    "writes",
+                    "the",
+                    "word",
+                    "of",
+                    "life"
+                ],
+                "λέγει καρδίαις ἀνθρώπων παραβολὴν καὶ νόμον.": [
+                    "He",
+                    "says",
+                    "a",
+                    "parable",
+                    "and",
+                    "a",
+                    "law",
+                    "to",
+                    "the",
+                    "hearts",
+                    "of",
+                    "men"
+                ],
+                "γράφει ἐκκλησίᾳ υἱὸς ἀποστόλου.": [
+                    "The",
+                    "son",
+                    "of",
+                    "an",
+                    "apostle",
+                    "writes",
+                    "to",
+                    "a",
+                    "church"
+                ],
+                "βλέπομεν τὰς ἡμέρας καὶ τὰς ὥρας τῆς ζωῆς.": [
+                    "We",
+                    "see",
+                    "the",
+                    "days",
+                    "and",
+                    "the",
+                    "hours",
+                    "of",
+                    "life"
+                ],
+                "ἐν τῇ ὥρᾳ τῆς ἡμέρας γινώσκομεν τὴν ἀλήθειαν.": [
+                    "In",
+                    "the",
+                    "hour",
+                    "of",
+                    "the",
+                    "day",
+                    "we",
+                    "know",
+                    "the",
+                    "truth"
+                ]
+            },
+            "ru_to_el": {
+                "Царство имеет славу.": [
+                    "The",
+                    "kingdom",
+                    "has",
+                    "glory."
+                ],
+                "Церкви говорят сердцам людей притчи.": [
+                    "The",
+                    "churches",
+                    "say",
+                    "parables",
+                    "to",
+                    "the",
+                    "hearts",
+                    "of",
+                    "men."
+                ],
+                "Голос Сына Человеческого учит апостола, и голос апостола учит человека.": [
+                    "The",
+                    "voice",
+                    "of",
+                    "the",
+                    "Son",
+                    "of",
+                    "Man",
+                    "teaches",
+                    "the",
+                    "apostle,",
+                    "and",
+                    "the",
+                    "voice",
+                    "of",
+                    "the",
+                    "apostle",
+                    "teaches",
+                    "the",
+                    "man."
+                ],
+                "Мы имеем писания апостолов.": [
+                    "We",
+                    "have",
+                    "the",
+                    "writings",
+                    "of",
+                    "the",
+                    "apostles."
+                ],
+                "Человек видит жизнь и смерть.": [
+                    "The",
+                    "man",
+                    "sees",
+                    "life",
+                    "and",
+                    "death."
+                ],
+                "Апостолы освобождают души.": [
+                    "The",
+                    "apostles",
+                    "untie",
+                    "the",
+                    "souls."
+                ],
+                "Мы видим дома и храмы.": [
+                    "We",
+                    "see",
+                    "the",
+                    "houses",
+                    "and",
+                    "the",
+                    "temples."
+                ],
+                "Иисус знает сердца людей.": [
+                    "Jesus",
+                    "knows",
+                    "the",
+                    "hearts",
+                    "of",
+                    "men."
+                ],
+                "Мы знаем голоса церквей, слова истины и души людей.": [
+                    "We",
+                    "know",
+                    "the",
+                    "voices",
+                    "of",
+                    "the",
+                    "churches,",
+                    "the",
+                    "words",
+                    "of",
+                    "the",
+                    "truth",
+                    "and",
+                    "the",
+                    "souls",
+                    "of",
+                    "men."
+                ],
+                "Церкви имеют мир и славу.": [
+                    "The",
+                    "churches",
+                    "have",
+                    "peace",
+                    "and",
+                    "glory."
+                ]
+            }
         }
     },
     "6": {
@@ -449,6 +1102,336 @@ const EXERCISES_EN_GREEK = {
                     "the",
                     "small",
                     "houses"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ἀγαθὴ ἡ ἐκκλησία καὶ ἡ βασιλεία κακή.": [
+                    "The",
+                    "church",
+                    "is",
+                    "good,",
+                    "and",
+                    "the",
+                    "kingdom",
+                    "is",
+                    "bad"
+                ],
+                "ἡ κακὴ καρδία τοῦ ἀνθρώπου γινώσκει θάνατον.": [
+                    "The",
+                    "bad",
+                    "heart",
+                    "of",
+                    "the",
+                    "man",
+                    "knows",
+                    "death"
+                ],
+                "οἱ ἀπόστολοι βλέπουσι τοὺς μικροὺς οἴκους καὶ τὰς κακὰς ὁδούς.": [
+                    "The",
+                    "apostles",
+                    "see",
+                    "the",
+                    "small",
+                    "houses",
+                    "and",
+                    "the",
+                    "bad",
+                    "roads"
+                ],
+                "οἱ δοῦλοι οἱ κακοὶ λύουσι τὸν οἶκον τοῦ ἀποστόλου.": [
+                    "The",
+                    "bad",
+                    "slaves",
+                    "destroy",
+                    "the",
+                    "house",
+                    "of",
+                    "the",
+                    "apostle"
+                ],
+                "οἱ κακοὶ λύουσι τὸ ἱερόν.": [
+                    "The",
+                    "bad",
+                    "people",
+                    "destroy",
+                    "the",
+                    "temple"
+                ],
+                "ὁ κύριος τῆς ζωῆς ἐγείρει τοὺς νεκρούς.": [
+                    "The",
+                    "Lord",
+                    "of",
+                    "life",
+                    "raises",
+                    "the",
+                    "dead"
+                ],
+                "οἱ λόγοι τῆς ἀληθείας διδάσκουσι καὶ τοὺς ἄλλους.": [
+                    "The",
+                    "words",
+                    "of",
+                    "the",
+                    "truth",
+                    "teach",
+                    "others",
+                    "too"
+                ],
+                "αἱ δίκαιαι παρθένοι λαμβάνουσι τὰ δῶρα τοῦ κυρίου τὰ καλά.": [
+                    "The",
+                    "righteous",
+                    "virgins",
+                    "receive",
+                    "the",
+                    "good",
+                    "gifts",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "ὁ κακὸς βλέπει τὴν ἔρημον καὶ τοὺς ἐσχάτους οἴκους.": [
+                    "The",
+                    "bad",
+                    "man",
+                    "sees",
+                    "the",
+                    "desert",
+                    "and",
+                    "the",
+                    "last",
+                    "houses"
+                ],
+                "πρῶτοι οἱ δοῦλοι· ἔσχατοι οἱ κύριοι.": [
+                    "The",
+                    "slaves",
+                    "are",
+                    "first",
+                    "and",
+                    "the",
+                    "lords",
+                    "are",
+                    "last"
+                ],
+                "τῇ ἐκκλησίᾳ τῇ μικρᾷ γράφει ὁ κύριος λόγον ἀγαθόν.": [
+                    "The",
+                    "Lord",
+                    "writes",
+                    "a",
+                    "good",
+                    "word",
+                    "to",
+                    "the",
+                    "small",
+                    "church"
+                ],
+                "τοὺς πιστοὺς βλέπει ὁ πιστός.": [
+                    "The",
+                    "faithful",
+                    "man",
+                    "sees",
+                    "the",
+                    "faithful",
+                    "men"
+                ],
+                "ἔσχατοι οἱ δοῦλοι οἱ κακοί· πρῶτοι οἱ υἱοὶ οἱ ἀγαθοί.": [
+                    "The",
+                    "bad",
+                    "slaves",
+                    "are",
+                    "last",
+                    "and",
+                    "the",
+                    "good",
+                    "sons",
+                    "are",
+                    "first"
+                ],
+                "ὁ υἱὸς τοῦ ἐσχάτου ἀδελφοῦ βλέπει τὰς καλὰς ἐκκλησίας τοῦ κυρίου.": [
+                    "The",
+                    "son",
+                    "of",
+                    "the",
+                    "last",
+                    "brother",
+                    "sees",
+                    "the",
+                    "good",
+                    "churches",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "ἄλλην παραβολὴν λέγομεν τῇ κακῇ παρθένῳ.": [
+                    "We",
+                    "say",
+                    "another",
+                    "parable",
+                    "to",
+                    "the",
+                    "bad",
+                    "virgin"
+                ],
+                "πρώτη ἡ ἐκκλησία· ἐσχάτη ἡ βασιλεία.": [
+                    "The",
+                    "church",
+                    "is",
+                    "first",
+                    "and",
+                    "the",
+                    "kingdom",
+                    "is",
+                    "last"
+                ],
+                "ταῖς πισταῖς λέγει ὁ κύριος παραβολὴν καλὴν καὶ τοῖς πιστοῖς.": [
+                    "The",
+                    "Lord",
+                    "says",
+                    "a",
+                    "good",
+                    "parable",
+                    "to",
+                    "the",
+                    "faithful",
+                    "women",
+                    "and",
+                    "to",
+                    "the",
+                    "faithful",
+                    "men"
+                ],
+                "ὁ ἀγαθὸς γράφει ἀγαθά· ὁ κακὸς κακά.": [
+                    "The",
+                    "good",
+                    "man",
+                    "writes",
+                    "good",
+                    "things",
+                    "and",
+                    "the",
+                    "bad",
+                    "man",
+                    "writes",
+                    "bad",
+                    "things"
+                ],
+                "ἀγαθὸς ὁ δοῦλος καὶ λέγει καλά.": [
+                    "The",
+                    "slave",
+                    "is",
+                    "good",
+                    "and",
+                    "says",
+                    "good",
+                    "things"
+                ],
+                "ἡ ἀλήθεια πιστὴ καὶ οἱ ἄνθρωποι κακοί.": [
+                    "The",
+                    "truth",
+                    "is",
+                    "faithful",
+                    "and",
+                    "the",
+                    "men",
+                    "are",
+                    "bad"
+                ]
+            },
+            "ru_to_el": {
+                "Первой Церкви Господь пишет первую притчу.": [
+                    "The",
+                    "Lord",
+                    "writes",
+                    "the",
+                    "first",
+                    "parable",
+                    "to",
+                    "the",
+                    "first",
+                    "church."
+                ],
+                "Хорошая (девушка) видит пути пустыни.": [
+                    "The",
+                    "good",
+                    "virgin",
+                    "sees",
+                    "the",
+                    "roads",
+                    "of",
+                    "the",
+                    "desert."
+                ],
+                "Хорошие (дела) — первые, а плохие (дела) — последние.": [
+                    "Good",
+                    "things",
+                    "are",
+                    "first,",
+                    "and",
+                    "bad",
+                    "things",
+                    "are",
+                    "last."
+                ],
+                "Смерть плоха, а жизнь хороша.": [
+                    "Death",
+                    "is",
+                    "bad,",
+                    "and",
+                    "life",
+                    "is",
+                    "good."
+                ],
+                "Господь Царства воскрешает верных (мужчин) и верных (женщин).": [
+                    "The",
+                    "Lord",
+                    "of",
+                    "the",
+                    "kingdom",
+                    "raises",
+                    "the",
+                    "faithful",
+                    "men",
+                    "and",
+                    "the",
+                    "faithful",
+                    "women."
+                ],
+                "Хорошие (люди) знают плохих (людей), и плохие (люди) знают хороших (людей).": [
+                    "Good",
+                    "people",
+                    "know",
+                    "bad",
+                    "people,",
+                    "and",
+                    "bad",
+                    "people",
+                    "know",
+                    "good",
+                    "people."
+                ],
+                "Хорошие слова мы говорим Церкви, а плохое (слово) пишут люди.": [
+                    "We",
+                    "say",
+                    "good",
+                    "words",
+                    "to",
+                    "the",
+                    "church,",
+                    "but",
+                    "people",
+                    "write",
+                    "a",
+                    "bad",
+                    "word."
+                ],
+                "Красивые девушки видят плохой путь.": [
+                    "The",
+                    "good",
+                    "virgins",
+                    "see",
+                    "the",
+                    "bad",
+                    "road."
                 ]
             }
         }
@@ -633,6 +1616,498 @@ const EXERCISES_EN_GREEK = {
                     "disciples"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "οἱ μαθηταὶ τῶν προφητῶν μένουσιν ἐν τῷ κόσμῳ.": [
+                    "The",
+                    "disciples",
+                    "of",
+                    "the",
+                    "prophets",
+                    "remain",
+                    "in",
+                    "the",
+                    "world"
+                ],
+                "οἱ κακοὶ βάλλουσι λίθους εἰς τὸν οἶκον τῶν μαθητῶν.": [
+                    "The",
+                    "bad",
+                    "people",
+                    "throw",
+                    "stones",
+                    "into",
+                    "the",
+                    "house",
+                    "of",
+                    "the",
+                    "disciples"
+                ],
+                "ὁ θεὸς πέμπει τοὺς ἀγγέλους εἰς τὸν κόσμον.": [
+                    "God",
+                    "sends",
+                    "the",
+                    "angels",
+                    "into",
+                    "the",
+                    "world"
+                ],
+                "ὁ προφήτης πέμπει τοὺς μαθητὰς τοῦ κυρίου ἐκ τῶν οἴκων εἰς τὴν ἐκκλησίαν.": [
+                    "The",
+                    "prophet",
+                    "sends",
+                    "the",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord",
+                    "out",
+                    "of",
+                    "the",
+                    "houses",
+                    "into",
+                    "the",
+                    "church"
+                ],
+                "ὁ θεὸς ἐγείρει τοὺς νεκροὺς ἐκ θανάτου.": [
+                    "God",
+                    "raises",
+                    "the",
+                    "dead",
+                    "out",
+                    "of",
+                    "death"
+                ],
+                "λαμβάνετε τὰ καλὰ δῶρα ἀπὸ τῶν παρθένων.": [
+                    "You",
+                    "take",
+                    "the",
+                    "good",
+                    "gifts",
+                    "from",
+                    "the",
+                    "virgins"
+                ],
+                "ἄγομεν τὰ τέκνα ἐκ τῶν οἴκων.": [
+                    "We",
+                    "lead",
+                    "the",
+                    "children",
+                    "out",
+                    "of",
+                    "the",
+                    "houses"
+                ],
+                "μετὰ τοὺς ἀγγέλους πέμπει ὁ θεὸς τὸν υἱόν.": [
+                    "After",
+                    "the",
+                    "angels",
+                    "God",
+                    "sends",
+                    "the",
+                    "Son"
+                ],
+                "μετὰ τῶν ἀγγέλων ἄγει ὁ κύριος τοὺς δικαίους εἰς τὸν οὐρανόν.": [
+                    "With",
+                    "the",
+                    "angels",
+                    "the",
+                    "Lord",
+                    "leads",
+                    "the",
+                    "righteous",
+                    "into",
+                    "heaven"
+                ],
+                "διὰ τῶν ὁδῶν τῆς ἐρήμου φέρουσιν οἱ δοῦλοι τὰ δῶρα εἰς ἄλλον τόπον.": [
+                    "Through",
+                    "the",
+                    "roads",
+                    "of",
+                    "the",
+                    "desert",
+                    "the",
+                    "slaves",
+                    "carry",
+                    "the",
+                    "gifts",
+                    "into",
+                    "another",
+                    "place"
+                ],
+                "διὰ τῶν γραφῶν τῶν προφητῶν γινώσκομεν τὸν κύριον.": [
+                    "Through",
+                    "the",
+                    "writings",
+                    "of",
+                    "the",
+                    "prophets",
+                    "we",
+                    "know",
+                    "the",
+                    "Lord"
+                ],
+                "διὰ τὴν δόξαν τοῦ θεοῦ ἐγείρει ὁ κύριος τοὺς νεκρούς.": [
+                    "For",
+                    "the",
+                    "sake",
+                    "of",
+                    "the",
+                    "glory",
+                    "of",
+                    "God",
+                    "the",
+                    "Lord",
+                    "raises",
+                    "the",
+                    "dead"
+                ],
+                "φέρουσι τοὺς νεκροὺς εἰς τὴν ἔρημον.": [
+                    "They",
+                    "carry",
+                    "the",
+                    "dead",
+                    "into",
+                    "the",
+                    "desert"
+                ],
+                "οἱ μαθηταὶ διδάσκουσι τὰ ἀγαθὰ τέκνα ἐν τῇ ἐκκλησίᾳ.": [
+                    "The",
+                    "disciples",
+                    "teach",
+                    "the",
+                    "good",
+                    "children",
+                    "in",
+                    "the",
+                    "church"
+                ],
+                "ὁ κύριος λέγει παραβολὴν τοῖς μαθηταῖς ἐν τῷ ἱερῷ.": [
+                    "The",
+                    "Lord",
+                    "says",
+                    "a",
+                    "parable",
+                    "to",
+                    "the",
+                    "disciples",
+                    "in",
+                    "the",
+                    "temple"
+                ],
+                "διὰ τὴν ἀλήθειαν βλέπουσιν οἱ προφῆται τὸν θάνατον.": [
+                    "For",
+                    "the",
+                    "sake",
+                    "of",
+                    "the",
+                    "truth",
+                    "the",
+                    "prophets",
+                    "see",
+                    "death"
+                ],
+                "ἀπὸ τῆς ἐρήμου ἄγουσιν οἱ βαπτισταὶ τοὺς ἀγαθοὺς νεανίας καὶ τοὺς υἱοὺς τῶν προφητῶν πρὸς τοὺς μικροὺς οἴκους τῶν μαθητῶν.": [
+                    "Out",
+                    "of",
+                    "the",
+                    "desert",
+                    "the",
+                    "baptists",
+                    "lead",
+                    "the",
+                    "good",
+                    "young",
+                    "men",
+                    "and",
+                    "the",
+                    "sons",
+                    "of",
+                    "the",
+                    "prophets",
+                    "to",
+                    "the",
+                    "small",
+                    "houses",
+                    "of",
+                    "the",
+                    "disciples"
+                ],
+                "διὰ τὴν βασιλείαν τοῦ θεοῦ φέρομεν τὰ κακά.": [
+                    "For",
+                    "the",
+                    "sake",
+                    "of",
+                    "the",
+                    "kingdom",
+                    "of",
+                    "God",
+                    "we",
+                    "bear",
+                    "bad",
+                    "things"
+                ],
+                "διὰ τὰς ψυχὰς τῶν ἀδελφῶν βλέπει κακά.": [
+                    "On",
+                    "account",
+                    "of",
+                    "the",
+                    "souls",
+                    "of",
+                    "the",
+                    "brothers",
+                    "he",
+                    "sees",
+                    "bad",
+                    "things"
+                ],
+                "καλὸς ὁ οὐρανός, κακὸς ὁ κόσμος.": [
+                    "Heaven",
+                    "is",
+                    "good",
+                    "and",
+                    "the",
+                    "world",
+                    "is",
+                    "bad"
+                ],
+                "οἱ νεανίαι βλέπουσι τὸν βαπτιστὴν ἐν τῇ ἐρήμῳ.": [
+                    "The",
+                    "young",
+                    "men",
+                    "see",
+                    "the",
+                    "baptist",
+                    "in",
+                    "the",
+                    "desert"
+                ]
+            },
+            "ru_to_el": {
+                "В мире мы имеем смерть, а в Церкви жизнь.": [
+                    "In",
+                    "the",
+                    "world",
+                    "we",
+                    "have",
+                    "death,",
+                    "and",
+                    "in",
+                    "the",
+                    "church",
+                    "life."
+                ],
+                "Хорошая (женщина) посылает девушку и детей к великим пророкам.": [
+                    "The",
+                    "good",
+                    "woman",
+                    "sends",
+                    "the",
+                    "virgin",
+                    "and",
+                    "the",
+                    "children",
+                    "to",
+                    "the",
+                    "great",
+                    "prophets."
+                ],
+                "Малое дитя бросает камень в красивый дом.": [
+                    "The",
+                    "little",
+                    "child",
+                    "throws",
+                    "a",
+                    "stone",
+                    "into",
+                    "the",
+                    "beautiful",
+                    "house."
+                ],
+                "Креститель говорит хорошее слово юношам и ведёт учеников к Господу.": [
+                    "The",
+                    "baptist",
+                    "says",
+                    "a",
+                    "good",
+                    "word",
+                    "to",
+                    "the",
+                    "young",
+                    "men",
+                    "and",
+                    "leads",
+                    "the",
+                    "disciples",
+                    "to",
+                    "the",
+                    "Lord."
+                ],
+                "Ученики пребывают в Церкви и говорят притчу другим.": [
+                    "The",
+                    "disciples",
+                    "remain",
+                    "in",
+                    "the",
+                    "church",
+                    "and",
+                    "say",
+                    "a",
+                    "parable",
+                    "to",
+                    "the",
+                    "others."
+                ],
+                "Через голос пророка Господь учит учеников.": [
+                    "Through",
+                    "the",
+                    "voice",
+                    "of",
+                    "the",
+                    "prophet",
+                    "the",
+                    "Lord",
+                    "teaches",
+                    "the",
+                    "disciples."
+                ],
+                "Вследствие (из-за) заповедей Бога ученики пишут братьям хорошие слова.": [
+                    "On",
+                    "account",
+                    "of",
+                    "the",
+                    "commandments",
+                    "of",
+                    "God",
+                    "the",
+                    "disciples",
+                    "write",
+                    "good",
+                    "words",
+                    "to",
+                    "the",
+                    "brothers."
+                ],
+                "Ради (из-за) детей пророк посылает плохих юношей в пустыню.": [
+                    "For",
+                    "the",
+                    "sake",
+                    "of",
+                    "the",
+                    "children",
+                    "the",
+                    "prophet",
+                    "sends",
+                    "the",
+                    "bad",
+                    "young",
+                    "men",
+                    "into",
+                    "the",
+                    "desert."
+                ],
+                "После Господа апостол ведёт учеников.": [
+                    "After",
+                    "the",
+                    "Lord",
+                    "the",
+                    "apostle",
+                    "leads",
+                    "the",
+                    "disciples."
+                ],
+                "Пророки учат юношей с детьми.": [
+                    "The",
+                    "prophets",
+                    "teach",
+                    "the",
+                    "young",
+                    "men",
+                    "with",
+                    "the",
+                    "children."
+                ],
+                "Хорошие (женщины) несут детей к Господу, а плохие ведут в мир.": [
+                    "The",
+                    "good",
+                    "women",
+                    "carry",
+                    "the",
+                    "children",
+                    "to",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "the",
+                    "bad",
+                    "women",
+                    "lead",
+                    "them",
+                    "into",
+                    "the",
+                    "world."
+                ],
+                "Господь с пророком пребывают в другом месте.": [
+                    "The",
+                    "Lord",
+                    "with",
+                    "the",
+                    "prophet",
+                    "remain",
+                    "in",
+                    "another",
+                    "place."
+                ],
+                "Праведники ведут учеников через пустыню к Господу.": [
+                    "The",
+                    "righteous",
+                    "lead",
+                    "the",
+                    "disciples",
+                    "through",
+                    "the",
+                    "desert",
+                    "to",
+                    "the",
+                    "Lord."
+                ],
+                "Мы видим жизнь Сына Божиего в этом мире.": [
+                    "We",
+                    "see",
+                    "the",
+                    "life",
+                    "of",
+                    "the",
+                    "Son",
+                    "of",
+                    "God",
+                    "in",
+                    "this",
+                    "world."
+                ],
+                "Ты плох, Церковь хороша.": [
+                    "You",
+                    "are",
+                    "bad,",
+                    "and",
+                    "the",
+                    "church",
+                    "is",
+                    "good."
+                ],
+                "Через слово Божие Господь воскрешает мёртвых.": [
+                    "Through",
+                    "the",
+                    "word",
+                    "of",
+                    "God",
+                    "the",
+                    "Lord",
+                    "raises",
+                    "the",
+                    "dead."
+                ]
+            }
         }
     },
     "8": {
@@ -765,6 +2240,484 @@ const EXERCISES_EN_GREEK = {
                     "to",
                     "the",
                     "judge"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "οἱ μαθηταί σου γινώσκουσι τὴν βασιλείαν καὶ ἄγουσι τοὺς ἀδελφοὺς αὐτῶν εἰς αὐτήν.": [
+                    "Your",
+                    "disciples",
+                    "know",
+                    "the",
+                    "kingdom",
+                    "and",
+                    "lead",
+                    "their",
+                    "brothers",
+                    "into",
+                    "it"
+                ],
+                "διδάσκω τοὺς κριτάς μου καὶ λέγω αὐτοῖς παραβολήν.": [
+                    "I",
+                    "teach",
+                    "my",
+                    "judges",
+                    "and",
+                    "say",
+                    "a",
+                    "parable",
+                    "to",
+                    "them"
+                ],
+                "ἄγει με ὁ κύριος πρὸς τοὺς μαθητὰς αὐτοῦ.": [
+                    "The",
+                    "Lord",
+                    "leads",
+                    "me",
+                    "to",
+                    "his",
+                    "disciples"
+                ],
+                "δι' ἐμὲ βλέπεις σὺ τὸν θάνατον, σοὶ δὲ ἐγὼ λέγω λόγους κακούς.": [
+                    "Because",
+                    "of",
+                    "me",
+                    "you",
+                    "see",
+                    "death,",
+                    "and",
+                    "I",
+                    "say",
+                    "bad",
+                    "words",
+                    "to",
+                    "you"
+                ],
+                "διὰ σοῦ ἄγει ὁ θεὸς τοὺς πιστοὺς εἰς τὴν βασιλείαν αὐτοῦ καὶ δι' αὐτῶν τοὺς ἄλλους.": [
+                    "Through",
+                    "you",
+                    "God",
+                    "leads",
+                    "the",
+                    "faithful",
+                    "into",
+                    "his",
+                    "kingdom,",
+                    "and",
+                    "through",
+                    "them",
+                    "the",
+                    "others"
+                ],
+                "δι' ἡμᾶς μένει ὁ κύριος ἐν τῷ κόσμῳ.": [
+                    "For",
+                    "our",
+                    "sake",
+                    "the",
+                    "Lord",
+                    "remains",
+                    "in",
+                    "the",
+                    "world"
+                ],
+                "ἐγώ εἰμι δοῦλος, σὺ δὲ δεσπότης.": [
+                    "I",
+                    "am",
+                    "a",
+                    "slave,",
+                    "and",
+                    "you",
+                    "are",
+                    "a",
+                    "master"
+                ],
+                "ἀγαθός ἐστιν ὁ κύριος καὶ ἀγαθοί ἐστε ὑμεῖς.": [
+                    "The",
+                    "Lord",
+                    "is",
+                    "good,",
+                    "and",
+                    "you",
+                    "are",
+                    "good"
+                ],
+                "μαθηταί ἐστε τοῦ κυρίου καὶ ἀδελφοὶ τῶν ἀποστόλων αὐτοῦ.": [
+                    "You",
+                    "are",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord",
+                    "and",
+                    "brothers",
+                    "of",
+                    "his",
+                    "apostles"
+                ],
+                "ὁ δεσπότης πιστός ἐστιν, οἱ δὲ δοῦλοι αὐτοῦ κακοί.": [
+                    "The",
+                    "master",
+                    "is",
+                    "faithful,",
+                    "but",
+                    "his",
+                    "slaves",
+                    "are",
+                    "bad"
+                ],
+                "ἡ ἐκκλησία πιστή ἐστιν, ἡμεῖς δὲ βλέπομεν αὐτήν.": [
+                    "The",
+                    "church",
+                    "is",
+                    "faithful,",
+                    "and",
+                    "we",
+                    "see",
+                    "it"
+                ],
+                "βλέπομέν σε καὶ λέγομέν σοι παραβολήν.": [
+                    "We",
+                    "see",
+                    "you",
+                    "and",
+                    "say",
+                    "a",
+                    "parable",
+                    "to",
+                    "you"
+                ],
+                "δοῦλοί ἐσμεν, δούλους δὲ διδάσκομεν.": [
+                    "We",
+                    "are",
+                    "slaves,",
+                    "and",
+                    "we",
+                    "teach",
+                    "slaves"
+                ],
+                "οἱ δοῦλοι ἡμῶν βλέπουσιν ἡμᾶς, ἡμεῖς δὲ διδάσκομεν αὐτούς.": [
+                    "Our",
+                    "slaves",
+                    "see",
+                    "us,",
+                    "and",
+                    "we",
+                    "teach",
+                    "them"
+                ],
+                "ἀφ' ὑμῶν λαμβάνει ὁ ἀδελφός μου δῶρα καλά, καὶ πέμπει αὐτὰ πρός με διὰ τῶν δούλων αὐτοῦ.": [
+                    "From",
+                    "you",
+                    "my",
+                    "brother",
+                    "receives",
+                    "good",
+                    "gifts,",
+                    "and",
+                    "he",
+                    "sends",
+                    "them",
+                    "to",
+                    "me",
+                    "through",
+                    "his",
+                    "slaves"
+                ],
+                "γινώσκομεν τὴν ὁδόν, καὶ δι' αὐτῆς ἄγομέν σε εἰς τὸν οἶκον ἡμῶν.": [
+                    "We",
+                    "know",
+                    "the",
+                    "road,",
+                    "and",
+                    "through",
+                    "it",
+                    "we",
+                    "lead",
+                    "you",
+                    "into",
+                    "our",
+                    "house"
+                ],
+                "μετὰ τῶν ἀδελφῶν ἡμῶν βλέπομεν τοὺς μαθητὰς τοῦ κυρίου ἡμῶν.": [
+                    "With",
+                    "our",
+                    "brothers",
+                    "we",
+                    "see",
+                    "the",
+                    "disciples",
+                    "of",
+                    "our",
+                    "Lord"
+                ],
+                "μετὰ τὰς ἡμέρας τὰς κακὰς βλέπομεν τὴν βασιλείαν τοῦ κυρίου ἡμῶν.": [
+                    "After",
+                    "the",
+                    "bad",
+                    "days",
+                    "we",
+                    "see",
+                    "the",
+                    "kingdom",
+                    "of",
+                    "our",
+                    "Lord"
+                ],
+                "μεθ' ὑμῶν λέγομεν τελώναις παραβολήν.": [
+                    "With",
+                    "you",
+                    "we",
+                    "say",
+                    "a",
+                    "parable",
+                    "to",
+                    "the",
+                    "tax",
+                    "collectors"
+                ]
+            },
+            "ru_to_el": {
+                "Твои ученики — в доме Господа.": [
+                    "Your",
+                    "disciples",
+                    "are",
+                    "in",
+                    "the",
+                    "house",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Мои братья — в пустыне.": [
+                    "My",
+                    "brothers",
+                    "are",
+                    "in",
+                    "the",
+                    "desert."
+                ],
+                "Пророк знает мытарей и ведёт их к судье.": [
+                    "The",
+                    "prophet",
+                    "knows",
+                    "the",
+                    "tax",
+                    "collectors",
+                    "and",
+                    "leads",
+                    "them",
+                    "to",
+                    "the",
+                    "judge."
+                ],
+                "Через его слово вы имеете славу.": [
+                    "Through",
+                    "his",
+                    "word",
+                    "you",
+                    "have",
+                    "glory."
+                ],
+                "Из-за ваших детей вы знаете плохие дни.": [
+                    "Because",
+                    "of",
+                    "your",
+                    "children",
+                    "you",
+                    "know",
+                    "the",
+                    "bad",
+                    "days."
+                ],
+                "В наши дни мир зол.": [
+                    "In",
+                    "our",
+                    "days",
+                    "the",
+                    "world",
+                    "is",
+                    "evil."
+                ],
+                "Бог знает наши души и освобождает их от смерти.": [
+                    "God",
+                    "knows",
+                    "our",
+                    "souls",
+                    "and",
+                    "sets",
+                    "them",
+                    "free",
+                    "from",
+                    "death."
+                ],
+                "Ты — мой сын и мой ученик.": [
+                    "You",
+                    "are",
+                    "my",
+                    "son",
+                    "and",
+                    "my",
+                    "disciple."
+                ],
+                "Мы — в Царстве Божием с твоими верными учениками.": [
+                    "We",
+                    "are",
+                    "in",
+                    "the",
+                    "kingdom",
+                    "of",
+                    "God",
+                    "with",
+                    "your",
+                    "faithful",
+                    "disciples."
+                ],
+                "Мы говорим тебе притчу, ты же говоришь нам другое слово.": [
+                    "We",
+                    "say",
+                    "a",
+                    "parable",
+                    "to",
+                    "you,",
+                    "but",
+                    "you",
+                    "say",
+                    "another",
+                    "word",
+                    "to",
+                    "us."
+                ],
+                "Путь плох, мы же ведём детей к Господу.": [
+                    "The",
+                    "way",
+                    "is",
+                    "bad,",
+                    "but",
+                    "we",
+                    "lead",
+                    "the",
+                    "children",
+                    "to",
+                    "the",
+                    "Lord."
+                ],
+                "Мой Господь несёт для вас дары, вы же пишете Ему плохое слово.": [
+                    "My",
+                    "Lord",
+                    "carries",
+                    "gifts",
+                    "for",
+                    "you,",
+                    "but",
+                    "you",
+                    "write",
+                    "a",
+                    "bad",
+                    "word",
+                    "to",
+                    "him."
+                ],
+                "Мои дома плохи, и ваши ученики уводят детей из него.": [
+                    "My",
+                    "houses",
+                    "are",
+                    "bad,",
+                    "and",
+                    "your",
+                    "disciples",
+                    "lead",
+                    "the",
+                    "children",
+                    "out",
+                    "of",
+                    "it."
+                ],
+                "Твои ученики ведут своих братьев ко мне.": [
+                    "Your",
+                    "disciples",
+                    "lead",
+                    "their",
+                    "brothers",
+                    "to",
+                    "me."
+                ],
+                "Я вижу и знаю моих сыновей и веду их к Господу.": [
+                    "I",
+                    "see",
+                    "and",
+                    "know",
+                    "my",
+                    "sons",
+                    "and",
+                    "lead",
+                    "them",
+                    "to",
+                    "the",
+                    "Lord."
+                ],
+                "Бог знает Свою Церковь и ведёт её из смерти в Своё Царство.": [
+                    "God",
+                    "knows",
+                    "his",
+                    "church",
+                    "and",
+                    "leads",
+                    "it",
+                    "out",
+                    "of",
+                    "death",
+                    "into",
+                    "his",
+                    "kingdom."
+                ],
+                "Твои заповеди хороши и праведны и ведут нас в жизнь.": [
+                    "Your",
+                    "commandments",
+                    "are",
+                    "good",
+                    "and",
+                    "righteous",
+                    "and",
+                    "lead",
+                    "us",
+                    "into",
+                    "life."
+                ],
+                "Наш Господь посылает Своих апостолов к тебе.": [
+                    "Our",
+                    "Lord",
+                    "sends",
+                    "his",
+                    "apostles",
+                    "to",
+                    "you."
+                ],
+                "Мы посылаем наших слуг в ваши дома, вы же берёте от нас наши дары.": [
+                    "We",
+                    "send",
+                    "our",
+                    "slaves",
+                    "into",
+                    "your",
+                    "houses,",
+                    "but",
+                    "you",
+                    "take",
+                    "our",
+                    "gifts",
+                    "from",
+                    "us."
+                ],
+                "Вы — хорошие, а ваши ученики — плохие.": [
+                    "You",
+                    "are",
+                    "good,",
+                    "but",
+                    "your",
+                    "disciples",
+                    "are",
+                    "bad."
                 ]
             }
         }
@@ -928,6 +2881,506 @@ const EXERCISES_EN_GREEK = {
                     "of",
                     "the",
                     "Lord"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "οὗτοι οἱ διδάσκαλοι κρίνουσιν αὐτὸν τὸν κριτήν.": [
+                    "These",
+                    "teachers",
+                    "judge",
+                    "the",
+                    "judge",
+                    "himself"
+                ],
+                "ὁ δὲ αὐτὸς νεανίας ἔχει τὴν αὐτὴν χαρὰν ἐν τῇ καρδίᾳ αὐτοῦ.": [
+                    "And",
+                    "the",
+                    "same",
+                    "young",
+                    "man",
+                    "has",
+                    "the",
+                    "same",
+                    "joy",
+                    "in",
+                    "his",
+                    "heart"
+                ],
+                "νῦν λαμβάνω αὐτὸς τὸ αὐτὸ εὐαγγέλιον ἀπὸ τοῦ κυρίου μου.": [
+                    "Now",
+                    "I",
+                    "myself",
+                    "receive",
+                    "the",
+                    "same",
+                    "gospel",
+                    "from",
+                    "my",
+                    "Lord"
+                ],
+                "οὗτος βλέπει ἐκεῖνον καὶ κρίνει αὐτόν.": [
+                    "This",
+                    "one",
+                    "sees",
+                    "that",
+                    "one",
+                    "and",
+                    "judges",
+                    "him"
+                ],
+                "μετὰ ταῦτα ἔχετε αὐτοὶ τὴν ἀγάπην τοῦ κυρίου ἐν ταῖς καρδίαις ὑμῶν.": [
+                    "After",
+                    "this",
+                    "you",
+                    "yourselves",
+                    "have",
+                    "the",
+                    "love",
+                    "of",
+                    "the",
+                    "Lord",
+                    "in",
+                    "your",
+                    "hearts"
+                ],
+                "οὗτοι ἔχουσι χαράν, ἐκεῖνοι δὲ ἔχουσιν ἁμαρτίαν.": [
+                    "These",
+                    "have",
+                    "joy,",
+                    "but",
+                    "those",
+                    "have",
+                    "sin"
+                ],
+                "αὕτη δέ ἐστιν ἡ φωνὴ τοῦ δεσπότου αὐτοῦ.": [
+                    "And",
+                    "this",
+                    "is",
+                    "the",
+                    "voice",
+                    "of",
+                    "his",
+                    "master"
+                ],
+                "οὕτως γινώσκομεν τοῦτον καὶ βλέπομεν τὸ πρόσωπον αὐτοῦ.": [
+                    "Thus",
+                    "we",
+                    "know",
+                    "this",
+                    "one",
+                    "and",
+                    "see",
+                    "his",
+                    "face"
+                ],
+                "λαμβάνομεν ταῦτα τὰ δῶρα ἀπὸ τοῦ αὐτοῦ καὶ βλέπομεν αὐτόν.": [
+                    "We",
+                    "receive",
+                    "these",
+                    "gifts",
+                    "from",
+                    "the",
+                    "same",
+                    "man",
+                    "and",
+                    "see",
+                    "him"
+                ],
+                "αὐτὸς βαπτίζεις ἐκεῖνον καὶ εἶ ἀδελφὸς αὐτοῦ.": [
+                    "You",
+                    "yourself",
+                    "baptize",
+                    "that",
+                    "one",
+                    "and",
+                    "are",
+                    "his",
+                    "brother"
+                ],
+                "εἰς τὴν αὐτὴν ἐκκλησίαν ἄγομεν τούτους τοὺς διδασκάλους ἡμῶν τοὺς ἀγαθούς.": [
+                    "Into",
+                    "the",
+                    "same",
+                    "church",
+                    "we",
+                    "lead",
+                    "these",
+                    "good",
+                    "teachers",
+                    "of",
+                    "ours"
+                ],
+                "αὐτὸς ἐγὼ ἔχω ταύτην τὴν ἐπαγγελίαν τοῦ κυρίου μου.": [
+                    "I",
+                    "myself",
+                    "have",
+                    "this",
+                    "promise",
+                    "of",
+                    "my",
+                    "Lord"
+                ],
+                "αὕτη ἡ παρθένος βλέπει τὸ πρόσωπον τοῦ κυρίου αὐτῆς.": [
+                    "This",
+                    "virgin",
+                    "sees",
+                    "the",
+                    "face",
+                    "of",
+                    "her",
+                    "Lord"
+                ],
+                "αὕτη γινώσκει αὐτὴν τὴν ἀλήθειαν.": [
+                    "This",
+                    "woman",
+                    "knows",
+                    "the",
+                    "truth",
+                    "itself"
+                ],
+                "ἀγαθή ἐστιν ἡ ἐπαγγελία σου, ἀγαθὴ εἶ αὕτη.": [
+                    "Your",
+                    "promise",
+                    "is",
+                    "good,",
+                    "and",
+                    "this",
+                    "one",
+                    "is",
+                    "good"
+                ],
+                "ἐκεῖνοί εἰσιν μαθηταὶ τοῦ αὐτοῦ διδασκάλου.": [
+                    "Those",
+                    "are",
+                    "disciples",
+                    "of",
+                    "the",
+                    "same",
+                    "teacher"
+                ],
+                "οὗτός ἐστιν διδάσκαλος ἐκείνου, ἐκεῖνος δὲ τούτου.": [
+                    "This",
+                    "one",
+                    "is",
+                    "the",
+                    "teacher",
+                    "of",
+                    "that",
+                    "one,",
+                    "and",
+                    "that",
+                    "one",
+                    "of",
+                    "this",
+                    "one"
+                ],
+                "οὗτος ὁ βαπτιστὴς διδάσκει τοὺς ἀγαθοὺς καὶ αὐτός ἐστιν ἀγαθός.": [
+                    "This",
+                    "baptist",
+                    "teaches",
+                    "good",
+                    "people",
+                    "and",
+                    "is",
+                    "himself",
+                    "good"
+                ],
+                "μετὰ τὰς ἡμέρας ἐκείνας διδάσκαλοί ἐσμεν τούτων τῶν δούλων.": [
+                    "After",
+                    "those",
+                    "days",
+                    "we",
+                    "are",
+                    "teachers",
+                    "of",
+                    "these",
+                    "slaves"
+                ],
+                "μετὰ τῶν πιστῶν προφητῶν ἔχομεν ἐπαγγελίας ἀγαθάς, οἱ δὲ πονηροὶ τελῶναι βλέπουσιν ἡμέρας κακάς.": [
+                    "With",
+                    "the",
+                    "faithful",
+                    "prophets",
+                    "we",
+                    "have",
+                    "good",
+                    "promises,",
+                    "but",
+                    "the",
+                    "evil",
+                    "tax",
+                    "collectors",
+                    "see",
+                    "bad",
+                    "days"
+                ]
+            },
+            "ru_to_el": {
+                "Эти пророки знают самого Господа.": [
+                    "These",
+                    "prophets",
+                    "know",
+                    "the",
+                    "Lord",
+                    "himself."
+                ],
+                "Те же самые ученики знают Его и видят Его лицо.": [
+                    "The",
+                    "same",
+                    "disciples",
+                    "know",
+                    "him",
+                    "and",
+                    "see",
+                    "his",
+                    "face."
+                ],
+                "Те Церкви судят этих учителей и ведут их от греха в радость.": [
+                    "Those",
+                    "churches",
+                    "judge",
+                    "these",
+                    "teachers",
+                    "and",
+                    "lead",
+                    "them",
+                    "from",
+                    "sin",
+                    "into",
+                    "joy."
+                ],
+                "Мы сами имеем этот грех в нашем сердце.": [
+                    "We",
+                    "ourselves",
+                    "have",
+                    "this",
+                    "sin",
+                    "in",
+                    "our",
+                    "heart."
+                ],
+                "Благодаря (из-за) любви нашего Господа эти юноши и девы имеют радость в своих сердцах.": [
+                    "Because",
+                    "of",
+                    "the",
+                    "love",
+                    "of",
+                    "our",
+                    "Lord",
+                    "these",
+                    "young",
+                    "men",
+                    "and",
+                    "these",
+                    "virgins",
+                    "have",
+                    "joy",
+                    "in",
+                    "their",
+                    "hearts."
+                ],
+                "Это — верные ученики пророка.": [
+                    "These",
+                    "are",
+                    "the",
+                    "faithful",
+                    "disciples",
+                    "of",
+                    "the",
+                    "prophet."
+                ],
+                "Апостол сам крестит своих братьев и ведёт их к тебе.": [
+                    "The",
+                    "apostle",
+                    "himself",
+                    "baptizes",
+                    "his",
+                    "brothers",
+                    "and",
+                    "leads",
+                    "them",
+                    "to",
+                    "you."
+                ],
+                "Через это Евангелие мы имеем жизнь в небесах.": [
+                    "Through",
+                    "this",
+                    "gospel",
+                    "we",
+                    "have",
+                    "life",
+                    "in",
+                    "the",
+                    "heavens."
+                ],
+                "Из-за этих учителей мы видим смерть в Церкви.": [
+                    "Because",
+                    "of",
+                    "these",
+                    "teachers",
+                    "we",
+                    "see",
+                    "death",
+                    "in",
+                    "the",
+                    "church."
+                ],
+                "Он сам знает нас и от Него мы получаем это обещание и ту же самую радость.": [
+                    "He",
+                    "himself",
+                    "knows",
+                    "us,",
+                    "and",
+                    "from",
+                    "him",
+                    "we",
+                    "receive",
+                    "this",
+                    "promise",
+                    "and",
+                    "the",
+                    "same",
+                    "joy."
+                ],
+                "Из-за этого же Евангелия мы сами посылаем этих мытарей к вам.": [
+                    "Because",
+                    "of",
+                    "this",
+                    "same",
+                    "gospel",
+                    "we",
+                    "ourselves",
+                    "send",
+                    "these",
+                    "tax",
+                    "collectors",
+                    "to",
+                    "you."
+                ],
+                "Он посылает самого Господа в этот мир.": [
+                    "He",
+                    "sends",
+                    "the",
+                    "Lord",
+                    "himself",
+                    "into",
+                    "this",
+                    "world."
+                ],
+                "Я сам вижу этого справедливого судью, и братья его видят.": [
+                    "I",
+                    "myself",
+                    "see",
+                    "this",
+                    "righteous",
+                    "judge,",
+                    "and",
+                    "his",
+                    "brothers",
+                    "see",
+                    "him."
+                ],
+                "Сейчас мы крестим тех учеников нашего Господа и посылаем их же в пустыню.": [
+                    "Now",
+                    "we",
+                    "baptize",
+                    "those",
+                    "disciples",
+                    "of",
+                    "our",
+                    "Lord",
+                    "and",
+                    "send",
+                    "them",
+                    "into",
+                    "the",
+                    "desert."
+                ],
+                "Мои ученики знают мой голос и приносят этих детей ко мне.": [
+                    "My",
+                    "disciples",
+                    "know",
+                    "my",
+                    "voice",
+                    "and",
+                    "bring",
+                    "these",
+                    "children",
+                    "to",
+                    "me."
+                ],
+                "Мы — ученики Господа, а вы — ученики злого (господина).": [
+                    "We",
+                    "are",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord,",
+                    "but",
+                    "you",
+                    "are",
+                    "disciples",
+                    "of",
+                    "the",
+                    "evil",
+                    "one."
+                ],
+                "Эта любовь ведёт наших детей в жизнь.": [
+                    "This",
+                    "love",
+                    "leads",
+                    "our",
+                    "children",
+                    "into",
+                    "life."
+                ],
+                "Любовь этих Церквей ведёт и других людей в радость.": [
+                    "The",
+                    "love",
+                    "of",
+                    "these",
+                    "churches",
+                    "leads",
+                    "other",
+                    "people",
+                    "into",
+                    "joy",
+                    "too."
+                ],
+                "Учителя этого мира имеют грех в своих сердцах и так учат людей.": [
+                    "The",
+                    "teachers",
+                    "of",
+                    "this",
+                    "world",
+                    "have",
+                    "sin",
+                    "in",
+                    "their",
+                    "hearts",
+                    "and",
+                    "so",
+                    "teach",
+                    "people."
+                ],
+                "Я знаю грех этих мытарей и посылаю их к самому Господу.": [
+                    "I",
+                    "know",
+                    "the",
+                    "sin",
+                    "of",
+                    "these",
+                    "tax",
+                    "collectors",
+                    "and",
+                    "send",
+                    "them",
+                    "to",
+                    "the",
+                    "Lord",
+                    "himself."
                 ]
             }
         }
@@ -1111,6 +3564,555 @@ const EXERCISES_EN_GREEK = {
                     "know"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "λύονται οὗτοι οἱ δοῦλοι ὑπὸ τοῦ κυρίου.": [
+                    "These",
+                    "slaves",
+                    "are",
+                    "set",
+                    "free",
+                    "by",
+                    "the",
+                    "Lord"
+                ],
+                "τῷ λόγῳ τοῦ κυρίου ἀγόμεθα εἰς τὴν ἐκκλησίαν τοῦ θεοῦ.": [
+                    "By",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "Lord",
+                    "we",
+                    "are",
+                    "led",
+                    "into",
+                    "the",
+                    "church",
+                    "of",
+                    "God"
+                ],
+                "οὐκ ἀκούετε τῆς φωνῆς τοῦ προφήτου, ἀλλ' ἐξέρχεσθε ἐκ τοῦ οἴκου αὐτοῦ.": [
+                    "You",
+                    "do",
+                    "not",
+                    "hear",
+                    "the",
+                    "voice",
+                    "of",
+                    "the",
+                    "prophet,",
+                    "but",
+                    "you",
+                    "go",
+                    "out",
+                    "of",
+                    "his",
+                    "house"
+                ],
+                "τῷ λόγῳ αὐτοῦ τοῦ κυρίου γίνεσθε μαθηταὶ αὐτοῦ.": [
+                    "By",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "Lord",
+                    "himself",
+                    "you",
+                    "become",
+                    "his",
+                    "disciples"
+                ],
+                "ἐκεῖνοι οἱ ἀγαθοὶ διδάσκαλοι οὐκ εἰσέρχονται εἰς τοὺς οἴκους τῶν ἁμαρτωλῶν.": [
+                    "Those",
+                    "good",
+                    "teachers",
+                    "do",
+                    "not",
+                    "enter",
+                    "the",
+                    "houses",
+                    "of",
+                    "sinners"
+                ],
+                "οὐ βαπτίζονται οἱ ἁμαρτωλοὶ ὑπὸ τῶν ἀποστόλων, ἀλλ' ἐξέρχονται ἐκ τούτων τῶν οἴκων πρὸς ἄλλους διδασκάλους.": [
+                    "Sinners",
+                    "are",
+                    "not",
+                    "baptized",
+                    "by",
+                    "the",
+                    "apostles,",
+                    "but",
+                    "they",
+                    "go",
+                    "out",
+                    "of",
+                    "these",
+                    "houses",
+                    "to",
+                    "other",
+                    "teachers"
+                ],
+                "λέγετε ἐκείνοις τοῖς ἁμαρτωλοῖς ὅτι σῴζεσθε ὑπὸ τοῦ θεοῦ ἀπὸ τῶν ἁμαρτιῶν ὑμῶν.": [
+                    "Say",
+                    "to",
+                    "those",
+                    "sinners",
+                    "that",
+                    "you",
+                    "are",
+                    "saved",
+                    "by",
+                    "God",
+                    "from",
+                    "your",
+                    "sins"
+                ],
+                "ἄρχει αὐτὸς ὁ θεὸς τῆς βασιλείας αὐτοῦ.": [
+                    "God",
+                    "himself",
+                    "rules",
+                    "his",
+                    "kingdom"
+                ],
+                "εἰρήνην καὶ χαρὰν ἔχει ἡ ἐκκλησία, ὅτι σῴζεται ὑπὸ τοῦ κυρίου αὐτῆς.": [
+                    "The",
+                    "church",
+                    "has",
+                    "peace",
+                    "and",
+                    "joy,",
+                    "because",
+                    "it",
+                    "is",
+                    "saved",
+                    "by",
+                    "its",
+                    "Lord"
+                ],
+                "οὐκ ἀποκρινόμεθα τῷ τελώνῃ ὅτι γινώσκομεν αὐτόν.": [
+                    "We",
+                    "do",
+                    "not",
+                    "answer",
+                    "the",
+                    "tax",
+                    "collector,",
+                    "because",
+                    "we",
+                    "know",
+                    "him"
+                ],
+                "οὐχ ὑπὸ τῶν μαθητῶν σῴζῃ ἀπὸ τῶν ἁμαρτιῶν σου, ἀλλ' ὑπ' αὐτοῦ τοῦ θεοῦ.": [
+                    "You",
+                    "are",
+                    "saved",
+                    "from",
+                    "your",
+                    "sins",
+                    "not",
+                    "by",
+                    "the",
+                    "disciples,",
+                    "but",
+                    "by",
+                    "God",
+                    "himself"
+                ],
+                "οὐ πορεύῃ ἐν τῇ ὁδῷ τῇ κακῇ, ἀλλὰ σῴζῃ ἀπὸ τῶν ἁμαρτιῶν σου καὶ οἱ ἀδελφοί σου ἀκούουσι τῆς φωνῆς τοῦ κυρίου.": [
+                    "You",
+                    "do",
+                    "not",
+                    "go",
+                    "in",
+                    "the",
+                    "bad",
+                    "way,",
+                    "but",
+                    "you",
+                    "are",
+                    "saved",
+                    "from",
+                    "your",
+                    "sins,",
+                    "and",
+                    "your",
+                    "brothers",
+                    "hear",
+                    "the",
+                    "voice",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "ὁ κύριος ἔρχεται εἰς τὸν οἶκον τοῦ μαθητοῦ αὐτοῦ.": [
+                    "The",
+                    "Lord",
+                    "comes",
+                    "into",
+                    "the",
+                    "house",
+                    "of",
+                    "his",
+                    "disciple"
+                ],
+                "ἐρχόμεθα πρὸς τοὺς ἀποστόλους, ὅτι γινώσκομεν τὴν φωνὴν αὐτῶν.": [
+                    "We",
+                    "come",
+                    "to",
+                    "the",
+                    "apostles,",
+                    "because",
+                    "we",
+                    "know",
+                    "their",
+                    "voice"
+                ],
+                "μετὰ τῶν ἀδελφῶν αὐτοῦ ἄγεται εἰς τὴν βασιλείαν τοῦ θεοῦ τῇ φωνῇ τῶν ἀποστόλων.": [
+                    "With",
+                    "his",
+                    "brothers",
+                    "he",
+                    "is",
+                    "led",
+                    "into",
+                    "the",
+                    "kingdom",
+                    "of",
+                    "God",
+                    "by",
+                    "the",
+                    "voice",
+                    "of",
+                    "the",
+                    "apostles"
+                ],
+                "οὐ γίνῃ μαθητὴς τοῦ κυρίου, ὅτι οὐκ εἰσέρχῃ εἰς τὴν ἐκκλησίαν αὐτοῦ.": [
+                    "You",
+                    "do",
+                    "not",
+                    "become",
+                    "a",
+                    "disciple",
+                    "of",
+                    "the",
+                    "Lord,",
+                    "because",
+                    "you",
+                    "do",
+                    "not",
+                    "enter",
+                    "his",
+                    "church"
+                ],
+                "οἱ κριταὶ οὗτοι κρίνουσι τοὺς λῃστὰς ἐκείνους ἐν νόμῳ.": [
+                    "These",
+                    "judges",
+                    "judge",
+                    "those",
+                    "robbers",
+                    "by",
+                    "the",
+                    "law"
+                ],
+                "αὗται αἱ καλαὶ παρθένοι διώκονται ὑπὸ τῶν λῃστῶν τούτων ἐν τῇ ὁδῷ, ἀλλ' ὁ κύριος σῴζει αὐτάς.": [
+                    "These",
+                    "good",
+                    "virgins",
+                    "are",
+                    "persecuted",
+                    "by",
+                    "these",
+                    "robbers",
+                    "on",
+                    "the",
+                    "way,",
+                    "but",
+                    "the",
+                    "Lord",
+                    "saves",
+                    "them"
+                ],
+                "ὁ βαπτιστὴς αὐτὸς ἐξέρχεται ἐκ τοῦ οἴκου καὶ ἀπέρχεται ἀπὸ τῶν πονηρῶν.": [
+                    "The",
+                    "baptist",
+                    "himself",
+                    "goes",
+                    "out",
+                    "of",
+                    "the",
+                    "house",
+                    "and",
+                    "departs",
+                    "from",
+                    "the",
+                    "evil",
+                    "people"
+                ]
+            },
+            "ru_to_el": {
+                "Эти церкви спасаемы Господом от смерти.": [
+                    "These",
+                    "churches",
+                    "are",
+                    "saved",
+                    "by",
+                    "the",
+                    "Lord",
+                    "from",
+                    "death."
+                ],
+                "Я спасаюсь Им, и Он учит меня своим словом.": [
+                    "I",
+                    "am",
+                    "saved",
+                    "by",
+                    "him,",
+                    "and",
+                    "he",
+                    "teaches",
+                    "me",
+                    "by",
+                    "his",
+                    "word."
+                ],
+                "Мы становимся учениками апостола, а вы не слышите его голоса.": [
+                    "We",
+                    "become",
+                    "disciples",
+                    "of",
+                    "the",
+                    "apostle,",
+                    "but",
+                    "you",
+                    "do",
+                    "not",
+                    "hear",
+                    "his",
+                    "voice."
+                ],
+                "Я — грешник, но наставляем апостолами Господа и имею Его обетования.": [
+                    "I",
+                    "am",
+                    "a",
+                    "sinner,",
+                    "but",
+                    "I",
+                    "am",
+                    "taught",
+                    "by",
+                    "the",
+                    "apostles",
+                    "of",
+                    "the",
+                    "Lord",
+                    "and",
+                    "have",
+                    "his",
+                    "promises."
+                ],
+                "Я — плохой слуга, но ты становишься моим учителем.": [
+                    "I",
+                    "am",
+                    "a",
+                    "bad",
+                    "slave,",
+                    "but",
+                    "you",
+                    "become",
+                    "my",
+                    "teacher."
+                ],
+                "Злые люди говорят тем Церквам, что наши братья не видят лица Господа.": [
+                    "Evil",
+                    "people",
+                    "say",
+                    "to",
+                    "those",
+                    "churches",
+                    "that",
+                    "our",
+                    "brothers",
+                    "do",
+                    "not",
+                    "see",
+                    "the",
+                    "face",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Мы знаем Господа, потому что получаем от Него хорошие дары и учимся у Него посредством притч.": [
+                    "We",
+                    "know",
+                    "the",
+                    "Lord,",
+                    "because",
+                    "we",
+                    "receive",
+                    "good",
+                    "gifts",
+                    "from",
+                    "him",
+                    "and",
+                    "are",
+                    "taught",
+                    "by",
+                    "him",
+                    "through",
+                    "parables."
+                ],
+                "Ты пишешь своим братьям, что ты преследуем злыми судьями.": [
+                    "You",
+                    "write",
+                    "to",
+                    "your",
+                    "brothers",
+                    "that",
+                    "you",
+                    "are",
+                    "persecuted",
+                    "by",
+                    "evil",
+                    "judges."
+                ],
+                "Он учит других и сам учится у этого апостола.": [
+                    "He",
+                    "teaches",
+                    "others",
+                    "and",
+                    "is",
+                    "himself",
+                    "taught",
+                    "by",
+                    "this",
+                    "apostle."
+                ],
+                "Этот ученик не отвечает тому пророку, потому что не знает его писаний.": [
+                    "This",
+                    "disciple",
+                    "does",
+                    "not",
+                    "answer",
+                    "that",
+                    "prophet,",
+                    "because",
+                    "he",
+                    "does",
+                    "not",
+                    "know",
+                    "his",
+                    "writings."
+                ],
+                "Ты говоришь той Церкви, что ты — плохой слуга.": [
+                    "You",
+                    "say",
+                    "to",
+                    "that",
+                    "church",
+                    "that",
+                    "you",
+                    "are",
+                    "a",
+                    "bad",
+                    "slave."
+                ],
+                "Вы пребываете в этом храме, но не являетесь учениками Господа.": [
+                    "You",
+                    "remain",
+                    "in",
+                    "this",
+                    "temple,",
+                    "but",
+                    "you",
+                    "are",
+                    "not",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Мы не видим лиц этих мытарей и грешников.": [
+                    "We",
+                    "do",
+                    "not",
+                    "see",
+                    "the",
+                    "faces",
+                    "of",
+                    "these",
+                    "tax",
+                    "collectors",
+                    "and",
+                    "sinners."
+                ],
+                "В доме учеников нашего Господа мир и радость.": [
+                    "In",
+                    "the",
+                    "house",
+                    "of",
+                    "the",
+                    "disciples",
+                    "of",
+                    "our",
+                    "Lord",
+                    "there",
+                    "is",
+                    "peace",
+                    "and",
+                    "joy."
+                ],
+                "Господь управляет этим миром при помощи своего слова.": [
+                    "The",
+                    "Lord",
+                    "rules",
+                    "this",
+                    "world",
+                    "by",
+                    "his",
+                    "word."
+                ],
+                "Эти грешники не входят в Господень дом, а выходят в пустыню вместе с разбойниками.": [
+                    "These",
+                    "sinners",
+                    "do",
+                    "not",
+                    "enter",
+                    "the",
+                    "house",
+                    "of",
+                    "the",
+                    "Lord,",
+                    "but",
+                    "they",
+                    "go",
+                    "out",
+                    "into",
+                    "the",
+                    "desert",
+                    "with",
+                    "the",
+                    "robbers."
+                ],
+                "Эти писания пишутся Господом его верным Церквам через пророков.": [
+                    "These",
+                    "writings",
+                    "are",
+                    "written",
+                    "by",
+                    "the",
+                    "Lord",
+                    "to",
+                    "his",
+                    "faithful",
+                    "churches",
+                    "through",
+                    "the",
+                    "prophets."
+                ]
+            }
         }
     },
     "11": {
@@ -1285,6 +4287,548 @@ const EXERCISES_EN_GREEK = {
                     "Gen.,",
                     "of",
                     "persons)"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ἠκούομεν τῆς φωνῆς αὐτοῦ ἐν ἐκείναις ταῖς ἡμέραις, νῦν δὲ οὐκέτι ἀκούομεν αὐτῆς.": [
+                    "We",
+                    "heard",
+                    "his",
+                    "voice",
+                    "in",
+                    "those",
+                    "days,",
+                    "but",
+                    "now",
+                    "we",
+                    "no",
+                    "longer",
+                    "hear",
+                    "it"
+                ],
+                "ὁ δὲ μαθητὴς τοῦ κυρίου ἔλεγε παραβολὴν τοῖς ἀδελφοῖς αὐτοῦ.": [
+                    "And",
+                    "the",
+                    "disciple",
+                    "of",
+                    "the",
+                    "Lord",
+                    "was",
+                    "speaking",
+                    "a",
+                    "parable",
+                    "to",
+                    "his",
+                    "brothers"
+                ],
+                "ἀπέκτεινον οἱ λῃσταὶ τὰ τέκνα σὺν τοῖς διδασκάλοις αὐτῶν παρὰ τῇ ὁδῷ ταύτῃ.": [
+                    "The",
+                    "robbers",
+                    "were",
+                    "killing",
+                    "the",
+                    "children",
+                    "together",
+                    "with",
+                    "their",
+                    "teachers",
+                    "beside",
+                    "this",
+                    "road"
+                ],
+                "τότε μὲν κατέβαινον εἰς τὸν οἶκον, νῦν δὲ οὐκέτι καταβαίνω.": [
+                    "Then",
+                    "they",
+                    "were",
+                    "going",
+                    "down",
+                    "into",
+                    "the",
+                    "house,",
+                    "but",
+                    "now",
+                    "I",
+                    "no",
+                    "longer",
+                    "go",
+                    "down"
+                ],
+                "παρελαμβάνετε τὸν ἄρτον παρὰ τῶν δούλων καὶ ἠσθίετε αὐτόν.": [
+                    "You",
+                    "were",
+                    "receiving",
+                    "the",
+                    "bread",
+                    "from",
+                    "the",
+                    "slaves",
+                    "and",
+                    "eating",
+                    "it"
+                ],
+                "διὰ τὴν ἀλήθειαν ἀπέθνῃσκον οἱ προφῆται ἐν ταῖς ἡμέραις ἐκείναις.": [
+                    "For",
+                    "the",
+                    "sake",
+                    "of",
+                    "the",
+                    "truth",
+                    "the",
+                    "prophets",
+                    "were",
+                    "dying",
+                    "in",
+                    "those",
+                    "days"
+                ],
+                "συνῆγεν οὗτος ὁ ἀπόστολος εἰς τὴν ἐκκλησίαν τοὺς μαθητὰς τοῦ κυρίου ὑμῶν.": [
+                    "This",
+                    "apostle",
+                    "was",
+                    "gathering",
+                    "the",
+                    "disciples",
+                    "of",
+                    "your",
+                    "Lord",
+                    "into",
+                    "the",
+                    "church"
+                ],
+                "νῦν μὲν διδασκόμεθα ὑπὸ τῶν ἀποστόλων, τότε δὲ ἐδιδάσκομεν ἡμεῖς τὴν ἐκκλησίαν.": [
+                    "Now",
+                    "we",
+                    "are",
+                    "taught",
+                    "by",
+                    "the",
+                    "apostles,",
+                    "but",
+                    "then",
+                    "we",
+                    "ourselves",
+                    "were",
+                    "teaching",
+                    "the",
+                    "church"
+                ],
+                "ὁ κύριος ἡμῶν ἦρε τὰς ἁμαρτίας ἡμῶν.": [
+                    "Our",
+                    "Lord",
+                    "took",
+                    "away",
+                    "our",
+                    "sins"
+                ],
+                "τότε μὲν ἀνέβαινον εἰς τὸ ἱερόν, νῦν δὲ οὐκέτι ἀναβαίνουσιν.": [
+                    "Then",
+                    "they",
+                    "were",
+                    "going",
+                    "up",
+                    "into",
+                    "the",
+                    "temple,",
+                    "but",
+                    "now",
+                    "they",
+                    "no",
+                    "longer",
+                    "go",
+                    "up"
+                ],
+                "πονηροὶ ἦτε, ἀγαθοὶ δὲ ἐστέ.": [
+                    "You",
+                    "were",
+                    "evil,",
+                    "but",
+                    "now",
+                    "you",
+                    "are",
+                    "good"
+                ],
+                "ὑμεῖς μὲν ἐστὲ ἀγαθοί, ἡμεῖς δέ ἐσμεν πονηροί.": [
+                    "You",
+                    "are",
+                    "good,",
+                    "but",
+                    "we",
+                    "are",
+                    "evil"
+                ],
+                "τότε ἤμην ἐν τῷ ἱερῷ καὶ ἐδίδασκέ με ὁ κύριος.": [
+                    "Then",
+                    "I",
+                    "was",
+                    "in",
+                    "the",
+                    "temple,",
+                    "and",
+                    "the",
+                    "Lord",
+                    "was",
+                    "teaching",
+                    "me"
+                ],
+                "λέγομεν ὑμῖν ὅτι ἐν τῷ οἴκῳ ὑμῶν ἦμεν.": [
+                    "We",
+                    "say",
+                    "to",
+                    "you",
+                    "that",
+                    "we",
+                    "were",
+                    "in",
+                    "your",
+                    "house"
+                ],
+                "ἐξέβαλλες αὐτοὺς ἐκ τοῦ ἱεροῦ.": [
+                    "You",
+                    "were",
+                    "throwing",
+                    "them",
+                    "out",
+                    "of",
+                    "the",
+                    "temple"
+                ],
+                "ἀπέστελλον οἱ τελῶναι τοὺς δούλους αὐτῶν πρός με.": [
+                    "The",
+                    "tax",
+                    "collectors",
+                    "were",
+                    "sending",
+                    "their",
+                    "slaves",
+                    "to",
+                    "me"
+                ],
+                "ὁ κύριος ἀπέστελλεν ἀγγέλους πρὸς ἡμᾶς.": [
+                    "The",
+                    "Lord",
+                    "was",
+                    "sending",
+                    "angels",
+                    "to",
+                    "us"
+                ],
+                "ἐν τῷ κόσμῳ ἦν καὶ ὁ κόσμος οὐκ ἔβλεπεν αὐτόν.": [
+                    "He",
+                    "was",
+                    "in",
+                    "the",
+                    "world,",
+                    "and",
+                    "the",
+                    "world",
+                    "did",
+                    "not",
+                    "see",
+                    "him"
+                ],
+                "δοῦλος ἦς τοῦ πονηροῦ, ἀλλὰ νῦν οὐκέτι εἶ δοῦλος.": [
+                    "You",
+                    "were",
+                    "a",
+                    "slave",
+                    "of",
+                    "the",
+                    "evil",
+                    "one,",
+                    "but",
+                    "now",
+                    "you",
+                    "are",
+                    "no",
+                    "longer",
+                    "a",
+                    "slave"
+                ],
+                "τοῦτό ἐστι τὸ δῶρον τοῦ ἁμαρτωλοῦ, καλὸν δὲ οὐκ ἔστιν.": [
+                    "This",
+                    "is",
+                    "the",
+                    "gift",
+                    "of",
+                    "the",
+                    "sinner,",
+                    "but",
+                    "it",
+                    "is",
+                    "not",
+                    "good"
+                ]
+            },
+            "ru_to_el": {
+                "Мы слышали его голос в те дни, а теперь уже не слышим его.": [
+                    "We",
+                    "heard",
+                    "his",
+                    "voice",
+                    "in",
+                    "those",
+                    "days,",
+                    "but",
+                    "now",
+                    "we",
+                    "no",
+                    "longer",
+                    "hear",
+                    "it."
+                ],
+                "Ученик же Господа говорил притчу своим братьям.": [
+                    "And",
+                    "the",
+                    "disciple",
+                    "of",
+                    "the",
+                    "Lord",
+                    "was",
+                    "speaking",
+                    "a",
+                    "parable",
+                    "to",
+                    "his",
+                    "brothers."
+                ],
+                "Разбойники убивали детей вместе с их учителями у этой дороги.": [
+                    "The",
+                    "robbers",
+                    "were",
+                    "killing",
+                    "the",
+                    "children",
+                    "together",
+                    "with",
+                    "their",
+                    "teachers",
+                    "beside",
+                    "this",
+                    "road."
+                ],
+                "Тогда они спускались в дом, а теперь я уже не спускаюсь.": [
+                    "Then",
+                    "they",
+                    "were",
+                    "going",
+                    "down",
+                    "into",
+                    "the",
+                    "house,",
+                    "but",
+                    "now",
+                    "I",
+                    "no",
+                    "longer",
+                    "go",
+                    "down."
+                ],
+                "Вы получали хлеб от рабов и ели его.": [
+                    "You",
+                    "were",
+                    "receiving",
+                    "the",
+                    "bread",
+                    "from",
+                    "the",
+                    "slaves",
+                    "and",
+                    "eating",
+                    "it."
+                ],
+                "Из-за истины умирали пророки в те дни.": [
+                    "For",
+                    "the",
+                    "sake",
+                    "of",
+                    "the",
+                    "truth",
+                    "the",
+                    "prophets",
+                    "were",
+                    "dying",
+                    "in",
+                    "those",
+                    "days."
+                ],
+                "Этот апостол собирал в церковь учеников вашего Господа.": [
+                    "This",
+                    "apostle",
+                    "was",
+                    "gathering",
+                    "the",
+                    "disciples",
+                    "of",
+                    "your",
+                    "Lord",
+                    "into",
+                    "the",
+                    "church."
+                ],
+                "Теперь мы учимся у апостолов, а тогда мы сами учили церковь.": [
+                    "Now",
+                    "we",
+                    "are",
+                    "taught",
+                    "by",
+                    "the",
+                    "apostles,",
+                    "but",
+                    "then",
+                    "we",
+                    "ourselves",
+                    "were",
+                    "teaching",
+                    "the",
+                    "church."
+                ],
+                "Господь наш взял наши грехи.": [
+                    "Our",
+                    "Lord",
+                    "took",
+                    "away",
+                    "our",
+                    "sins."
+                ],
+                "Тогда они поднимались в храм, а теперь уже не поднимаются.": [
+                    "Then",
+                    "they",
+                    "were",
+                    "going",
+                    "up",
+                    "into",
+                    "the",
+                    "temple,",
+                    "but",
+                    "now",
+                    "they",
+                    "no",
+                    "longer",
+                    "go",
+                    "up."
+                ],
+                "Вы были злыми, а теперь вы добрые.": [
+                    "You",
+                    "were",
+                    "evil,",
+                    "but",
+                    "now",
+                    "you",
+                    "are",
+                    "good."
+                ],
+                "Вы добрые, а мы злые.": [
+                    "You",
+                    "are",
+                    "good,",
+                    "but",
+                    "we",
+                    "are",
+                    "evil."
+                ],
+                "Тогда я был в храме, и Господь учил меня.": [
+                    "Then",
+                    "I",
+                    "was",
+                    "in",
+                    "the",
+                    "temple,",
+                    "and",
+                    "the",
+                    "Lord",
+                    "was",
+                    "teaching",
+                    "me."
+                ],
+                "Мы говорим вам, что были в вашем доме.": [
+                    "We",
+                    "say",
+                    "to",
+                    "you",
+                    "that",
+                    "we",
+                    "were",
+                    "in",
+                    "your",
+                    "house."
+                ],
+                "Ты выбрасывал их из храма.": [
+                    "You",
+                    "were",
+                    "throwing",
+                    "them",
+                    "out",
+                    "of",
+                    "the",
+                    "temple."
+                ],
+                "Мытари посылали своих рабов ко мне.": [
+                    "The",
+                    "tax",
+                    "collectors",
+                    "were",
+                    "sending",
+                    "their",
+                    "slaves",
+                    "to",
+                    "me."
+                ],
+                "Господь посылал к нам ангелов.": [
+                    "The",
+                    "Lord",
+                    "was",
+                    "sending",
+                    "angels",
+                    "to",
+                    "us."
+                ],
+                "Он был в мире, и мир не видел его.": [
+                    "He",
+                    "was",
+                    "in",
+                    "the",
+                    "world,",
+                    "and",
+                    "the",
+                    "world",
+                    "did",
+                    "not",
+                    "see",
+                    "him."
+                ],
+                "Ты был рабом злого, но теперь ты уже не раб.": [
+                    "You",
+                    "were",
+                    "a",
+                    "slave",
+                    "of",
+                    "the",
+                    "evil",
+                    "one,",
+                    "but",
+                    "now",
+                    "you",
+                    "are",
+                    "no",
+                    "longer",
+                    "a",
+                    "slave."
+                ],
+                "Это дар грешника, но он не хорош.": [
+                    "This",
+                    "is",
+                    "the",
+                    "gift",
+                    "of",
+                    "the",
+                    "sinner,",
+                    "but",
+                    "it",
+                    "is",
+                    "not",
+                    "good."
                 ]
             }
         }
@@ -1532,6 +5076,406 @@ const EXERCISES_EN_GREEK = {
                     "Lord"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ἐγράφοντο οὗτοι οἱ λόγοι ἐν τῷ βιβλίῳ τοῦ κυρίου.": [
+                    "These",
+                    "words",
+                    "were",
+                    "written",
+                    "in",
+                    "the",
+                    "book",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "ἐδιδασκόμην ὑπ' αὐτοῦ ἐκ τῶν βιβλίων τῶν προφητῶν.": [
+                    "I",
+                    "was",
+                    "being",
+                    "taught",
+                    "by",
+                    "him",
+                    "from",
+                    "the",
+                    "books",
+                    "of",
+                    "the",
+                    "prophets"
+                ],
+                "ἐν ἐκείναις ταῖς ἡμέραις καὶ ἐδιδασκόμεθα ὑπ' αὐτοῦ καὶ ἐδιδάσκομεν τοὺς ἄλλους, ἀλλὰ νῦν οὐδὲ διδασκόμεθα οὐδὲ διδάσκομεν.": [
+                    "In",
+                    "those",
+                    "days",
+                    "we",
+                    "were",
+                    "both",
+                    "being",
+                    "taught",
+                    "by",
+                    "him",
+                    "and",
+                    "teaching",
+                    "others,",
+                    "but",
+                    "now",
+                    "we",
+                    "are",
+                    "neither",
+                    "taught",
+                    "nor",
+                    "teach"
+                ],
+                "ἀπήρχοντο οἱ ἁμαρτωλοὶ πρὸς τὴν θάλασσαν.": [
+                    "The",
+                    "sinners",
+                    "were",
+                    "departing",
+                    "to",
+                    "the",
+                    "sea"
+                ],
+                "ἐξεπορεύετο πρὸς αὐτὸν ἡ ἐκκλησία, ἀλλὰ νῦν οὐκέτι ἐκπορεύεται.": [
+                    "The",
+                    "church",
+                    "was",
+                    "going",
+                    "out",
+                    "to",
+                    "him,",
+                    "but",
+                    "now",
+                    "it",
+                    "no",
+                    "longer",
+                    "goes",
+                    "out"
+                ],
+                "οὔπω βλέπομεν τὸν κύριον ἐν τῇ δόξῃ αὐτοῦ, ἀλλὰ ἐδιδασκόμεθα ὑπ' αὐτοῦ καὶ ἐν ταῖς ἡμέραις ταῖς κακαῖς.": [
+                    "We",
+                    "do",
+                    "not",
+                    "yet",
+                    "see",
+                    "the",
+                    "Lord",
+                    "in",
+                    "his",
+                    "glory,",
+                    "but",
+                    "we",
+                    "were",
+                    "being",
+                    "taught",
+                    "by",
+                    "him",
+                    "even",
+                    "in",
+                    "the",
+                    "bad",
+                    "days"
+                ],
+                "ἐλέγετο ἐν τῷ ἱερῷ καλὸς λόγος περὶ τούτου τοῦ ἀποστόλου.": [
+                    "A",
+                    "good",
+                    "word",
+                    "was",
+                    "being",
+                    "said",
+                    "in",
+                    "the",
+                    "temple",
+                    "about",
+                    "this",
+                    "apostle"
+                ],
+                "περὶ αὐτὸν ἐβλέπετο ἡ δόξα αὐτοῦ.": [
+                    "Around",
+                    "him",
+                    "his",
+                    "glory",
+                    "was",
+                    "seen"
+                ],
+                "ἐφέρετο τὰ δῶρα καὶ πρὸς τοὺς πονηροὺς δεσπότας.": [
+                    "The",
+                    "gifts",
+                    "were",
+                    "being",
+                    "carried",
+                    "to",
+                    "the",
+                    "evil",
+                    "masters",
+                    "too"
+                ],
+                "ἐδέχου τὰ βιβλία παρὰ τῶν προφητῶν.": [
+                    "You",
+                    "were",
+                    "receiving",
+                    "the",
+                    "books",
+                    "from",
+                    "the",
+                    "prophets"
+                ],
+                "συνήρχοντο οἱ μαθηταὶ πρὸς τοῦτον.": [
+                    "The",
+                    "disciples",
+                    "were",
+                    "gathering",
+                    "to",
+                    "him"
+                ],
+                "τὰ ἔργα τοῦ πονηροῦ πονηρά ἐστιν.": [
+                    "The",
+                    "works",
+                    "of",
+                    "the",
+                    "evil",
+                    "one",
+                    "are",
+                    "evil"
+                ],
+                "οὐδὲ αὐτὸς πονηρὸς οὐδὲ τὰ ἔργα αὐτοῦ πονηρά.": [
+                    "Neither",
+                    "is",
+                    "he",
+                    "himself",
+                    "evil,",
+                    "nor",
+                    "are",
+                    "his",
+                    "works",
+                    "evil"
+                ],
+                "ὑπὲρ τῆς ἐκκλησίας αὐτοῦ ἀπέθνῃσκεν ὁ κύριος.": [
+                    "The",
+                    "Lord",
+                    "was",
+                    "dying",
+                    "for",
+                    "his",
+                    "church"
+                ],
+                "οὐκ ἔστιν μαθητὴς ὑπὲρ τὸν διδάσκαλον αὐτοῦ οὐδὲ δοῦλος ὑπὲρ τὸν κύριον αὐτοῦ.": [
+                    "A",
+                    "disciple",
+                    "is",
+                    "not",
+                    "above",
+                    "his",
+                    "teacher,",
+                    "nor",
+                    "a",
+                    "slave",
+                    "above",
+                    "his",
+                    "lord"
+                ],
+                "ἐν τῷ πλοίῳ ἦγον πρὸς τὸν κύριον διὰ τῆς θαλάσσης.": [
+                    "In",
+                    "the",
+                    "boat",
+                    "they",
+                    "were",
+                    "carrying",
+                    "them",
+                    "to",
+                    "the",
+                    "Lord",
+                    "across",
+                    "the",
+                    "sea"
+                ],
+                "ἐξήρχεσθε ἐκ τῶν οἴκων ὑμῶν.": [
+                    "You",
+                    "were",
+                    "going",
+                    "out",
+                    "of",
+                    "your",
+                    "houses"
+                ],
+                "ταῦτα τὰ δαιμόνια ἐξήρχετο διὰ τοῦ λόγου αὐτοῦ.": [
+                    "These",
+                    "demons",
+                    "were",
+                    "going",
+                    "out",
+                    "through",
+                    "his",
+                    "word"
+                ],
+                "ἠκούοντο καὶ ἤκουον, ἀκούονται καὶ ἀκούουσιν.": [
+                    "They",
+                    "were",
+                    "being",
+                    "heard",
+                    "and",
+                    "were",
+                    "hearing;",
+                    "they",
+                    "are",
+                    "being",
+                    "heard",
+                    "and",
+                    "are",
+                    "hearing"
+                ],
+                "ἠρχόμην πρὸς τὸν κύριον, ἦγον δὲ καὶ τοὺς ἄλλους ἁμαρτωλούς.": [
+                    "I",
+                    "was",
+                    "coming",
+                    "to",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "I",
+                    "was",
+                    "also",
+                    "leading",
+                    "other",
+                    "sinners"
+                ]
+            },
+            "ru_to_el": {
+                "Эти слова были написаны в книге Господа.": [
+                    "These",
+                    "words",
+                    "were",
+                    "written",
+                    "in",
+                    "the",
+                    "book",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Грешники уходили к морю.": [
+                    "The",
+                    "sinners",
+                    "were",
+                    "departing",
+                    "to",
+                    "the",
+                    "sea."
+                ],
+                "Мы ещё не видим Господа в его славе, но были учимы им и в злые дни.": [
+                    "We",
+                    "do",
+                    "not",
+                    "yet",
+                    "see",
+                    "the",
+                    "Lord",
+                    "in",
+                    "his",
+                    "glory,",
+                    "but",
+                    "we",
+                    "were",
+                    "being",
+                    "taught",
+                    "by",
+                    "him",
+                    "even",
+                    "in",
+                    "the",
+                    "bad",
+                    "days."
+                ],
+                "Ты принимал книги от пророков.": [
+                    "You",
+                    "were",
+                    "receiving",
+                    "the",
+                    "books",
+                    "from",
+                    "the",
+                    "prophets."
+                ],
+                "Ученики сходились к нему.": [
+                    "The",
+                    "disciples",
+                    "were",
+                    "gathering",
+                    "to",
+                    "him."
+                ],
+                "Ни сам он не злой, ни дела его не злы.": [
+                    "Neither",
+                    "is",
+                    "he",
+                    "himself",
+                    "evil,",
+                    "nor",
+                    "are",
+                    "his",
+                    "works",
+                    "evil."
+                ],
+                "За свою церковь умирал Господь.": [
+                    "The",
+                    "Lord",
+                    "was",
+                    "dying",
+                    "for",
+                    "his",
+                    "church."
+                ],
+                "Нет ученика выше своего учителя и раба выше своего господина.": [
+                    "A",
+                    "disciple",
+                    "is",
+                    "not",
+                    "above",
+                    "his",
+                    "teacher,",
+                    "nor",
+                    "a",
+                    "slave",
+                    "above",
+                    "his",
+                    "lord."
+                ],
+                "Вы выходили из ваших домов.": [
+                    "You",
+                    "were",
+                    "going",
+                    "out",
+                    "of",
+                    "your",
+                    "houses."
+                ],
+                "Эти бесы выходили через его слово.": [
+                    "These",
+                    "demons",
+                    "were",
+                    "going",
+                    "out",
+                    "through",
+                    "his",
+                    "word."
+                ],
+                "Я приходил к Господу и приводил также других грешников.": [
+                    "I",
+                    "was",
+                    "coming",
+                    "to",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "I",
+                    "was",
+                    "also",
+                    "leading",
+                    "other",
+                    "sinners."
+                ]
+            }
         }
     },
     "13": {
@@ -1725,6 +5669,396 @@ const EXERCISES_EN_GREEK = {
                     "sea"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ἄξει ὁ κύριος τοὺς μαθητὰς αὐτοῦ εἰς τὴν βασιλείαν.": [
+                    "The",
+                    "Lord",
+                    "will",
+                    "lead",
+                    "his",
+                    "disciples",
+                    "into",
+                    "the",
+                    "kingdom"
+                ],
+                "γνώσομαι καὶ τοὺς ἀγαθοὺς καὶ τοὺς πονηρούς.": [
+                    "I",
+                    "will",
+                    "know",
+                    "both",
+                    "the",
+                    "good",
+                    "and",
+                    "the",
+                    "evil"
+                ],
+                "λήμψεσθε τὰ πλοῖα ἐκ τῆς θαλάσσης.": [
+                    "You",
+                    "will",
+                    "take",
+                    "the",
+                    "boats",
+                    "out",
+                    "of",
+                    "the",
+                    "sea"
+                ],
+                "λύσεις τοὺς δούλους.": [
+                    "You",
+                    "will",
+                    "set",
+                    "the",
+                    "slaves",
+                    "free"
+                ],
+                "ἕξουσιν οἱ πονηροὶ οὐδὲ χαρὰν οὐδὲ εἰρήνην.": [
+                    "The",
+                    "evil",
+                    "will",
+                    "have",
+                    "neither",
+                    "joy",
+                    "nor",
+                    "peace"
+                ],
+                "ἐν ἐκείνῃ τῇ ὥρᾳ ἐλεύσεται ὁ υἱὸς τοῦ ἀνθρώπου σὺν τοῖς ἀγγέλοις αὐτοῦ.": [
+                    "In",
+                    "that",
+                    "hour",
+                    "the",
+                    "Son",
+                    "of",
+                    "Man",
+                    "will",
+                    "come",
+                    "with",
+                    "his",
+                    "angels"
+                ],
+                "ἁμαρτωλοὶ ἐστέ, γενήσεσθε δὲ μαθηταὶ τοῦ κυρίου.": [
+                    "You",
+                    "are",
+                    "sinners,",
+                    "but",
+                    "you",
+                    "will",
+                    "become",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "διώκουσιν οἱ πονηροὶ τοὺς προφήτας, ἀλλ' ἐν ταῖς ἡμέραις τοῦ υἱοῦ τοῦ ἀνθρώπου οὐκέτι διώξουσιν αὐτούς.": [
+                    "The",
+                    "evil",
+                    "persecute",
+                    "the",
+                    "prophets,",
+                    "but",
+                    "in",
+                    "the",
+                    "days",
+                    "of",
+                    "the",
+                    "Son",
+                    "of",
+                    "Man",
+                    "they",
+                    "will",
+                    "no",
+                    "longer",
+                    "persecute",
+                    "them"
+                ],
+                "προσεύξῃ τῷ θεῷ σου καὶ δοξάσεις αὐτόν.": [
+                    "You",
+                    "will",
+                    "pray",
+                    "to",
+                    "your",
+                    "God",
+                    "and",
+                    "glorify",
+                    "him"
+                ],
+                "τότε γνώσεσθε ὅτι αὐτός ἐστιν ὁ κύριος.": [
+                    "Then",
+                    "you",
+                    "will",
+                    "know",
+                    "that",
+                    "he",
+                    "is",
+                    "the",
+                    "Lord"
+                ],
+                "ταῦτα γνώσομαι οὐδὲ ἐγώ.": [
+                    "Even",
+                    "I",
+                    "will",
+                    "not",
+                    "know",
+                    "this"
+                ],
+                "τοὺς ἀνθρώπους τοῦ κόσμου τούτου διδάξουσιν οἱ δοῦλοι τῆς ἁμαρτίας, ἀλλ' ἐμὲ διδάξει ὁ διδάσκαλος ὁ πιστός.": [
+                    "The",
+                    "slaves",
+                    "of",
+                    "sin",
+                    "will",
+                    "teach",
+                    "the",
+                    "people",
+                    "of",
+                    "this",
+                    "world,",
+                    "but",
+                    "the",
+                    "faithful",
+                    "teacher",
+                    "will",
+                    "teach",
+                    "me"
+                ],
+                "ἐκεῖνα λήμψονται οἱ ἀπόστολοι, ταῦτα δὲ καὶ οἱ ἄλλοι μαθηταί.": [
+                    "The",
+                    "apostles",
+                    "will",
+                    "take",
+                    "those",
+                    "things,",
+                    "and",
+                    "the",
+                    "other",
+                    "disciples",
+                    "these"
+                ],
+                "διὰ τοῦ λόγου τοῦ κυρίου ἀναβλέψουσιν οἱ τυφλοὶ οὗτοι.": [
+                    "Through",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "Lord",
+                    "these",
+                    "blind",
+                    "men",
+                    "will",
+                    "see",
+                    "again"
+                ],
+                "ὁ προφήτης αὐτὸς γράψει ταῦτα ἐν ταῖς γραφαῖς.": [
+                    "The",
+                    "prophet",
+                    "himself",
+                    "will",
+                    "write",
+                    "this",
+                    "in",
+                    "the",
+                    "Scriptures"
+                ],
+                "ἐλεύσονται κακαὶ ἡμέραι.": [
+                    "Bad",
+                    "days",
+                    "will",
+                    "come"
+                ],
+                "ἀπελεύσῃ καὶ σὺ εἰς τὰς ὁδοὺς τῶν πονηρῶν καὶ διδάξεις οὕτως τοὺς ἄλλους ἀνθρώπους.": [
+                    "And",
+                    "you",
+                    "too",
+                    "will",
+                    "go",
+                    "into",
+                    "the",
+                    "ways",
+                    "of",
+                    "the",
+                    "evil",
+                    "and",
+                    "so",
+                    "teach",
+                    "other",
+                    "people"
+                ],
+                "κηρύξουσιν καὶ αὐτοὶ τὸ εὐαγγέλιον ἐν τούτῳ τῷ κόσμῳ τῷ κακῷ.": [
+                    "They",
+                    "too",
+                    "will",
+                    "preach",
+                    "the",
+                    "gospel",
+                    "in",
+                    "this",
+                    "evil",
+                    "world"
+                ],
+                "ἐλεύσεται καὶ αὕτη πρὸς αὐτόν, καὶ αὐτὸς διδάξει αὐτήν.": [
+                    "She",
+                    "too",
+                    "will",
+                    "come",
+                    "to",
+                    "him,",
+                    "and",
+                    "he",
+                    "will",
+                    "teach",
+                    "her"
+                ],
+                "ἐκηρύσσετο τὸ εὐαγγέλιον ἐν ταῖς κακαῖς ἡμέραις, κηρύσσεται δὲ καὶ νῦν, ἀλλ' ἐν ἐκείνῃ τῇ ἡμέρᾳ ἐλεύσεται ὁ κύριος αὐτός.": [
+                    "The",
+                    "gospel",
+                    "was",
+                    "preached",
+                    "in",
+                    "the",
+                    "bad",
+                    "days,",
+                    "and",
+                    "it",
+                    "is",
+                    "preached",
+                    "now",
+                    "too,",
+                    "but",
+                    "on",
+                    "that",
+                    "day",
+                    "the",
+                    "Lord",
+                    "himself",
+                    "will",
+                    "come"
+                ]
+            },
+            "ru_to_el": {
+                "Приведёт Господь своих учеников в Царство.": [
+                    "The",
+                    "Lord",
+                    "will",
+                    "lead",
+                    "his",
+                    "disciples",
+                    "into",
+                    "the",
+                    "kingdom."
+                ],
+                "Вы возьмёте лодки из моря.": [
+                    "You",
+                    "will",
+                    "take",
+                    "the",
+                    "boats",
+                    "out",
+                    "of",
+                    "the",
+                    "sea."
+                ],
+                "Ты освободишь рабов.": [
+                    "You",
+                    "will",
+                    "set",
+                    "the",
+                    "slaves",
+                    "free."
+                ],
+                "У злых не будет ни радости, ни мира.": [
+                    "The",
+                    "evil",
+                    "will",
+                    "have",
+                    "neither",
+                    "joy",
+                    "nor",
+                    "peace."
+                ],
+                "Вы грешники, но станете учениками Господа.": [
+                    "You",
+                    "are",
+                    "sinners,",
+                    "but",
+                    "you",
+                    "will",
+                    "become",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Тогда вы узнаете, что он и есть Господь.": [
+                    "Then",
+                    "you",
+                    "will",
+                    "know",
+                    "that",
+                    "he",
+                    "is",
+                    "the",
+                    "Lord."
+                ],
+                "Через слово Господа эти слепые прозреют.": [
+                    "Through",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "Lord",
+                    "these",
+                    "blind",
+                    "men",
+                    "will",
+                    "see",
+                    "again."
+                ],
+                "Придут злые дни.": [
+                    "Bad",
+                    "days",
+                    "will",
+                    "come."
+                ],
+                "И она придёт к нему, и он научит её.": [
+                    "She",
+                    "too",
+                    "will",
+                    "come",
+                    "to",
+                    "him,",
+                    "and",
+                    "he",
+                    "will",
+                    "teach",
+                    "her."
+                ],
+                "Евангелие проповедовалось в злые дни и проповедуется теперь, но в тот день придёт сам Господь.": [
+                    "The",
+                    "gospel",
+                    "was",
+                    "preached",
+                    "in",
+                    "the",
+                    "bad",
+                    "days,",
+                    "and",
+                    "it",
+                    "is",
+                    "preached",
+                    "now",
+                    "too,",
+                    "but",
+                    "on",
+                    "that",
+                    "day",
+                    "the",
+                    "Lord",
+                    "himself",
+                    "will",
+                    "come."
+                ]
+            }
         }
     },
     "14": {
@@ -1887,6 +6221,317 @@ const EXERCISES_EN_GREEK = {
                     "sight"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ἀπέλυσεν ὁ κύριος τὸν δοῦλον αὐτοῦ, ὁ δὲ δοῦλος οὐκ ἀπέλυσεν ἄλλον.": [
+                    "The",
+                    "Lord",
+                    "set",
+                    "his",
+                    "slave",
+                    "free,",
+                    "but",
+                    "the",
+                    "slave",
+                    "did",
+                    "not",
+                    "set",
+                    "another",
+                    "free"
+                ],
+                "ἤδη ἐπέστρεψαν οὗτοι πρὸς τὸν κύριον, ἐκεῖνοι δὲ ἐπιστρέψουσιν ἐν ταῖς ἡμέραις ταῖς κακαῖς.": [
+                    "These",
+                    "have",
+                    "already",
+                    "turned",
+                    "to",
+                    "the",
+                    "Lord,",
+                    "but",
+                    "those",
+                    "will",
+                    "turn",
+                    "in",
+                    "the",
+                    "bad",
+                    "days"
+                ],
+                "ἐπιστεύσαμεν εἰς τὸν κύριον καὶ σώσει ἡμᾶς.": [
+                    "We",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "he",
+                    "will",
+                    "save",
+                    "us"
+                ],
+                "καὶ ἐπίστευσας εἰς αὐτὸν καὶ πιστεύσεις.": [
+                    "And",
+                    "you",
+                    "believed",
+                    "in",
+                    "him,",
+                    "and",
+                    "you",
+                    "will",
+                    "believe"
+                ],
+                "ὑπέστρεψας πρὸς τὸν κύριον καὶ ἐδέξατό σε εἰς τὴν ἐκκλησίαν αὐτοῦ.": [
+                    "You",
+                    "returned",
+                    "to",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "he",
+                    "received",
+                    "you",
+                    "into",
+                    "his",
+                    "church"
+                ],
+                "ἐν ἐκείναις ταῖς ἡμέραις ἐπορεύεσθε ἐν ταῖς ὁδοῖς ταῖς κακαῖς.": [
+                    "In",
+                    "those",
+                    "days",
+                    "you",
+                    "were",
+                    "walking",
+                    "in",
+                    "the",
+                    "evil",
+                    "ways"
+                ],
+                "ἐπεστρέψατε πρὸς τὸν κύριον καὶ ἐθεράπευσεν ὑμᾶς.": [
+                    "You",
+                    "turned",
+                    "to",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "he",
+                    "healed",
+                    "you"
+                ],
+                "ἐκεῖνοι πονηροί, ἀλλ' ἡμεῖς ἐπείσαμεν αὐτούς.": [
+                    "Those",
+                    "are",
+                    "evil,",
+                    "but",
+                    "we",
+                    "persuaded",
+                    "them"
+                ],
+                "ἡτοίμασα ὑμῖν τόπον ἐν τῷ οὐρανῷ.": [
+                    "I",
+                    "have",
+                    "prepared",
+                    "a",
+                    "place",
+                    "for",
+                    "you",
+                    "in",
+                    "heaven"
+                ],
+                "ἐδεξάμην σε εἰς τὸν οἶκόν μου, ἀλλ' οὗτοι οἱ πονηροὶ οὐκ ἐδέξαντο.": [
+                    "I",
+                    "received",
+                    "you",
+                    "into",
+                    "my",
+                    "house,",
+                    "but",
+                    "these",
+                    "evil",
+                    "people",
+                    "did",
+                    "not",
+                    "receive",
+                    "you"
+                ],
+                "ἀνέβλεψαν οἱ τυφλοί.": [
+                    "The",
+                    "blind",
+                    "men",
+                    "saw",
+                    "again"
+                ],
+                "πονηροὶ ἦσαν αὐτοί, πονηροὺς δὲ ἔπεμψαν εἰς τὴν ἐκκλησίαν.": [
+                    "They",
+                    "themselves",
+                    "were",
+                    "evil,",
+                    "and",
+                    "they",
+                    "sent",
+                    "evil",
+                    "men",
+                    "into",
+                    "the",
+                    "church"
+                ],
+                "ἐδίδαξάς με ἐν τῷ ἱερῷ.": [
+                    "You",
+                    "taught",
+                    "me",
+                    "in",
+                    "the",
+                    "temple"
+                ],
+                "τότε ἠκούσαμεν ταύτας τὰς ἐντολάς, ἄλλας δὲ ἀκούσομεν ἐν τῇ ἐκκλησίᾳ.": [
+                    "Then",
+                    "we",
+                    "heard",
+                    "these",
+                    "commandments,",
+                    "and",
+                    "we",
+                    "will",
+                    "hear",
+                    "others",
+                    "in",
+                    "the",
+                    "church"
+                ],
+                "ἐν ἐκείνῃ τῇ ὥρᾳ ἐξελεύσονται ἐκ τοῦ κόσμου, τότε δὲ ἐδέξαντο ἡμᾶς.": [
+                    "In",
+                    "that",
+                    "hour",
+                    "they",
+                    "will",
+                    "go",
+                    "out",
+                    "of",
+                    "the",
+                    "world,",
+                    "but",
+                    "then",
+                    "they",
+                    "received",
+                    "us"
+                ],
+                "ἤκουσαν αὐτοῦ καὶ ἐθαύμασαν.": [
+                    "They",
+                    "heard",
+                    "him",
+                    "and",
+                    "marvelled"
+                ],
+                "ἐδέξω σὺ τὸ εὐαγγέλιον, οὗτοι δὲ οὐ δέξονται αὐτό.": [
+                    "You",
+                    "received",
+                    "the",
+                    "gospel,",
+                    "but",
+                    "these",
+                    "will",
+                    "not",
+                    "receive",
+                    "it"
+                ],
+                "οὐδὲ ἠκούσατε τὸν κύριον οὐδὲ ἐπιστεύσατε εἰς αὐτόν.": [
+                    "You",
+                    "neither",
+                    "listened",
+                    "to",
+                    "the",
+                    "Lord",
+                    "nor",
+                    "believed",
+                    "in",
+                    "him"
+                ]
+            },
+            "ru_to_el": {
+                "Господь освободил своего раба, а раб не освободил другого.": [
+                    "The",
+                    "Lord",
+                    "set",
+                    "his",
+                    "slave",
+                    "free,",
+                    "but",
+                    "the",
+                    "slave",
+                    "did",
+                    "not",
+                    "set",
+                    "another",
+                    "free."
+                ],
+                "Мы уверовали в Господа, и он спасёт нас.": [
+                    "We",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "he",
+                    "will",
+                    "save",
+                    "us."
+                ],
+                "Вы обратились к Господу, и он исцелил вас.": [
+                    "You",
+                    "turned",
+                    "to",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "he",
+                    "healed",
+                    "you."
+                ],
+                "Я приготовил вам место на небе.": [
+                    "I",
+                    "have",
+                    "prepared",
+                    "a",
+                    "place",
+                    "for",
+                    "you",
+                    "in",
+                    "heaven."
+                ],
+                "Слепые прозрели.": [
+                    "The",
+                    "blind",
+                    "men",
+                    "saw",
+                    "again."
+                ],
+                "Ты учил меня в храме.": [
+                    "You",
+                    "taught",
+                    "me",
+                    "in",
+                    "the",
+                    "temple."
+                ],
+                "Они услышали его и удивились.": [
+                    "They",
+                    "heard",
+                    "him",
+                    "and",
+                    "marvelled."
+                ],
+                "Вы ни послушали Господа, ни уверовали в него.": [
+                    "You",
+                    "neither",
+                    "listened",
+                    "to",
+                    "the",
+                    "Lord",
+                    "nor",
+                    "believed",
+                    "in",
+                    "him."
+                ]
+            }
         }
     },
     "15": {
@@ -2038,6 +6683,384 @@ const EXERCISES_EN_GREEK = {
                     "in",
                     "the",
                     "Lord"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "καὶ εἴδομεν τὸν κύριον καὶ ἠκούσαμεν τοὺς λόγους αὐτοῦ.": [
+                    "And",
+                    "we",
+                    "saw",
+                    "the",
+                    "Lord",
+                    "and",
+                    "heard",
+                    "his",
+                    "words"
+                ],
+                "οὐδὲ εἰσῆλθες εἰς τοὺς οἴκους αὐτῶν οὐδὲ εἶπες αὐτοῖς παραβολήν.": [
+                    "You",
+                    "neither",
+                    "entered",
+                    "their",
+                    "houses",
+                    "nor",
+                    "said",
+                    "a",
+                    "parable",
+                    "to",
+                    "them"
+                ],
+                "ἐν ἐκείνῃ τῇ ὥρᾳ ἐγένοντο μαθηταὶ τοῦ κυρίου.": [
+                    "In",
+                    "that",
+                    "hour",
+                    "they",
+                    "became",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "οὗτοι μὲν ἐγένοντο μαθηταὶ ἀγαθοί, ἐκεῖνοι δὲ ἔτι πονηροί.": [
+                    "These",
+                    "became",
+                    "good",
+                    "disciples,",
+                    "but",
+                    "those",
+                    "are",
+                    "still",
+                    "evil"
+                ],
+                "προσέφερον αὐτῷ τοὺς τυφλούς.": [
+                    "They",
+                    "were",
+                    "bringing",
+                    "the",
+                    "blind",
+                    "to",
+                    "him"
+                ],
+                "ἔπεσον ἐκ τοῦ οὐρανοῦ οἱ ἄγγελοι οἱ πονηροί.": [
+                    "The",
+                    "evil",
+                    "angels",
+                    "fell",
+                    "out",
+                    "of",
+                    "heaven"
+                ],
+                "τὰ μὲν δαιμόνια ἐξεβάλετε, τὰ δὲ τέκνα ἐθεραπεύσατε.": [
+                    "You",
+                    "cast",
+                    "out",
+                    "the",
+                    "demons,",
+                    "but",
+                    "you",
+                    "healed",
+                    "the",
+                    "children"
+                ],
+                "τοὺς μὲν πονηροὺς συνηγάγετε ὑμεῖς εἰς τοὺς οἴκους ὑμῶν, τοὺς δὲ ἀγαθοὺς ἡμεῖς.": [
+                    "You",
+                    "gathered",
+                    "the",
+                    "evil",
+                    "into",
+                    "your",
+                    "houses,",
+                    "and",
+                    "we",
+                    "the",
+                    "good"
+                ],
+                "οὐκ ἐκήρυξας τὸ εὐαγγέλιον ἐν τῇ ἐκκλησίᾳ, οὐδὲ γὰρ ἐγένου μαθητής.": [
+                    "You",
+                    "did",
+                    "not",
+                    "preach",
+                    "the",
+                    "gospel",
+                    "in",
+                    "the",
+                    "church,",
+                    "for",
+                    "you",
+                    "did",
+                    "not",
+                    "become",
+                    "a",
+                    "disciple"
+                ],
+                "νῦν μὲν λέγετε λόγους ἀγαθούς, εἶπον δὲ οὗτοι τοὺς αὐτοὺς λόγους καὶ ἐν ταῖς ἡμέραις ἐκείναις.": [
+                    "Now",
+                    "you",
+                    "say",
+                    "good",
+                    "words,",
+                    "but",
+                    "they",
+                    "said",
+                    "the",
+                    "same",
+                    "words",
+                    "in",
+                    "those",
+                    "days",
+                    "too"
+                ],
+                "ἐπιστεύσαμεν εἰς τὸν κύριον, οἱ γὰρ μαθηταὶ ἤγαγον ἡμᾶς πρὸς αὐτόν.": [
+                    "We",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord,",
+                    "for",
+                    "the",
+                    "disciples",
+                    "led",
+                    "us",
+                    "to",
+                    "him"
+                ],
+                "ταῦτα μὲν εἶπον ὑμῖν ἐν τῷ ἱερῷ, ἐκεῖνα δὲ οὔπω λέγω.": [
+                    "This",
+                    "I",
+                    "said",
+                    "to",
+                    "you",
+                    "in",
+                    "the",
+                    "temple,",
+                    "but",
+                    "that",
+                    "I",
+                    "do",
+                    "not",
+                    "yet",
+                    "say"
+                ],
+                "τότε μὲν εἰσήλθετε εἰς τὴν ἐκκλησίαν, ἐν ἐκείνῃ δὲ τῇ ἡμέρᾳ εἰσελεύσεσθε εἰς τὸν οὐρανόν.": [
+                    "Then",
+                    "you",
+                    "entered",
+                    "the",
+                    "church,",
+                    "and",
+                    "on",
+                    "that",
+                    "day",
+                    "you",
+                    "will",
+                    "enter",
+                    "heaven"
+                ],
+                "τότε ὀψόμεθα τὸν κύριον ἐν τῇ δόξῃ αὐτοῦ· ἐπιστεύσαμεν γὰρ εἰς αὐτόν.": [
+                    "Then",
+                    "we",
+                    "will",
+                    "see",
+                    "the",
+                    "Lord",
+                    "in",
+                    "his",
+                    "glory,",
+                    "for",
+                    "we",
+                    "believed",
+                    "in",
+                    "him"
+                ],
+                "ὁ μὲν κύριος ἐξῆλθε τότε ἐκ τοῦ κόσμου, οἱ δὲ μαθηταὶ αὐτοῦ ἔτι μένουσιν ἐν αὐτῷ.": [
+                    "The",
+                    "Lord",
+                    "then",
+                    "went",
+                    "out",
+                    "of",
+                    "the",
+                    "world,",
+                    "but",
+                    "his",
+                    "disciples",
+                    "still",
+                    "remain",
+                    "in",
+                    "it"
+                ],
+                "ταύτας τὰς ἐντολὰς ἔλαβον παρὰ τοῦ κυρίου.": [
+                    "These",
+                    "commandments",
+                    "I",
+                    "received",
+                    "from",
+                    "the",
+                    "Lord"
+                ],
+                "τότε μὲν παρελάβετε τὴν ἐπαγγελίαν παρὰ τοῦ κυρίου, νῦν δὲ καὶ κηρύσσετε αὐτὴν ἐν τῷ κόσμῳ.": [
+                    "Then",
+                    "you",
+                    "received",
+                    "the",
+                    "promise",
+                    "from",
+                    "the",
+                    "Lord,",
+                    "and",
+                    "now",
+                    "you",
+                    "preach",
+                    "it",
+                    "in",
+                    "the",
+                    "world",
+                    "too"
+                ],
+                "ἤλθετε πρὸς τὸν κύριον καὶ παρελάβετε παρ' αὐτοῦ ταῦτα.": [
+                    "You",
+                    "came",
+                    "to",
+                    "the",
+                    "Lord",
+                    "and",
+                    "received",
+                    "this",
+                    "from",
+                    "him"
+                ],
+                "συνήγαγεν ἡμᾶς αὐτὸς εἰς τὴν ἐκκλησίαν αὐτοῦ.": [
+                    "He",
+                    "himself",
+                    "gathered",
+                    "us",
+                    "into",
+                    "his",
+                    "church"
+                ],
+                "εἶδον οἱ ἄνθρωποι τὸν υἱὸν τοῦ θεοῦ· ἐγένετο γὰρ αὐτὸς ἄνθρωπος καὶ ἔμενεν ἐν τούτῳ τῷ κόσμῳ.": [
+                    "People",
+                    "saw",
+                    "the",
+                    "Son",
+                    "of",
+                    "God,",
+                    "for",
+                    "he",
+                    "became",
+                    "a",
+                    "man",
+                    "and",
+                    "remained",
+                    "in",
+                    "this",
+                    "world"
+                ]
+            },
+            "ru_to_el": {
+                "И мы увидели Господа и услышали его слова.": [
+                    "And",
+                    "we",
+                    "saw",
+                    "the",
+                    "Lord",
+                    "and",
+                    "heard",
+                    "his",
+                    "words."
+                ],
+                "В тот час они стали учениками Господа.": [
+                    "In",
+                    "that",
+                    "hour",
+                    "they",
+                    "became",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Бесов вы изгнали, а детей исцелили.": [
+                    "You",
+                    "cast",
+                    "out",
+                    "the",
+                    "demons,",
+                    "but",
+                    "you",
+                    "healed",
+                    "the",
+                    "children."
+                ],
+                "Мы уверовали в Господа, ведь ученики привели нас к нему.": [
+                    "We",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord,",
+                    "for",
+                    "the",
+                    "disciples",
+                    "led",
+                    "us",
+                    "to",
+                    "him."
+                ],
+                "Тогда мы увидим Господа в его славе, ибо мы уверовали в него.": [
+                    "Then",
+                    "we",
+                    "will",
+                    "see",
+                    "the",
+                    "Lord",
+                    "in",
+                    "his",
+                    "glory,",
+                    "for",
+                    "we",
+                    "believed",
+                    "in",
+                    "him."
+                ],
+                "Господь тогда вышел из мира, а его ученики ещё остаются в нём.": [
+                    "The",
+                    "Lord",
+                    "then",
+                    "went",
+                    "out",
+                    "of",
+                    "the",
+                    "world,",
+                    "but",
+                    "his",
+                    "disciples",
+                    "still",
+                    "remain",
+                    "in",
+                    "it."
+                ],
+                "Эти заповеди я принял от Господа.": [
+                    "These",
+                    "commandments",
+                    "I",
+                    "received",
+                    "from",
+                    "the",
+                    "Lord."
+                ],
+                "Вы пришли к Господу и приняли от него это.": [
+                    "You",
+                    "came",
+                    "to",
+                    "the",
+                    "Lord",
+                    "and",
+                    "received",
+                    "this",
+                    "from",
+                    "him."
                 ]
             }
         }
@@ -2237,6 +7260,400 @@ const EXERCISES_EN_GREEK = {
                     "Lord"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "ἐπιστεύσαμεν εἰς τὸν κύριον καὶ ἐγνώσθημεν ὑπ' αὐτοῦ.": [
+                    "We",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord",
+                    "and",
+                    "were",
+                    "known",
+                    "by",
+                    "him"
+                ],
+                "ταῦτα ἐγράφη ἐν τοῖς βιβλίοις.": [
+                    "This",
+                    "was",
+                    "written",
+                    "in",
+                    "the",
+                    "books"
+                ],
+                "ἐδιδάξατε τὰ τέκνα, ἐδιδάχθητε δὲ καὶ αὐτοὶ ὑπὸ τοῦ κυρίου, ὁ λόγος τοῦ θεοῦ ἐρρέθη ὑπὸ τοῦ προφήτου.": [
+                    "You",
+                    "taught",
+                    "the",
+                    "children,",
+                    "but",
+                    "you",
+                    "yourselves",
+                    "were",
+                    "also",
+                    "taught",
+                    "by",
+                    "the",
+                    "Lord;",
+                    "the",
+                    "word",
+                    "of",
+                    "God",
+                    "was",
+                    "spoken",
+                    "by",
+                    "the",
+                    "prophet"
+                ],
+                "ἐλήμφθησαν οἱ πιστοὶ εἰς τὸν οὐρανόν, ἐξεβλήθησαν δὲ ἐξ αὐτοῦ οἱ ἄγγελοι οἱ πονηροί.": [
+                    "The",
+                    "faithful",
+                    "were",
+                    "taken",
+                    "into",
+                    "heaven,",
+                    "and",
+                    "the",
+                    "evil",
+                    "angels",
+                    "were",
+                    "cast",
+                    "out",
+                    "of",
+                    "it"
+                ],
+                "ἐγερθήσονται οἱ νεκροὶ τῷ λόγῳ τοῦ κυρίου.": [
+                    "The",
+                    "dead",
+                    "will",
+                    "be",
+                    "raised",
+                    "by",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "οὗτοι οἱ τυφλοὶ συνήχθησαν εἰς τὴν ἐκκλησίαν.": [
+                    "These",
+                    "blind",
+                    "men",
+                    "were",
+                    "gathered",
+                    "into",
+                    "the",
+                    "church"
+                ],
+                "ἐξεβλήθη τὰ δαιμόνια· ὁ γὰρ κύριος ἐξέβαλεν αὐτά.": [
+                    "The",
+                    "demons",
+                    "were",
+                    "cast",
+                    "out,",
+                    "for",
+                    "the",
+                    "Lord",
+                    "cast",
+                    "them",
+                    "out"
+                ],
+                "πέμπονται μὲν καὶ νῦν οἱ μαθηταί, ἐπέμφθησαν δέ τότε οἱ ἀπόστολοι καὶ πεμφθήσονται ἐν ἐκείνῃ τῇ ἡμέρᾳ καὶ οἱ ἄγγελοι.": [
+                    "The",
+                    "disciples",
+                    "are",
+                    "sent",
+                    "even",
+                    "now,",
+                    "but",
+                    "the",
+                    "apostles",
+                    "were",
+                    "sent",
+                    "then,",
+                    "and",
+                    "on",
+                    "that",
+                    "day",
+                    "the",
+                    "angels",
+                    "will",
+                    "be",
+                    "sent",
+                    "too"
+                ],
+                "εἰσῆλθες εἰς τὴν ἐκκλησίαν καὶ ἐβαπτίσθης.": [
+                    "You",
+                    "entered",
+                    "the",
+                    "church",
+                    "and",
+                    "were",
+                    "baptized"
+                ],
+                "ἐπιστεύθη ἐν κόσμῳ, ἀνελήμφθη ἐν δόξῃ.": [
+                    "He",
+                    "was",
+                    "received",
+                    "by",
+                    "faith",
+                    "in",
+                    "the",
+                    "world",
+                    "and",
+                    "taken",
+                    "up",
+                    "in",
+                    "glory"
+                ],
+                "οἱ ἁμαρτωλοὶ ἐσώθησαν ἐν ἐκείνῃ τῇ ὥρᾳ καὶ ἐγενήθησαν μαθηταὶ τοῦ κυρίου.": [
+                    "The",
+                    "sinners",
+                    "were",
+                    "saved",
+                    "in",
+                    "that",
+                    "hour",
+                    "and",
+                    "became",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "ἐπορεύθημεν εἰς τὸν ἄλλον τόπον, οὐ γὰρ δέξονται ἡμᾶς οὗτοι.": [
+                    "We",
+                    "went",
+                    "to",
+                    "the",
+                    "other",
+                    "place,",
+                    "because",
+                    "these",
+                    "will",
+                    "not",
+                    "receive",
+                    "us"
+                ],
+                "ἐδοξάσθη ὁ θεὸς ὑπὸ τοῦ υἱοῦ, ἐδόξασε δὲ αὐτόν.": [
+                    "God",
+                    "was",
+                    "glorified",
+                    "by",
+                    "the",
+                    "Son,",
+                    "and",
+                    "he",
+                    "glorified",
+                    "him"
+                ],
+                "τὸ εὐαγγέλιον ἐκηρύχθη ἐν ταῖς ἡμέραις ἐκείναις, κηρυχθήσεται δὲ καὶ νῦν.": [
+                    "The",
+                    "gospel",
+                    "was",
+                    "preached",
+                    "in",
+                    "those",
+                    "days,",
+                    "and",
+                    "it",
+                    "will",
+                    "be",
+                    "preached",
+                    "now",
+                    "too"
+                ],
+                "ἑτοιμασθήσεται ὑμῖν τόπος ἐν οὐρανῷ κατὰ τὴν ἐπαγγελίαν τοῦ κυρίου.": [
+                    "A",
+                    "place",
+                    "will",
+                    "be",
+                    "prepared",
+                    "for",
+                    "you",
+                    "in",
+                    "heaven",
+                    "according",
+                    "to",
+                    "the",
+                    "promise",
+                    "of",
+                    "the",
+                    "Lord"
+                ],
+                "τὰ τέκνα προσηνέχθησαν τῷ κυρίῳ.": [
+                    "The",
+                    "children",
+                    "were",
+                    "brought",
+                    "to",
+                    "the",
+                    "Lord"
+                ],
+                "εἶδον οὗτοι τὸ πρόσωπον τοῦ κυρίου καὶ ἤκουσαν τῆς φωνῆς αὐτοῦ.": [
+                    "These",
+                    "saw",
+                    "the",
+                    "face",
+                    "of",
+                    "the",
+                    "Lord",
+                    "and",
+                    "heard",
+                    "his",
+                    "voice"
+                ],
+                "ἐν τῷ μικρῷ οἴκῳ ἀκουσθήσεται ἡ φωνὴ τοῦ ἀποστόλου.": [
+                    "In",
+                    "the",
+                    "small",
+                    "house",
+                    "the",
+                    "voice",
+                    "of",
+                    "the",
+                    "apostle",
+                    "will",
+                    "be",
+                    "heard"
+                ],
+                "πρῶτός εἰμι τῶν ἁμαρτωλῶν, ἐσώθην δὲ καὶ ἐγώ.": [
+                    "I",
+                    "am",
+                    "the",
+                    "first",
+                    "of",
+                    "sinners,",
+                    "but",
+                    "I",
+                    "too",
+                    "was",
+                    "saved"
+                ],
+                "ὀψόμεθα μὲν τοὺς ἀγγέλους, ὀφθησόμεθα δὲ καὶ ὑπ' αὐτῶν.": [
+                    "We",
+                    "will",
+                    "see",
+                    "the",
+                    "angels,",
+                    "and",
+                    "we",
+                    "ourselves",
+                    "will",
+                    "be",
+                    "seen",
+                    "by",
+                    "them"
+                ]
+            },
+            "ru_to_el": {
+                "Мы уверовали в Господа и были познаны им.": [
+                    "We",
+                    "believed",
+                    "in",
+                    "the",
+                    "Lord",
+                    "and",
+                    "were",
+                    "known",
+                    "by",
+                    "him."
+                ],
+                "Верные были взяты в небо, а злые ангелы изгнаны из него.": [
+                    "The",
+                    "faithful",
+                    "were",
+                    "taken",
+                    "into",
+                    "heaven,",
+                    "and",
+                    "the",
+                    "evil",
+                    "angels",
+                    "were",
+                    "cast",
+                    "out",
+                    "of",
+                    "it."
+                ],
+                "Мёртвые будут воскрешены словом Господа.": [
+                    "The",
+                    "dead",
+                    "will",
+                    "be",
+                    "raised",
+                    "by",
+                    "the",
+                    "word",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Ты вошёл в церковь и был крещён.": [
+                    "You",
+                    "entered",
+                    "the",
+                    "church",
+                    "and",
+                    "were",
+                    "baptized."
+                ],
+                "Грешники были спасены в тот час и стали учениками Господа.": [
+                    "The",
+                    "sinners",
+                    "were",
+                    "saved",
+                    "in",
+                    "that",
+                    "hour",
+                    "and",
+                    "became",
+                    "disciples",
+                    "of",
+                    "the",
+                    "Lord."
+                ],
+                "Дети были принесены Господу.": [
+                    "The",
+                    "children",
+                    "were",
+                    "brought",
+                    "to",
+                    "the",
+                    "Lord."
+                ],
+                "В маленьком доме будет услышан голос апостола.": [
+                    "In",
+                    "the",
+                    "small",
+                    "house",
+                    "the",
+                    "voice",
+                    "of",
+                    "the",
+                    "apostle",
+                    "will",
+                    "be",
+                    "heard."
+                ],
+                "Мы увидим ангелов, и сами будем увидены ими.": [
+                    "We",
+                    "will",
+                    "see",
+                    "the",
+                    "angels,",
+                    "and",
+                    "we",
+                    "ourselves",
+                    "will",
+                    "be",
+                    "seen",
+                    "by",
+                    "them."
+                ]
+            }
         }
     }
 };
@@ -2306,6 +7723,19 @@ const EXERCISES_EN_HEBREW = {
                 ],
                 "отец": [
                     "father"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "הַלְלוּ־יָהּ כִּי־טוֹב": [
+                    "Praise",
+                    "the",
+                    "Lord,",
+                    "for",
+                    "he",
+                    "is",
+                    "good"
                 ]
             }
         }
@@ -2444,6 +7874,17 @@ const EXERCISES_EN_HEBREW = {
                     "sea"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "הַטּוֹב וְהַיָּשָׁר": [
+                    "the",
+                    "good",
+                    "and",
+                    "the",
+                    "upright"
+                ]
+            }
         }
     },
     "6": {
@@ -2480,6 +7921,148 @@ const EXERCISES_EN_HEBREW = {
                 ],
                 "мудрость": [
                     "wisdom"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "טוֹבָה חָכְמָה מִזָּהָב": [
+                    "Wisdom",
+                    "is",
+                    "better",
+                    "than",
+                    "gold"
+                ],
+                "קָשָׁה הָעֲבוֹדָה מֵהָאֲנָשִׁים": [
+                    "This",
+                    "work",
+                    "is",
+                    "too",
+                    "hard",
+                    "for",
+                    "people"
+                ],
+                "עָרוּם מִכֹּל חַיַּת הַשָּׂדֶה": [
+                    "More",
+                    "crafty",
+                    "than",
+                    "all",
+                    "the",
+                    "beasts",
+                    "of",
+                    "the",
+                    "field"
+                ],
+                "כָּמוֹךָ מִי־אֵל": [
+                    "Who",
+                    "among",
+                    "the",
+                    "gods",
+                    "is",
+                    "like",
+                    "you"
+                ],
+                "לִפְנֵי הַמֶּ֫לֶךְ": [
+                    "before",
+                    "the",
+                    "king"
+                ],
+                "אַחַר הַמַּבּוּל": [
+                    "after",
+                    "the",
+                    "flood"
+                ],
+                "בֵּין הַמַּ֫יִם": [
+                    "between",
+                    "the",
+                    "waters"
+                ],
+                "עַל־הָאֶ֫בֶן": [
+                    "on",
+                    "the",
+                    "stone"
+                ],
+                "עַד־הַנָּהָר": [
+                    "as",
+                    "far",
+                    "as",
+                    "the",
+                    "river"
+                ],
+                "מִן־הָאָ֫רֶץ": [
+                    "from",
+                    "the",
+                    "land"
+                ],
+                "בָּרָא אֱלֹהִים אֵת הַשָּׁמַ֫יִם": [
+                    "God",
+                    "created",
+                    "the",
+                    "heavens"
+                ],
+                "נָתַן הַנָּבִיא אֶת־הַסֵּ֫פֶר לַמֶּ֫לֶךְ": [
+                    "The",
+                    "prophet",
+                    "gave",
+                    "the",
+                    "book",
+                    "to",
+                    "the",
+                    "king"
+                ],
+                "בָּנָה הַמֶּ֫לֶךְ אֶת־הַהֵיכָל הַגָּדוֹל": [
+                    "The",
+                    "king",
+                    "built",
+                    "the",
+                    "great",
+                    "temple"
+                ],
+                "שָׁלַח הַנָּבִיא אֶת־הַמַּלְאָךְ אֶל־הָעִיר": [
+                    "The",
+                    "prophet",
+                    "sent",
+                    "the",
+                    "messenger",
+                    "to",
+                    "the",
+                    "city"
+                ],
+                "אָהַב דָּוִד אֶת־יְהוֹנָתָן": [
+                    "David",
+                    "loved",
+                    "Jonathan"
+                ]
+            },
+            "ru_to_el": {
+                "Бог сотворил эти небеса": [
+                    "God",
+                    "created",
+                    "the",
+                    "heavens."
+                ],
+                "Царь построил великий храм": [
+                    "The",
+                    "king",
+                    "built",
+                    "a",
+                    "great",
+                    "temple."
+                ],
+                "Давид любил Ионафана": [
+                    "David",
+                    "loved",
+                    "Jonathan."
+                ],
+                "Пророк отправил этого посланника в город": [
+                    "The",
+                    "prophet",
+                    "sent",
+                    "the",
+                    "messenger",
+                    "to",
+                    "the",
+                    "city."
                 ]
             }
         }
@@ -2550,6 +8133,52 @@ const EXERCISES_EN_HEBREW = {
                     "wicked"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "סוּס טוֹב": [
+                    "a",
+                    "good",
+                    "horse"
+                ],
+                "אִישׁ טוֹב": [
+                    "a",
+                    "good",
+                    "man"
+                ],
+                "הָאִשָּׁה הַטּוֹבָה": [
+                    "this",
+                    "good",
+                    "woman"
+                ],
+                "אֲנָשִׁים טוֹבִים": [
+                    "good",
+                    "people"
+                ],
+                "טוֹבוֹת הַנָּשִׁים": [
+                    "these",
+                    "women",
+                    "are",
+                    "good"
+                ]
+            },
+            "ru_to_el": {
+                "добрый человек": [
+                    "a",
+                    "good",
+                    "man"
+                ],
+                "добрая женщина": [
+                    "a",
+                    "good",
+                    "woman"
+                ],
+                "эти добрые люди": [
+                    "these",
+                    "good",
+                    "people"
+                ]
+            }
         }
     },
     "8": {
@@ -2617,6 +8246,108 @@ const EXERCISES_EN_HEBREW = {
                 ],
                 "глупый": [
                     "foolish"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "אַתֶּם בָּעִיר הַגְּדוֹלָה": [
+                    "You",
+                    "are",
+                    "in",
+                    "the",
+                    "great",
+                    "city"
+                ],
+                "הֶהָרִים אֲשֶׁר־תַּ֫חַת הַשָּׁמַ֫יִם": [
+                    "the",
+                    "mountains",
+                    "that",
+                    "are",
+                    "under",
+                    "the",
+                    "heavens"
+                ],
+                "הָעֵץ אֲשֶׁר בְּתוֹךְ־הַגָּן": [
+                    "the",
+                    "tree",
+                    "that",
+                    "is",
+                    "in",
+                    "the",
+                    "midst",
+                    "of",
+                    "the",
+                    "garden"
+                ],
+                "מָה הַחֲלוֹם הַזֶה": [
+                    "What",
+                    "is",
+                    "this",
+                    "dream"
+                ],
+                "אֲנִי יְהוָה": [
+                    "I",
+                    "am",
+                    "the",
+                    "Lord"
+                ],
+                "הוּא נָבִיא צַדִּיק": [
+                    "He",
+                    "is",
+                    "a",
+                    "righteous",
+                    "prophet"
+                ],
+                "אַתָּה מֶ֫לֶךְ טוֹב": [
+                    "You",
+                    "are",
+                    "a",
+                    "good",
+                    "king"
+                ],
+                "אֲנַ֫חְנוּ אַחִים": [
+                    "We",
+                    "are",
+                    "brothers"
+                ],
+                "הִיא אִשָּׁה חֲכָמָה": [
+                    "She",
+                    "is",
+                    "a",
+                    "wise",
+                    "woman"
+                ],
+                "מִי־הָאִישׁ הַזֶּה": [
+                    "Who",
+                    "is",
+                    "this",
+                    "man"
+                ]
+            },
+            "ru_to_el": {
+                "Он праведный пророк": [
+                    "He",
+                    "is",
+                    "a",
+                    "righteous",
+                    "prophet."
+                ],
+                "Ты хороший царь": [
+                    "You",
+                    "are",
+                    "a",
+                    "good",
+                    "king."
+                ],
+                "Мы братья": [
+                    "We",
+                    "are",
+                    "brothers."
+                ],
+                "этот мужчина": [
+                    "this",
+                    "man"
                 ]
             }
         }
@@ -2693,6 +8424,138 @@ const EXERCISES_EN_HEBREW = {
                     "cattle"
                 ]
             }
+        },
+        "translation": {
+            "el_to_ru": {
+                "אֲבִי אַבְרָהָם": [
+                    "the",
+                    "father",
+                    "of",
+                    "Abraham"
+                ],
+                "בֵּית מַלְכִּי": [
+                    "the",
+                    "house",
+                    "of",
+                    "my",
+                    "king"
+                ],
+                "עֶ֫בֶד אֲחִי הַמֶּ֫לֶךְ": [
+                    "the",
+                    "servant",
+                    "of",
+                    "the",
+                    "brother",
+                    "of",
+                    "the",
+                    "king"
+                ],
+                "דְּבַר הַמַּלְכָּה הַטּוֹב": [
+                    "the",
+                    "good",
+                    "word",
+                    "of",
+                    "the",
+                    "queen"
+                ],
+                "יְפַת מַרְאֶה": [
+                    "beautiful",
+                    "to",
+                    "look",
+                    "at"
+                ],
+                "בְּבֵית דָּוִד": [
+                    "in",
+                    "the",
+                    "house",
+                    "of",
+                    "David"
+                ],
+                "קֹ֫דֶשׁ הַקֳּדָשִׁים": [
+                    "the",
+                    "holy",
+                    "of",
+                    "holies"
+                ],
+                "שִׁ֫יר הַשִּׁירִים": [
+                    "the",
+                    "song",
+                    "of",
+                    "songs"
+                ],
+                "קְדוֹשׁ יִשְׂרָאֵל": [
+                    "the",
+                    "Holy",
+                    "One",
+                    "of",
+                    "Israel"
+                ],
+                "סֵ֫פֶר אָבִ֫יהוּ": [
+                    "the",
+                    "book",
+                    "of",
+                    "his",
+                    "father"
+                ],
+                "חֲכַם־לֵב": [
+                    "wise",
+                    "of",
+                    "heart"
+                ],
+                "קוֹל הָאִישׁ": [
+                    "the",
+                    "voice",
+                    "of",
+                    "this",
+                    "man"
+                ],
+                "עֶ֫בֶד הַמֶּ֫לֶךְ": [
+                    "the",
+                    "servant",
+                    "of",
+                    "this",
+                    "king"
+                ],
+                "בֶּן־דָּוִד": [
+                    "the",
+                    "son",
+                    "of",
+                    "David"
+                ],
+                "דִּבְרֵי מֶ֫לֶךְ הָאָ֫רֶץ": [
+                    "the",
+                    "words",
+                    "of",
+                    "the",
+                    "king",
+                    "of",
+                    "the",
+                    "land"
+                ]
+            },
+            "ru_to_el": {
+                "голос человека": [
+                    "the",
+                    "voice",
+                    "of",
+                    "a",
+                    "man"
+                ],
+                "царь земли": [
+                    "the",
+                    "king",
+                    "of",
+                    "the",
+                    "land"
+                ],
+                "слуга царя": [
+                    "the",
+                    "servant",
+                    "of",
+                    "a",
+                    "king"
+                ]
+            }
         }
     },
     "11": {
@@ -2763,6 +8626,32 @@ const EXERCISES_EN_HEBREW = {
                 "встреча": [
                     "appointed",
                     "time"
+                ]
+            }
+        },
+        "translation": {
+            "el_to_ru": {
+                "שְׁלֹ֫שֶׁת אֲלָפִים": [
+                    "three",
+                    "thousand"
+                ],
+                "בֵּן אֶחָד": [
+                    "one",
+                    "son"
+                ],
+                "בַּת אַחַת": [
+                    "one",
+                    "daughter"
+                ],
+                "בִּשְׁלֹשִׁים וָשֶׁבַע שָׁנָה": [
+                    "in",
+                    "the",
+                    "thirty-seventh",
+                    "year"
+                ],
+                "אַרְבָּעָה עָשָׂר יוֹם": [
+                    "fourteen",
+                    "days"
                 ]
             }
         }

@@ -1,1 +1,104 @@
-{}
+{
+    "3": {
+        "el_to_ru": [
+            "Praise the Lord, for he is good"
+        ]
+    },
+    "5": {
+        "el_to_ru": [
+            "the good and the upright"
+        ]
+    },
+    "6": {
+        "el_to_ru": [
+            "Wisdom is better than gold",
+            "This work is too hard for people",
+            "More crafty than all the beasts of the field",
+            "Who among the gods is like you",
+            "before the king",
+            "after the flood",
+            "between the waters",
+            "on the stone",
+            "as far as the river",
+            "from the land",
+            "God created the heavens",
+            "The prophet gave the book to the king",
+            "The king built the great temple",
+            "The prophet sent the messenger to the city",
+            "David loved Jonathan"
+        ],
+        "ru_to_el": [
+            "God created the heavens.",
+            "The king built a great temple.",
+            "David loved Jonathan.",
+            "The prophet sent the messenger to the city."
+        ]
+    },
+    "7": {
+        "el_to_ru": [
+            "a good horse",
+            "a good man",
+            "this good woman",
+            "good people",
+            "these women are good"
+        ],
+        "ru_to_el": [
+            "a good man",
+            "a good woman",
+            "these good people"
+        ]
+    },
+    "8": {
+        "el_to_ru": [
+            "You are in the great city",
+            "the mountains that are under the heavens",
+            "the tree that is in the midst of the garden",
+            "What is this dream",
+            "I am the Lord",
+            "He is a righteous prophet",
+            "You are a good king",
+            "We are brothers",
+            "She is a wise woman",
+            "Who is this man"
+        ],
+        "ru_to_el": [
+            "He is a righteous prophet.",
+            "You are a good king.",
+            "We are brothers.",
+            "this man"
+        ]
+    },
+    "10": {
+        "el_to_ru": [
+            "the father of Abraham",
+            "the house of my king",
+            "the servant of the brother of the king",
+            "the good word of the queen",
+            "beautiful to look at",
+            "in the house of David",
+            "the holy of holies",
+            "the song of songs",
+            "the Holy One of Israel",
+            "the book of his father",
+            "wise of heart",
+            "the voice of this man",
+            "the servant of this king",
+            "the son of David",
+            "the words of the king of the land"
+        ],
+        "ru_to_el": [
+            "the voice of a man",
+            "the king of the land",
+            "the servant of a king"
+        ]
+    },
+    "11": {
+        "el_to_ru": [
+            "three thousand",
+            "one son",
+            "one daughter",
+            "in the thirty-seventh year",
+            "fourteen days"
+        ]
+    }
+}

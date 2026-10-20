@@ -146,7 +146,7 @@ function showTranslation() {
     // чип с конкретным токеном в поле сборки, чтобы удаление работало точно.
     translationState.allWords = allWords;
  
-    html += '<div class="build-area' + (toScript ? ' build-area--script' : '') + '" id="transBuildArea"></div>';
+    html += '<div class="build-area' + (toScript ? ' build-area--script' : '') + '" id="transBuildArea" data-hint="' + escHtml(t('Выберите слова по порядку')) + '"></div>';
     html += '<div class="word-bank' + (toScript ? ' word-bank--script' : '') + '" id="transWordBank">';
     allWords.forEach((w, idx) => {
         html += '<span class="chip" data-chip-idx="' + idx + '" onclick="transPickWord(\'' + escArg(w) + '\', ' + idx + ')">' + w + '</span>';

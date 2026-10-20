@@ -112,8 +112,8 @@ const UI_EN = {
     'пример составлен автоматически': 'example generated automatically',
     'Попробуйте другое слово или его часть': 'Try another word or part of a word',
     'Стереть': 'Delete',
-    'Примеры употребления в словаре пока по-русски: это предложения из уроков.':
-        'Usage examples in the dictionary are still in Russian: they are the sentences of the lessons.',
+    'Библейские примеры в словаре даны с русским Синодальным переводом.':
+        'Bible examples in the dictionary are shown with the Russian Synodal translation.',
 
     // ---------------------------------------------------------- парадигмы
     // Подписи осей и переводы строк — это русские строки из данных, а не
@@ -222,6 +222,9 @@ const UI_EN = {
     'Проверить': 'Check',
     'Готово': 'Done',
     'Далее': 'Next',
+    // Подсказка в поле сборки предложения: текст лежит в data-hint, потому что
+    // CSS не переводится (styles/components.css, .build-area:empty::before).
+    'Выберите слова по порядку': 'Choose the words in order',
     'К упражнениям': 'Back to exercises',
     'К уроку': 'Back to the lesson',
     'К урокам': 'Back to lessons',
@@ -810,7 +813,10 @@ function applyExercisesEn(lesson, base, n) {
                 let value = map[isPrompt ? q.russian : q.greek];
                 if (value == null) return q;
                 let copy = Object.assign({}, q);
-                if (isPrompt) copy.russian = value;
+                // Условие рисуется как текст, а не как набор слов: массив,
+                // положенный в шаблон, склеился бы через запятую («he,writes»).
+                // Ключевые слова остаются массивом — по ним идёт сверка.
+                if (isPrompt) copy.russian = value.join(' ');
                 else copy.keywords = value.slice();
                 return copy;
             });
@@ -826,12 +832,17 @@ function applyExercisesEn(lesson, base, n) {
             out[dir] = src.map(q => {
                 let value = map[q.source];
                 if (value == null) return q;
-                if (dir === 'ru_to_el') return Object.assign({}, q, { source: value });
+                // Условие обратного перевода — текст на экране; ответ
+                // (el_to_ru) собирается из фишек, поэтому остаётся массивом.
+                if (dir === 'ru_to_el') return Object.assign({}, q, { source: value.join(' ') });
                 let copy = Object.assign({}, q);
                 copy.correct = value.slice();
                 // Исходное предложение до разбора на слова — из него словарь
-                // берёт пример употребления (js/vocab.js).
-                copy.correctText = value.join(' ');
+                // берёт пример употребления (js/vocab.js). Пакет хранит слова
+                // без хвостовой пунктуации (её снимает сборка, как это делает
+                // boot.js с русским ответом), а примеру точка нужна.
+                let text = value.join(' ');
+                copy.correctText = /[.!?]$/.test(text) ? text : text + '.';
                 return copy;
             });
         });

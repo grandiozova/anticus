@@ -770,7 +770,9 @@
     transition: border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
 .build-area:empty::before {
-    content: 'Выберите слова по порядку';
+    /* Подсказка приходит из JS: CSS не переводится, а строка нужна обоим
+       языкам интерфейса (t('Выберите слова по порядку')). */
+    content: attr(data-hint);
     color: var(--md-sys-color-on-surface-variant);
     font-size: 0.875rem;
     letter-spacing: 0.015625rem;

@@ -529,11 +529,18 @@ language card in settings, stored under `app_lang`.
   `words-*.json` / `prompts-*.json` / `sentences-*.json`); `applyExercisesEn`
   marks fully translated drills on the localized lesson (`_englishDrills`) and
   `lessonDrillAvailable()` hides the rest, so a lesson opens only the drills it
-  can grade. An English typed answer is matched by whole words
-  (`keywordsMatchEn`), with contractions expanded and word order ignored; person
-  and article are required keywords.
+  can grade. Every drill of both courses is translated today — words, prompts and
+  sentences — so nothing is hidden; `tests/i18n.test.js` checks that for every
+  lesson. A translated prompt must be a **string**: `applyExercisesEn` joins the
+  words before storing them in `q.russian` / `q.source`, because an array
+  interpolated into a template renders «he,writes». Only `q.keywords` /
+  `q.correct`, which are graded, stay arrays. An English typed answer is matched
+  by whole words (`keywordsMatchEn`), with contractions expanded and word order
+  ignored; person and article are required keywords.
 - The «Карточки» destination still shows a toast, and the prayer/reading card is
-  still hidden. The dictionary keeps working.
+  still hidden. The dictionary keeps working; its usage examples are English
+  except the Hebrew Bible verses, whose Synodal translation stays Russian (the
+  card above the list says so, driven by `vocabExamplesRu` in the registry).
 - `setAppLang()` must reset every cross-screen cache (localized lessons,
   `allVocabCache`, `lessonSearchIndex`, flashcard decks) — same rule as
   `applyCourse()` — and re-render the current screen.

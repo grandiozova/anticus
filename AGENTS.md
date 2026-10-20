@@ -403,16 +403,34 @@ English is an overlay on top of it. The switch is a card in the settings screen
   (`_englishDrills`), `lessonDrillAvailable()` hides the rest, and the test's
   question pool skips them too. So `materialOnly` now only falls back to the
   material when a lesson has no translated drill at all, and `startLessonDrill()`
-  no longer refuses English outright.
+  no longer refuses English outright. **Every drill of both courses is translated
+  today** — 653 word/prompt questions and 506 sentence questions — so in practice
+  nothing is hidden; `tests/i18n.test.js` walks every lesson of both courses and
+  fails on a Russian answer, an unopened drill or a sentence prompt still in Russian.
+- **A translated prompt is a string, not the word array.** `applyExercisesEn`
+  joins the English prompt words before storing them in `q.russian` (reverse
+  translation) and `q.source` (`ru_to_el`); only `q.keywords` / `q.correct`, which
+  are graded against, stay arrays. A template interpolates an array through
+  `toString()`, so the first version rendered «he,writes» on screen while every
+  test passed — the test only asked whether Cyrillic was left. The sweep now also
+  fails on a `,` glued to the next word.
+- **A sentence answer is a word list without terminal punctuation, and a sentence
+  prompt keeps its punctuation.** `sentences-*.json` holds the English sentence as
+  written; the build strips the trailing `.,;:!?` from an `el_to_ru` answer, exactly
+  as `boot.js` does with the Russian one, because the words become chips. A prompt
+  is displayed as text and keeps its full stop.
 - **An English typed answer is matched by whole words, not by substring**
   (`keywordsMatchEn`, `js/core.js`): `see` must not pass inside `sees`, `i`
   inside `is`; the common contractions are expanded (`I'm` → `i am`); word order
   and extra words are ignored. Person and article are part of the keywords — the
   owner's decision: «he unties», «the word».
 - The «Карточки» destination still answers with a toast, and the prayer/reading
-  card is still hidden. The dictionary keeps working and says, above the list,
-  that usage examples are still Russian — they are the lessons' own sentences, and
-  the drills that would carry them are what has not been translated.
+  card is still hidden. The dictionary keeps working, and its usage examples are
+  English now — they are the lessons' own sentences and the drills carry them.
+  Only the Hebrew Bible examples stay Russian: `data/hebrew-examples.js` pairs the
+  OSHB verse with the Synodal translation, and the card above the list says so.
+  That card is driven by `vocabExamplesRu` in the course registry, not by the
+  interface language: Greek has no such examples and shows no card.
 - **A paradigm table is material, so its labels follow the language too.** The axis
   labels are Russian strings that are *not* in the markup: `legacyParadigm()`
   (`js/declension.js`) builds the Greek ones (`'Падеж'`, `'Лицо'`, the `Ед.ч.` /

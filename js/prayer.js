@@ -181,7 +181,7 @@ function showPrayerExerciseQuestion() {
         if (!coursePrayer().hideTranslateHint) {
             html += `<div class="prayer-russian mb-12">Соберите перевод на ${courseLang()} из слов</div>`;
         }
-        html += `<div class="build-area build-area--script" id="prayerBuildArea"></div>`;
+        html += `<div class="build-area build-area--script" id="prayerBuildArea" data-hint="${escHtml(t('Выберите слова по порядку'))}"></div>`;
         html += `<div class="word-bank word-bank--script" id="prayerWordBank">`;
         q.pool.forEach(w => {
             html += `<span class="chip" onclick="prayerPickWord('${escArg(w)}')">${w}</span>`;
