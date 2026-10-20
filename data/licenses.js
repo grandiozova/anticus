@@ -79,10 +79,10 @@ const LICENSES = [
     {
         name: 'Синодальный перевод Библии',
         nameEn: 'Synodal translation of the Bible',
-        terms: 'Русский текст Бытия 1:1–5 и стихов-примеров в словаре — ' +
+        terms: 'Русский текст стихов-примеров в еврейском словаре — ' +
                'Синодальный перевод, общественное достояние.',
-        termsEn: 'The Russian text of Genesis 1:1–5 and of the example verses in the ' +
-                 'dictionary is the Synodal translation, in the public domain.',
+        termsEn: 'The Russian text of the example verses in the Hebrew dictionary is ' +
+                 'the Synodal translation, in the public domain.',
         url: null
     },
     {
@@ -116,6 +116,25 @@ const LICENSES = [
                  'Rights belong to the holders of the textbook. ' +
                  'This is a non-commercial educational project.',
         url: null
+    },
+    // Русский перевод чтения Бытия — не Синодальный: он взят с ru.chabad.org
+    // по просьбе владельца приложения и с указанием источника (и на самом
+    // экране чтения, и здесь). Строчные буквы вместо тамошних заглавных — это
+    // оформление, а не другой текст.
+    {
+        name: 'Перевод Торы: ru.chabad.org',
+        nameEn: 'Torah translation: ru.chabad.org',
+        terms: 'Русский перевод первой главы Бытия на экране «Чтение Библии» — ' +
+               'с сайта ru.chabad.org, глава «Берешит». Права на перевод ' +
+               'принадлежат его правообладателям; перевод приведён с названным ' +
+               'источником, обычным письмом вместо заглавных букв сайта. ' +
+               'Проект некоммерческий и образовательный.',
+        termsEn: 'The Russian translation of Genesis 1 on the “Bible reading” screen ' +
+                 'comes from ru.chabad.org, the “Bereshit” parashah. Rights to the ' +
+                 'translation belong to its holders; it is reproduced with the ' +
+                 'source named, in ordinary sentence case instead of the site’s ' +
+                 'capitals. This is a non-commercial educational project.',
+        url: 'https://ru.chabad.org/parshah/torahreading_cdo/aid/856619/p/complete/jewish/page.htm'
     },
     // Английский текст уроков — отдельная запись, потому что это отдельный
     // текст со своим положением: он переведён с русского текста приложения, а

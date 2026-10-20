@@ -2,16 +2,43 @@
 // РАЗБОР ТЕКСТА: «ОТЧЕ НАШ» И ЧТЕНИЕ БИБЛИИ
 // ============================================================
 
-// prayerExerciseState объявлен в core.js вместе с остальным состоянием:
-// повторное `let` в другом файле — SyntaxError.
+// prayerExerciseState и prayerDayIndex объявлены в core.js вместе с остальным
+// состоянием: повторное `let` в другом файле — SyntaxError.
 
 // Разбор текста есть не у каждого курса: у греческого это молитва «Отче наш»,
-// у еврейского — чтение Бытия 1:1–5. Данные разные (PRAYER_DATA /
-// HEBREW_READING_DATA), а экран, разбор и упражнения общие; поэтому поля
-// читаются через helpers ниже, а не по греческим именам напрямую.
+// у еврейского — первая глава Бытия, разбитая на дни творения. Данные разные
+// (PRAYER_DATA / HEBREW_READING_DATA), а экран, разбор и упражнения общие;
+// поэтому поля читаются через helpers ниже, а не по греческим именам напрямую.
 // Карточку-ссылку на главном экране прячет applyCourseChrome(), а этот guard
 // страхует прямой вызов — из строки адреса, теста или будущего кода.
 function prayerWordText(word) { return word.text || word.greek || ''; }
+
+// Дни чтения — необязательное поле данных: у молитвы его нет, и тогда экран
+// показывает весь текст целиком, как раньше. День — это отрезок verses
+// (from/to включительно), а не отдельный набор стихов: адрес разбора
+// (#analysis-N) и data-verse остаются общими для всей главы.
+function prayerDays() { return coursePrayer().days || []; }
+
+function prayerDay() {
+    const days = prayerDays();
+    if (!days.length) return null;
+    return days[Math.min(Math.max(prayerDayIndex, 0), days.length - 1)];
+}
+
+function prayerDayVerseIndices() {
+    const day = prayerDay();
+    const verses = coursePrayer().verses;
+    if (!day) return verses.map((v, i) => i);
+    let out = [];
+    for (let i = day.from; i <= day.to; i++) out.push(i);
+    return out;
+}
+
+// «Бытие 1:9–13» — книга из данных курса, диапазон из самого дня.
+function prayerRangeLabel(day) {
+    const book = coursePrayer().book;
+    return (book ? book + ' ' : '') + day.range;
+}
 
 function showPrayer() {
     const data = coursePrayer();
@@ -22,25 +49,99 @@ function showPrayer() {
     renderPrayerText();
     renderPrayerExercise();
 }
-    
+
+// Переключение дня: чипы над текстом и свайп по тексту зовут его же, поэтому
+// оба пути делают ровно одно и то же.
+function setPrayerDay(index) {
+    const days = prayerDays();
+    if (!days.length) return;
+    const next = Math.max(0, Math.min(days.length - 1, index));
+    if (next === prayerDayIndex) return;
+    prayerDayIndex = next;
+    // Начатое упражнение собрано по прошлому дню и под новым текстом значило бы
+    // другое — его сбрасываем, а не оставляем висеть.
+    resetPrayerExercise();
+    renderPrayerText();
+    renderPrayerExercise();
+    // День — это страница: смена дня возвращает к началу нового, откуда бы её
+    // ни позвали (чип наверху, кнопка внизу, свайп посреди текста).
+    scrollPageTop();
+}
+
+function stepPrayerDay(step) { setPrayerDay(prayerDayIndex + step); }
+
+// Внизу длинного дня — те же «предыдущий/следующий», что и свайп: шестой день
+// это восемь стихов, и от его конца до чипов наверху далеко. Кнопки текстовые,
+// крайние не показываются вовсе, поэтому ряд не заворачивается.
+function prayerDayFootHtml() {
+    const days = prayerDays();
+    let html = '<div class="prayer-day-foot">';
+    if (prayerDayIndex > 0) {
+        html += `<button class="menu-btn text" onclick="stepPrayerDay(-1)">` +
+            `<span class="msym">arrow_back</span>День ${prayerDayIndex}</button>`;
+    } else {
+        html += '<span></span>';
+    }
+    if (prayerDayIndex < days.length - 1) {
+        html += `<button class="menu-btn text" onclick="stepPrayerDay(1)">День ${prayerDayIndex + 2}` +
+            `<span class="msym">arrow_forward</span></button>`;
+    }
+    html += '</div>';
+    return html;
+}
+
+function prayerDayNavHtml() {
+    const days = prayerDays();
+    const day = prayerDay();
+    let html = `<div class="prayer-day-head">
+        <span class="prayer-day-title md-title-medium">${day.title}</span>
+        <span class="prayer-day-range">${prayerRangeLabel(day)}</span>
+    </div>`;
+    html += '<div class="chip-set prayer-day-chips">';
+    days.forEach((d, i) => {
+        html += `<button type="button" class="filter-chip" aria-pressed="${i === prayerDayIndex ? 'true' : 'false'}"` +
+            ` onclick="setPrayerDay(${i})"><span class="filter-chip__body">День ${i + 1}</span></button>`;
+    });
+    html += '</div>';
+    return html;
+}
+
+function prayerSourceHtml(source) {
+    const link = `<a href="${escHtml(source.url)}" target="_blank" rel="noopener noreferrer">${escHtml(source.site)}</a>`;
+    const tail = source.title ? ', ' + source.title : '';
+    return `<div class="prayer-source">${escHtml(source.label)} — ${link}${escHtml(tail)}.</div>`;
+}
+
 function renderPrayerText() {
+    const data = coursePrayer();
     const container = document.getElementById('prayerContent');
-    let html = '<p class="md-body-medium mb-12">Нажмите на любое слово, чтобы увидеть разбор формы.</p>';
-    coursePrayer().verses.forEach((verse, verseIdx) => {
+    let html = '';
+    if (prayerDay()) html += prayerDayNavHtml();
+    html += '<p class="md-body-medium mb-12">Нажмите на любое слово, чтобы увидеть разбор формы.</p>';
+    prayerDayVerseIndices().forEach(verseIdx => {
+        const verse = data.verses[verseIdx];
         html += `<div class="prayer-verse">`;
         html += `<div class="prayer-line script">`;
         verse.words.forEach((word, wordIdx) => {
             html += `<span class="prayer-word" data-verse="${verseIdx}" data-word="${wordIdx}" role="button" tabindex="0" onclick="showWordAnalysis(${verseIdx}, ${wordIdx})">${prayerWordText(word)}</span>`;
         });
         html += `</div>`;
-        html += `<div class="prayer-russian">${verse.russian}</div>`;
+        html += `<div class="prayer-russian">${verse.ref ? `<span class="prayer-verse-ref">${verse.ref}</span>` : ''}${verse.russian}</div>`;
         if (verse.transcription) {
             html += `<div class="prayer-transcription">${verse.transcription}</div>`;
         }
         html += `<div id="analysis-${verseIdx}" class="prayer-analysis"></div>`;
         html += `</div>`;
     });
+    if (prayerDay()) html += prayerDayFootHtml();
+    if (data.source) html += prayerSourceHtml(data.source);
     container.innerHTML = html;
+    // Выбранный день может оказаться за краем прокрутки чипов — подтягиваем
+    // его в кадр, как это делает словарь со своей частью речи.
+    const active = container.querySelector('.prayer-day-chips .filter-chip[aria-pressed="true"]');
+    if (active && active.scrollIntoView) {
+        try { active.scrollIntoView({ block: 'nearest', inline: 'center' }); } catch (e) {}
+    }
 }
 
 function showWordAnalysis(verseIdx, wordIdx) {
@@ -77,12 +178,25 @@ function showWordAnalysis(verseIdx, wordIdx) {
 
 function renderPrayerExercise() {
     const container = document.getElementById('prayerExercise');
-    let html = `<div class="md-button-row" style="margin-top:0;">
+    const day = prayerDay();
+    // День подписан и здесь: экран упражнений ниже текста, и по одной кнопке
+    // не видно, какой день она спрашивает.
+    let html = day
+        ? `<div class="prayer-exercise-day">${day.title} · ${prayerRangeLabel(day)}</div>`
+        : '';
+    html += `<div class="md-button-row" style="margin-top:0;">
         <button class="menu-btn" onclick="startPrayerFill()"><span class="msym">edit</span>Заполни пропуски</button>
         <button class="menu-btn primary" onclick="startPrayerTranslate()"><span class="msym">translate</span>Перевод на ${courseLang()}</button>
     </div>`;
     html += `<div id="prayerExerciseQuestion"></div>`;
     container.innerHTML = html;
+}
+
+// Смена дня снимает начатое упражнение: его вопросы собраны из прошлого дня.
+function resetPrayerExercise() {
+    prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
+    const box = document.getElementById('prayerExerciseQuestion');
+    if (box) box.innerHTML = '';
 }
     
 function closeAllAnalysis() {
@@ -94,14 +208,17 @@ function closeAllAnalysis() {
 // Все слова разбора без повторов. В тексте они повторяются (в молитве ἡμῶν —
 // четыре раза, καί — четыре, σου — три; в чтении — «элохим»), и без этого одно
 // и то же лишнее слово могло попасть в варианты или в банк дважды.
+// У чтения пул собирается по открытому дню, а не по всей главе: лишнее слово
+// из дня, который человек ещё не читал, — это подсказка не по делу.
 function prayerWordPool() {
-    return Array.from(new Set(coursePrayer().verses.flatMap(v => v.words.map(prayerWordText))));
+    const verses = prayerDayVerseIndices().map(i => coursePrayer().verses[i]);
+    return Array.from(new Set(verses.flatMap(v => v.words.map(prayerWordText))));
 }
 
 function startPrayerFill() {
     let questions = [];
     const allWords = prayerWordPool();
-    coursePrayer().verses.forEach(verse => {
+    prayerDayVerseIndices().map(i => coursePrayer().verses[i]).forEach(verse => {
         const words = verse.words.map(prayerWordText);
         const wordIndex = Math.floor(Math.random() * words.length);
         const correctWord = words[wordIndex];
@@ -124,7 +241,7 @@ function startPrayerFill() {
 function startPrayerTranslate() {
     let questions = [];
     const allWords = prayerWordPool();
-    coursePrayer().verses.forEach(verse => {
+    prayerDayVerseIndices().map(i => coursePrayer().verses[i]).forEach(verse => {
         // Стих спрашивается не целиком, а кусками из verse.segments, если они
         // есть: в чтении Бытия целый стих — это 10–12 фишек, и упражнение
         // превращалось в диктант. Куска нет — спрашивается стих, как раньше
@@ -281,4 +398,42 @@ function retryPrayerMistakes() {
         total: questions.length, chosen: [], mistakes: []
     };
     showPrayerExerciseQuestion();
+}
+
+// Свайп по тексту чтения переключает день — тот же жест, что листает разделы
+// урока (initLessonSwipe, js/lesson.js). Слушаем контейнер, а не стихи: он
+// перерисовывается вместе с днём, а сам элемент остаётся.
+// Жест не начинается на чипах дня (они сами прокручиваются вбок), на полях
+// ввода и в разборе слова — SWIPE_BLOCKERS называет те же цели, что у урока.
+let prayerSwipe = null;
+
+function initPrayerSwipe() {
+    let host = document.getElementById('prayerContent');
+    if (!host) return;
+
+    host.addEventListener('touchstart', function (e) {
+        if (!e.touches || e.touches.length !== 1) { prayerSwipe = null; return; }
+        let t = e.touches[0];
+        let blocked = !!(e.target && e.target.closest && e.target.closest(SWIPE_BLOCKERS));
+        prayerSwipe = { x: t.clientX, y: t.clientY, blocked: blocked };
+    }, { passive: true });
+
+    host.addEventListener('touchmove', function (e) {
+        // Второй палец — это масштабирование, а не листание.
+        if (e.touches && e.touches.length > 1) prayerSwipe = null;
+    }, { passive: true });
+
+    host.addEventListener('touchend', function (e) {
+        let s = prayerSwipe;
+        prayerSwipe = null;
+        if (!s || s.blocked || !e.changedTouches || e.changedTouches.length !== 1) return;
+        if (prayerDays().length < 2) return;
+        let t = e.changedTouches[0];
+        let dx = t.clientX - s.x;
+        let dy = t.clientY - s.y;
+        // Короткий жест или жест больше вниз-вверх — это прокрутка страницы.
+        if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+        // Интерфейс русский и остаётся слева направо, поэтому влево — вперёд.
+        stepPrayerDay(dx < 0 ? 1 : -1);
+    }, { passive: true });
 }

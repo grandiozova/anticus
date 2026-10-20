@@ -135,6 +135,9 @@ function applyCourse(id) {
     exerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, mistakes: [] };
     translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
     prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
+    // День чтения — состояние экрана, но начинать чужой курс с чужого дня
+    // нельзя: счёт дней у курсов свой.
+    prayerDayIndex = 0;
     currentDrill = null;
     currentLessonPart = 'material';
     lessonsReturnSection = 'mainMenu';
@@ -175,7 +178,7 @@ function applyCourseChrome() {
     }
 
     // Карточка разбора текста: у греческого это «Отче наш», у еврейского —
-    // чтение Бытия 1:1–5. У курса без разбора её нет.
+    // чтение Бытия 1 по дням творения. У курса без разбора её нет.
     let card = document.getElementById('prayerFeatureCard');
     if (card) {
         // В английском режиме разбор текста не переведён и карточки нет:

@@ -134,7 +134,7 @@ data/
   lessons.js         2,764  const LESSONS_DATA (греческий курс, уроки 1–16) и GREEK_ALPHABET — пул букв для уроков 1–2
   hebrew-lessons.js    872  const HEBREW_LESSONS_DATA — главы 1–11: грамматика, словарь, упражнения; HEBREW_ALPHABET — пул букв и огласовок
   prayer.js            142  const PRAYER_DATA — «Отче наш» (греческий)
-  hebrew-reading.js    130  const HEBREW_READING_DATA — Бытие 1:1–5 (иврит)
+  hebrew-reading.js    791  const HEBREW_READING_DATA — вся глава Бытия 1 по дням творения (иврит)
   hebrew-examples.js   375  const HEBREW_EXAMPLES — 115 стихов OSHB для словаря: ключ — словарная форма
   licenses.js           96  const LICENSES
   courses.js           119  const COURSES/COURSE_ORDER — реестр курсов, грузится последним из data/
@@ -749,10 +749,43 @@ repeating this:
 
 **The Hebrew course's «prayer» slot holds a Bible reading, not a prayer.** The Old
 Testament has no Lord's Prayer, so `COURSES.hebrew.prayer` points at
-`HEBREW_READING_DATA` (`data/hebrew-reading.js`) — Genesis 1:1–5, the first day. The
-screen, the word-by-word analysis and both drills are the same ones the Greek prayer
-uses (`prayerSection`, `js/prayer.js`), so there is no second code path:
+`HEBREW_READING_DATA` (`data/hebrew-reading.js`) — the whole of Genesis 1, split into
+its six days of creation. The screen, the word-by-word analysis and both drills are the
+same ones the Greek prayer uses (`prayerSection`, `js/prayer.js`), so there is no second
+code path:
 
+- **A day is a range into `verses`, not a second set of verses.** `days: [{ title,
+  range, from, to }]` indexes the flat `verses` array, and `prayerDayVerseIndices()`
+  returns the day's numbers. The rendered word keeps its **global** verse index in
+  `data-verse`, and the analysis box its global `#analysis-N` — that is why a word
+  always finds its own verse no matter which day is open. `prayerDayIndex` lives in
+  `core.js` (top-level `let`, like the rest of the state) and is reset in
+  `applyCourse()`, because another course's days mean nothing.
+- **Two ways to change the day, one function.** The six chips above the text
+  (`.prayer-day-chips`, the dictionary's `.filter-chip` pattern, scrollable, the active
+  one scrolled into view) and the horizontal swipe (`initPrayerSwipe()` on
+  `#prayerContent`, the same gesture as the lesson's `initLessonSwipe`) both call
+  `setPrayerDay()`. Swiping left is "next": the interface is Russian and stays LTR, the
+  chips along with it. Both ends are dead ends; the gesture never wraps. A short or
+  vertical drag is page scrolling, and a gesture starting inside `SWIPE_BLOCKERS` is
+  left alone.
+- **The drills ask the open day and are dropped when it changes.** `prayerWordPool()`,
+  `startPrayerFill()` and `startPrayerTranslate()` all go through
+  `prayerDayVerseIndices()`, so the distractors come from the day the reader is in, and
+  a started exercise is cleared in `setPrayerDay()` (`resetPrayerExercise()`) rather
+  than left hanging under another day's text. The exercise card names the day above its
+  buttons for the same reason.
+- **The reading is longer than one screenful, so the page is the scroll — and the day
+  heading is not sticky.** The card holds the day title, the range («Бытие 1:9–13»), the
+  chips, the verses with their Russian, and, under a rule, the translation's source.
+  Each Russian line starts with the verse reference (`.prayer-verse-ref`), because
+  thirty-one verses with no numbers are hard to follow.
+- **The Russian is not the Synodal translation any more.** It is the translation from
+  `ru.chabad.org` (the «Берешит» parashah), reproduced with the source named: the
+  `source` field draws the link under the verses, and `data/licenses.js` carries the
+  attribution. The site prints it in capitals; here it is ordinary sentence case, which
+  is typography, not a different text. The Synodal entry in the licence list now covers
+  only the dictionary's example verses (`data/hebrew-examples.js`).
 - **The field names differ, the code does not.** Hebrew entries carry `text` (verse and
   word), Greek entries keep `greek`; `prayerWordText()` reads either. `prayer.title`
   names the app bar (`updateShell()` in `js/shell.js`) and `prayer.incipit` is the
@@ -762,12 +795,22 @@ uses (`prayerSection`, `js/prayer.js`), so there is no second code path:
   OSHB/WLC 4.20 (`Gen.xml`) mechanically, then cross-checked with Sefaria — the only
   difference is the accent on the word «тоху» (OSHB U+05A8, Sefaria U+0599), and OSHB
   wins because the repo treats the Westminster Leningrad Codex as the authority. The
-  Russian is the Synodal translation (public domain); the OSHB attribution is in
-  `data/licenses.js`.
+  OSHB attribution is in `data/licenses.js`.
+- **Words after 1:1–5 carry a reading, a gloss and a machine analysis.** The first five
+  verses keep their authored word analyses. For the rest, `translit` and `translation`
+  are authored (one entry per form, which is why repeated forms read the same in every
+  verse) and `analysis` is assembled from the OSHB morphology code of that very token —
+  stem, conjugation, person, gender, number, state, with the prefixes (conjunction,
+  preposition, article, object marker, pronominal suffix) named separately. The codes
+  mean what OSHB says they mean: `q` after the stem is the waw-consecutive **perfect**
+  (וְהָיוּ = `Vqq3cp`) and `w` the waw-consecutive **imperfect** (וַיְהִי = `Vqw3ms`);
+  reversing them turns every wayyiqtol into a weqatal. Do not hand-edit a generated
+  analysis into a different scheme; change the mapping, or the whole chapter drifts.
 - **A maqqef pair is one word entry.** `words` holds «ʿal-pǝnê» and «ʾeṯ-hāʾôr» as
   single tokens, so the fill drill addresses `q.words` and not `verse.text.split(' ')`:
   the split would put the blank inside a maqqef pair. `tests/prayer.test.js` checks that
-  the shown blank is on the word the index names.
+  the shown blank is on the word the index names. A pair's `analysis` names both parts
+  («частица прямого дополнения; артикль + сущ. …»).
 - **The reading's `.translit` is authored in the course's convention** — Russian with
   the stress mark, then the book's transliteration in brackets, the same shape as a
   vocabulary entry's `translit`. It is shown in the word's analysis card only (the
@@ -781,17 +824,19 @@ uses (`prayerSection`, `js/prayer.js`), so there is no second code path:
   it, and the translate drill opens without the «Соберите перевод на … из слов» line;
   the Greek prayer has no field and keeps the hint. `tests/prayer.test.js` holds both
   sides.
-- **The reading's translate drill asks phrases, not whole verses.** A Genesis verse is
-  10–12 chips, so «Соберите перевод» turned into a dictation of the entire verse. Each
-  verse therefore carries `segments: [{ from, to, russian }]` — `from`/`to` are indices
-  into that verse's `words`, inclusive, and `startPrayerTranslate()` builds one
+- **The reading's translate drill asks phrases, not whole verses.** A Genesis verse runs
+  to fifteen chips, so «Соберите перевод» turned into a dictation of the entire verse.
+  Each verse therefore carries `segments: [{ from, to, russian }]` — `from`/`to` are
+  indices into that verse's `words`, inclusive, and `startPrayerTranslate()` builds one
   question per segment from `words.slice(from, to + 1)`. The Hebrew is never typed into
   `segments`; only the Russian prompt is authored, so a segment cannot drift from the
   verse in the order of its niqqud. A verse without `segments` is still asked whole —
   that is how the Greek prayer works, and it must stay that way unless it is cut up the
-  same way. Segments are non-overlapping and each is shorter than its verse;
-  `tests/prayer.test.js` checks both, that every question is exactly its segment's
-  words, and that the reading yields 8–10 questions.
+  same way. **In the reading the segments partition every verse**: they start at word 0,
+  run without a gap, end at the last word, and none is longer than eight words — that is
+  the invariant the test holds, not «shorter than the verse» (in a four-word verse the
+  segment *is* the verse, and that is right). The Greek prayer has no segments at all
+  and is asked a verse at a time.
 - **Hebrew word chips need a taller line box.** `.prayer-word` has `overflow: hidden`
   for its ripple, and the shared `1.75rem` line would clip the niqqud that hang below
   the letter. `:root[data-script="hebrew"] .prayer-word { line-height: 1.5 }` and the

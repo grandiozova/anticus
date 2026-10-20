@@ -27,6 +27,10 @@ let letterWriteStyle = 'print';
 let allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all', mistakes: [] };
 let translationState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
 let prayerExerciseState = { type: null, questions: [], index: 0, correct: 0, total: 0, chosen: [], mistakes: [] };
+// Какой день чтения открыт. У молитвы дней нет, поле не читается; в чтении
+// Бытия день — это то, что человек читает за раз, и он переживает уход с
+// экрана. Сбрасывается в applyCourse: у другого курса свои дни.
+let prayerDayIndex = 0;
 let allVocabCache = null;
 
 // ============================================================

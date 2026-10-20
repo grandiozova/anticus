@@ -49,6 +49,7 @@ if (!getLessonData(currentLesson)) currentLesson = firstLessonNumber();
 renderMainMenu();
 updateShell();
 initLessonSwipe();
+initPrayerSwipe();
 syncCourseControls();
 // Перекрытие с выбором курса — последним, поверх готового приложения.
 initStartScreen();

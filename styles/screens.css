@@ -1332,7 +1332,10 @@
     padding: 12px 0;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
 }
-.prayer-verse:last-child { border-bottom: 0; }
+/* Последний стих дня границы снизу не получает. :last-of-type, а не
+   :last-child: под стихами стоит строка источника перевода, и с :last-child
+   граница возвращалась бы к последнему стиху. */
+.prayer-verse:last-of-type { border-bottom: 0; }
 /* Стих — ряд отдельных слов, поэтому направление письма стоит здесь: иначе
    слова легли бы в порядке слева направо, а каждое читалось бы справа налево.
    Класс .script на этот ряд вешает renderPrayerText() (js/prayer.js). */
@@ -1404,6 +1407,65 @@
     font-size: 0.8125rem;
     line-height: 1.25rem;
     font-style: italic;
+}
+
+/* ---------- чтение по дням ----------
+   Заголовок дня, чипы дней и адрес стиха. Чипы — тот же .filter-chip, что
+   над словарём: день это фильтр текста, а не отдельный экран, поэтому
+   .chip-set прокручивается вбок и сам подтягивает выбранный день в кадр
+   (js/prayer.js). */
+.prayer-day-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 4px 12px;
+    margin-bottom: 4px;
+}
+.prayer-day-title { color: var(--md-sys-color-on-surface); }
+.prayer-day-range {
+    font-size: 0.8125rem;
+    line-height: 1.25rem;
+    color: var(--md-sys-color-on-surface-variant);
+    font-variant-numeric: tabular-nums;
+}
+.prayer-day-chips { margin-bottom: 12px; }
+/* Адрес стиха перед переводом: строка идёт слева направо, как русский текст,
+   и цифры не должны липнуть к первому слову. */
+.prayer-verse-ref {
+    margin-inline-end: 8px;
+    color: var(--md-sys-color-outline);
+    font-variant-numeric: tabular-nums;
+}
+/* День подписан и над кнопками упражнений: они ниже текста. */
+.prayer-exercise-day {
+    margin-bottom: 12px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--md-sys-color-on-surface-variant);
+}
+/* Ряд «День 5 | День 7» внизу дня: у длинного дня до чипов наверху далеко.
+   Пустое место слева держит единственную кнопку у правого края. */
+.prayer-day-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+}
+/* Источник перевода — сноска под стихами, отделённая линией. */
+.prayer-source {
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid var(--md-sys-color-outline-variant);
+    font-size: 0.75rem;
+    line-height: 1rem;
+    color: var(--md-sys-color-on-surface-variant);
+}
+.prayer-source a {
+    color: var(--md-sys-color-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 
