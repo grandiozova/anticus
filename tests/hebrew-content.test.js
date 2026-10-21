@@ -246,10 +246,14 @@ test('формы употребления находят слово в обор�
 test('библейские примеры скопированы из OSHB, а не набраны руками', () => {
     // Второй источник — только для слов, которых нет в оборотах пособия.
     // Проверяем не «поле заполнено», а дословность: стих совпадает с
-    // reference/oshb/verses.json, перевод — с Синодальным, а форма для
+    // reference/oshb/verses.json, оба перевода — со справочником, а форма для
     // подсветки действительно стоит в стихе.
     const ref = JSON.parse(fs.readFileSync(repoPath('reference', 'oshb', 'verses.json'), 'utf8'));
     const byText = new Map(ref.verses.map(v => [v.he, v]));
+
+    const noEnglish = ref.verses.filter(v => !v.en || !v.ref_en).map(v => v.osis);
+    assert.deepStrictEqual(noEnglish, [],
+        'у этих стихов нет английского перевода или ссылки по нумерации KJV:\n  ' + noEnglish.join(', '));
 
     const app = loadApp(GREEK);
     const w = app.window;
@@ -277,6 +281,8 @@ test('библейские примеры скопированы из OSHB, а �
             const src = byText.get(ex.text);
             if (!src) bad.push(r.word + ': стиха нет в reference/oshb — ' + ex.text);
             else if (src.ru !== ex.russian) bad.push(r.word + ': перевод разошёлся со справочником');
+            else if (src.en !== ex.english) bad.push(r.word + ': английский перевод разошёлся со справочником');
+            else if (src.ref_en !== ex.refEn) bad.push(r.word + ': английская ссылка разошлась со справочником');
             if (!ex.form || ex.text.indexOf(ex.form) === -1) bad.push(r.word + ': формы нет в стихе');
             if (!ex.ref) bad.push(r.word + ': нет ссылки на стих');
         }

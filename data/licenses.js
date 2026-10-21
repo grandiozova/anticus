@@ -90,12 +90,14 @@ const LICENSES = [
     {
         name: 'King James Version',
         nameEn: 'King James Version',
-        terms: 'Стихи Бытия на экране «Чтение Библии» даны по-английски в переводе ' +
-               'короля Иакова (1611); он общественное достояние за пределами ' +
-               'Великобритании. Проект некоммерческий и образовательный.',
-        termsEn: 'The Genesis verses on the “Bible reading” screen are quoted in the ' +
-                 'King James Version (1611), in the public domain outside the ' +
-                 'United Kingdom. This is a non-commercial educational project.',
+        terms: 'Английские стихи Библии — на экране «Чтение Библии» и в примерах ' +
+               'употребления в словаре — даны в переводе короля Иакова (1611); он ' +
+               'общественное достояние за пределами Великобритании. Проект ' +
+               'некоммерческий и образовательный.',
+        termsEn: 'The English Bible verses — on the “Bible reading” screen and in the ' +
+                 'dictionary’s usage examples — are quoted in the King James ' +
+                 'Version (1611), in the public domain outside the United Kingdom. ' +
+                 'This is a non-commercial educational project.',
         url: 'https://www.gutenberg.org/ebooks/10'
     },
     {

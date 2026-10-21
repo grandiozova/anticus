@@ -157,10 +157,11 @@ function flashcardContextBlockHtml(word) {
     if (typeof findUsageExamples !== 'function') return '';
     let examples = findUsageExamples(word, 1);
     if (!examples.length) return '';
+    let ref = usageExampleRef(examples[0]);
     return '<div class="vocab-example">' +
         '<div class="vocab-example__script">' + highlightWord(examples[0].greek, word, examples[0].form) + '</div>' +
-        '<div class="vocab-example__ru">' + examples[0].russian + '</div>' +
-        (examples[0].ref ? '<div class="vocab-example__ref">' + examples[0].ref + '</div>' : '') +
+        '<div class="vocab-example__ru">' + usageExampleTranslation(examples[0]) + '</div>' +
+        (ref ? '<div class="vocab-example__ref">' + ref + '</div>' : '') +
     '</div>';
 }
 

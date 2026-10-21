@@ -446,10 +446,14 @@ English is an overlay on top of it. The switch is a card in the settings screen
   drawn through `displayTranslit()`.
 - The dictionary keeps working, and its usage examples are
   English now — they are the lessons' own sentences and the drills carry them.
-  Only the Hebrew Bible examples stay Russian: `data/hebrew-examples.js` pairs the
-  OSHB verse with the Synodal translation, and the card above the list says so.
-  That card is driven by `vocabExamplesRu` in the course registry, not by the
-  interface language: Greek has no such examples and shows no card.
+  The Hebrew Bible examples are English too: `data/hebrew-examples.js` pairs the
+  OSHB verse with two translations, the Synodal Russian (`russian`, `ref`) and the
+  King James Version (`english`, `refEn`), and `usageExampleTranslation()` /
+  `usageExampleRef()` (`js/vocab.js`) pick by the interface language. So no card
+  above the list is needed any more, and `vocabExamplesRu` is gone from the
+  registry. The English reference is a field of its own rather than a rewriting of
+  the Russian one: Job 41 is divided differently in the two translations, and
+  «Иов. 41:13» is `Job 41:21` (OSHB marks such verses with a `KJV:` attribute).
 - **A paradigm table is material, so its labels follow the language too.** The axis
   labels are Russian strings that are *not* in the markup: `legacyParadigm()`
   (`js/declension.js`) builds the Greek ones (`'Падеж'`, `'Лицо'`, the `Ед.ч.` /
@@ -629,10 +633,10 @@ Two things to know before copying:
 
 The Hebrew dictionary shows a usage example for a word the textbook never uses in a
 phrase. That example is a verse from the **Open Scriptures Hebrew Bible** (WLC 4.20,
-`lemma` attributes are Strong's numbers) with the **Synodal** Russian translation;
-115 verses are committed to `reference/oshb/verses.json`, and
-`data/hebrew-examples.js` is the app's copy. The rules are in
-`reference/oshb/README.md`; the important ones:
+`lemma` attributes are Strong's numbers) with the **Synodal** Russian translation and
+the **King James Version** English one; 115 verses are committed to
+`reference/oshb/verses.json`, and `data/hebrew-examples.js` is the app's copy. The
+rules are in `reference/oshb/README.md`; the important ones:
 
 - **The Hebrew is machine-extracted, never typed.** `data/hebrew-examples.js` is
   keyed by the dictionary headword and carries the exact word form to highlight
@@ -649,9 +653,15 @@ phrase. That example is a verse from the **Open Scriptures Hebrew Bible** (WLC 4
 - **Six function words stay without an example**: `וְ`, `לְ`, `בְּ`, `כְּ`, `הֲ`,
   `עַל־דְּבַר`. They are prefixes or parts of a phrase in the verse and cannot be
   highlighted as a word. That is the correct end state, not a gap.
-- **Never retype a verse, and never edit the Russian.** If an example is wrong,
+- **Never retype a verse, and never edit a translation.** If an example is wrong,
   choose another verse and regenerate both files; `tests/hebrew-content.test.js`
-  holds every example to `reference/oshb/verses.json` verbatim.
+  holds every example to `reference/oshb/verses.json` verbatim — Hebrew, both
+  translations and both references.
+- **The English verse is looked up through OSHB's own `KJV:` attribute, not through
+  the verse number.** `Job.41.13` is `Job.41.21` in the KJV: OSHB splits that chapter
+  differently, and the XML carries the mapping. It is the only such verse in the set,
+  and the English reference (`ref_en`) follows the mapping, so the English screen
+  never cites a verse it is not showing.
 
 ## The Hebrew course
 

@@ -191,14 +191,15 @@ invisible until someone hits the specific path (offline load, one specific theme
   punctuation: it is split into word-bank chips.
 - **Words the textbook never puts in a phrase get a Bible verse** from
   `data/hebrew-examples.js`, keyed by the dictionary headword and generated from
-  `reference/oshb/verses.json` (OSHB Hebrew + Synodal Russian). The record carries
-  the exact word `form` to highlight, because the verse has an inflected form the
-  entry's search forms do not contain; `findUsageExamples()` therefore looks the
-  entry up by `entry.greek`, with no morphology at runtime. Coverage is 173 of 179
-  words; the six function words (`וְ`, `לְ`, `בְּ`, `כְּ`, `הֲ`, `עַל־דְּבַר`) stay
-  without an example because they cannot be highlighted as a word. Never retype a
-  verse or edit the Synodal text; choose another verse and regenerate both files.
-  `tests/hebrew-content.test.js` checks every example against its source verbatim.
+  `reference/oshb/verses.json` (OSHB Hebrew + Synodal Russian + King James Version
+  English). The record carries the exact word `form` to highlight, because the verse
+  has an inflected form the entry's search forms do not contain; `findUsageExamples()`
+  therefore looks the entry up by `entry.greek`, with no morphology at runtime.
+  Coverage is 173 of 179 words; the six function words (`וְ`, `לְ`, `בְּ`, `כְּ`,
+  `הֲ`, `עַל־דְּבַר`) stay without an example because they cannot be highlighted as
+  a word. Never retype a verse or edit either translation; choose another verse and
+  regenerate both files. `tests/hebrew-content.test.js` checks every example against
+  its source verbatim.
 - **A word may carry `usage_forms`** — the exact forms in which the book prints it
   (construct state, plural, with a preposition or article), copied verbatim from the
   reference. `getWordSearchForms()` adds them, so `הַמַּיִם` finds `מַיִם` and
@@ -555,9 +556,11 @@ language card in settings, stored under `app_lang`.
   and Hebrew text, readings and verse numbers are copied from the Russian data
   unchanged. Genesis verses are the King James Version (public domain, in
   `data/licenses.js`); `word.translit` goes through `displayTranslit()`.
-- The dictionary keeps working; its usage examples are English except the Hebrew
-  Bible verses, whose Synodal translation stays Russian (the card above the list
-  says so, driven by `vocabExamplesRu` in the registry).
+- The dictionary keeps working; every usage example is English — the lessons'
+  own sentences, and the Hebrew Bible verses with the King James Version beside the
+  Synodal Russian. `usageExampleTranslation()` / `usageExampleRef()` (`js/vocab.js`)
+  pick by the interface language; the English reference is stored per example
+  (`refEn`) because Job 41 is divided differently in the two translations.
 - `setAppLang()` must reset every cross-screen cache (localized lessons, the
   localized prayer/reading, `allVocabCache`, `lessonSearchIndex`, flashcard decks)
   — same rule as `applyCourse()` — and re-render the current screen.

@@ -285,13 +285,16 @@ function findUsageExamples(entry, maxCount) {
     let examples = [];
     let forms = getWordSearchForms(entry);
     let seen = new Set();
-    function push(greek, russian, form, ref) {
+    function push(greek, russian, form, ref, english, refEn) {
         if (!greek || !russian || examples.length >= cap) return;
         let tokens = tokenizeGreek(greek);
         let key = tokens.join(' ');
         if (seen.has(key)) return;
         seen.add(key);
-        examples.push({ greek: greek, russian: russian, form: form || '', ref: ref || '' });
+        examples.push({
+            greek: greek, russian: russian, form: form || '', ref: ref || '',
+            english: english || '', refEn: refEn || ''
+        });
     }
     function tryAdd(greek, russian) {
         if (!greek || !russian || examples.length >= cap) return;
@@ -321,10 +324,12 @@ function findUsageExamples(entry, maxCount) {
     // Библейские примеры — второй подлинный источник (data/hebrew-examples.js),
     // только для слов, которые пособие ни разу не употребило в обороте. Здесь
     // нечего искать по формам: статья уже названа ключом, а словоформа для
-    // подсветки лежит рядом с текстом. Стих берётся из OSHB, перевод —
-    // Синодальный; оба скопированы машинно (см. reference/oshb/README.md).
+    // подсветки лежит рядом с текстом. Стих берётся из OSHB, переводы —
+    // Синодальный и King James Version; все три скопированы машинно (см.
+    // reference/oshb/README.md).
     if (typeof HEBREW_EXAMPLES !== 'undefined' && entry.greek) {
-        (HEBREW_EXAMPLES[entry.greek] || []).forEach(ex => push(ex.text, ex.russian, ex.form, ex.ref));
+        (HEBREW_EXAMPLES[entry.greek] || []).forEach(ex =>
+            push(ex.text, ex.russian, ex.form, ex.ref, ex.english, ex.refEn));
     }
     entry._examples = examples;
     return examples;
@@ -463,17 +468,35 @@ function renderVocabDetailsHtml(entry) {
 // Пример употребления — или автопример, когда подлинного нет и парадигмы тоже
 // нет: у слова с формами «что показать» уже есть, и раньше таблица стояла
 // вместо примера.
+//
+// Перевод примера и ссылка идут за языком интерфейса, а не за курсом, и оба
+// читаются здесь, а не на месте отрисовки: словарь и карточки показывают один
+// и тот же пример, и разойтись им нельзя. У библейского стиха два перевода
+// (Синодальный и King James Version) и две нумерации — у книги Иова глава 41
+// разделена иначе; у оборота пособия перевод один, и в английском режиме он
+// уже английский, потому что урок пришёл из оверлея. Поэтому отсутствие
+// english значит «тот же самый перевод», а не «перевода нет».
+function usageExampleTranslation(ex) {
+    return isEnglish() && ex.english ? ex.english : ex.russian;
+}
+function usageExampleRef(ex) {
+    if (!ex.ref) return '';
+    return isEnglish() && ex.refEn ? ex.refEn : ex.ref;
+}
+
 function renderVocabExamplesHtml(entry) {
     if (!entry) return '';
 
     let examples = findUsageExamples(entry, 1).slice(0, 1);
     if (examples.length) {
-        return '<div class="vocab-examples">' + examples.map(ex =>
-            '<div class="vocab-example">' +
+        return '<div class="vocab-examples">' + examples.map(ex => {
+            let ref = usageExampleRef(ex);
+            return '<div class="vocab-example">' +
                 '<div class="vocab-example__script">' + highlightWord(ex.greek, entry, ex.form) + '</div>' +
-                '<div class="vocab-example__ru">' + ex.russian + '</div>' +
-                (ex.ref ? '<div class="vocab-example__ref">' + ex.ref + '</div>' : '') +
-            '</div>').join('') + '</div>';
+                '<div class="vocab-example__ru">' + usageExampleTranslation(ex) + '</div>' +
+                (ref ? '<div class="vocab-example__ref">' + ref + '</div>' : '') +
+            '</div>';
+        }).join('') + '</div>';
     }
     if (entry.declension_forms) return '';
 
@@ -592,18 +615,6 @@ function showAllVocab() {
     let clearBtn = document.getElementById('vocabSearchClear');
     if (clearBtn) clearBtn.classList.remove('show');
     vocabTypeFilter = 'all';
-    let langNote = document.getElementById('vocabLanguageNote');
-    let langNoteText = document.getElementById('vocabLanguageNoteText');
-    if (langNote) {
-        // Примеры уроков переведены; по-русски остаются только стихи OSHB, и
-        // это признак курса, а не языка интерфейса (см. vocabExamplesRu).
-        let noteNeeded = isEnglish() && !!activeCourse().vocabExamplesRu;
-        langNote.classList.toggle('hidden', !noteNeeded);
-        if (langNoteText) {
-            langNoteText.textContent = noteNeeded
-                ? t('Библейские примеры в словаре даны с русским Синодальным переводом.') : '';
-        }
-    }
     // Экран открывают заново — клавиатура снова убрана.
     resetVocabKeyboard();
     renderTypeChips('vocabTypeChips', vocabTypeFilter, 'setVocabType');

@@ -445,6 +445,27 @@ test('правильный ответ переводится тем же сло�
     app.close();
 });
 
+test('подпись каждого упражнения и каждой группы переведена', () => {
+    // Список упражнений — каталог, а не материал урока: подпись `heb_suffix_type`
+    // встречается только у ивритских глав, и проверка «на двух уроках» её не
+    // видела. Ключ словаря — сама русская строка, поэтому «Местоименные» без ё
+    // рядом с «Местоимёнными» в грамматике остались без перевода молча.
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const missing = app.get(`
+        (function () {
+            let bad = [];
+            LESSON_DRILL_GROUPS.forEach(function (group) {
+                if (!UI_EN[group.label]) bad.push('группа: ' + group.label);
+                group.drills.forEach(function (d) {
+                    if (!UI_EN[String(d.label)]) bad.push('пункт: ' + d.label);
+                });
+            });
+            return bad.join('; ');
+        })()`);
+    assert.strictEqual(missing, '', 'нет английской подписи: ' + missing);
+    app.close();
+});
+
 test('список упражнений урока переведён, направление — на английский', () => {
     const app = loadApp({ storage: { app_lang: 'en' } });
     [['greek', 3], ['hebrew', 4]].forEach(([course, lesson]) => {
@@ -752,6 +773,97 @@ test('оборот карточки спрашивает форму по-анг�
     assert.ok(!CYR.test(back.textContent), 'русский текст на обороте: ' + around(back.textContent));
     assert.ok(back.querySelectorAll('.option-btn').length >= 2, 'нет вариантов формы');
     assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+// ------------------------------------------------------------ словарь: примеры
+//
+// Пример употребления — материал, а не подпись, поэтому его перевод идёт за
+// языком интерфейса. Оборот пособия английский уже потому, что урок пришёл из
+// оверлея; библейский стих раньше оставался с Синодальным переводом, и об этом
+// говорила карточка над словарём. Теперь у стиха два перевода — русский и King
+// James Version, — и карточка больше не нужна.
+
+test('пример употребления из Библии показывается по-английски', () => {
+    const app = loadApp({ storage: { app_lang: 'en', app_course: 'hebrew', app_default_course: 'hebrew' } });
+    const entry = app.window.getAllVocab().find(e => e.greek === 'אָדָם');
+    assert.ok(entry, 'в словаре нет статьи אָדָם');
+    app.window.showAllVocab();
+    app.window.toggleVocabExamples(entry.id);
+    const box = app.document.querySelector(
+        '#allVocabContent .word-item[data-vocab-id="' + entry.id + '"] .vocab-example');
+    assert.ok(box, 'пример не раскрылся');
+    assert.ok(/killeth a beast/.test(box.textContent), 'стих не переведён: ' + box.textContent);
+    assert.strictEqual(box.querySelector('.vocab-example__ref').textContent, 'Lev. 24:21',
+        'ссылка не английская');
+    assert.ok(!CYR.test(box.textContent), 'русский текст в примере: ' + around(box.textContent));
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('в русском режиме библейский пример остаётся с Синодальным переводом', () => {
+    const app = loadApp({ storage: { app_course: 'hebrew', app_default_course: 'hebrew' } });
+    const entry = app.window.getAllVocab().find(e => e.greek === 'אָדָם');
+    app.window.showAllVocab();
+    app.window.toggleVocabExamples(entry.id);
+    const box = app.document.querySelector(
+        '#allVocabContent .word-item[data-vocab-id="' + entry.id + '"] .vocab-example');
+    assert.ok(/должен заплатить/.test(box.textContent), 'русский стих пропал: ' + box.textContent);
+    assert.strictEqual(box.querySelector('.vocab-example__ref').textContent, 'Лев. 24:21');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('в английском словаре ни один пример не остаётся по-русски', () => {
+    // Сверка не по одному слову: примеров 116, и «перевести все» — это про все,
+    // а не про те, что попали на скриншот.
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const bad = [];
+    ['greek', 'hebrew'].forEach(course => {
+        app.window.applyCourse(course);
+        const left = app.get(`
+            (function () {
+                let bad = [];
+                for (let e of getAllVocab()) {
+                    let box = document.createElement('div');
+                    box.innerHTML = renderVocabDetailsHtml(e);
+                    let ex = box.querySelector('.vocab-example');
+                    if (ex && /[А-Яа-яЁё]/.test(ex.textContent)) bad.push(e.greek);
+                }
+                return bad.join(', ');
+            })()`);
+        if (left) bad.push(course + ': ' + left);
+    });
+    assert.deepStrictEqual(bad, [], 'русские примеры в английском словаре: ' + bad.join(' | '));
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('карточка показывает библейский пример по-английски', () => {
+    const app = loadApp({ storage: { app_lang: 'en', app_course: 'hebrew', app_default_course: 'hebrew' } });
+    const word = app.window.getAllVocab().find(e => e.greek === 'אָדָם');
+    app.window.startAllFlashcards('all', [word]);
+    app.window.allFlashcardReveal();
+    const box = app.document.querySelector('#allFlashcardsSection');
+    assert.ok(/killeth a beast/.test(box.textContent), 'на карточке нет английского примера');
+    assert.ok(!CYR.test(box.textContent), 'русский текст на карточке: ' + around(box.textContent));
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('английская ссылка на стих идёт по нумерации своего перевода', () => {
+    // У книги Иова глава 41 разделена иначе, и «Иов. 41:13» — это Job 41:21:
+    // OSHB сам помечает такие стихи атрибутом KJV, и ссылка в английском
+    // режиме обязана называть стих того перевода, который показан рядом.
+    const app = loadApp();
+    const refs = JSON.parse(app.get(`JSON.stringify([
+        HEBREW_EXAMPLES['יָצָא'][0].ref,
+        HEBREW_EXAMPLES['יָצָא'][0].refEn,
+        HEBREW_EXAMPLES['יָצָא'][0].english
+    ])`));
+    assert.strictEqual(refs[0], 'Иов. 41:13');
+    assert.strictEqual(refs[1], 'Job 41:21');
+    assert.ok(/His breath kindleth coals/.test(refs[2]), refs[2]);
     app.close();
 });
 
