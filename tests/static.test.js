@@ -119,25 +119,50 @@ test('правило перевода не перекраивает шеврон
     }
 });
 
-test('переключатель языка не остаётся без подписей на узком экране', () => {
+test('переключатель языка — компактная пара сегментов с кодом', () => {
     // Общее правило узкого экрана гасит подписи сегментов ради четырёх иконок
-    // темы (font-size: 0). У языка иконки-заменителя нет, и до этой правки
-    // карточка «Язык» на телефоне показывала два пустых поля. Поэтому у
-    // переключателя языка свой кегль — и он не нулевой, — а подложка
-    // выбранного языка едет по data-lang, а не по inline-стилю.
+    // темы (font-size: 0). У языка остаётся код, и у него свой кегль — иначе на
+    // телефоне карточка «Язык» показывала бы два пустых поля. Сегменты не
+    // тянутся на всю ширину: контейнер шириной по содержимому, заливка
+    // выбранного сегмента лежит внутри рамки.
     const css = read('styles/settings.css').replace(/\/\*[\s\S]*?\*\//g, '');
     const own = css.match(/\.md-segmented\.md-segmented--lang button\s*\{([^}]*)\}/);
     assert.ok(own, 'нет собственного правила кнопок переключателя языка');
     const size = own[1].match(/font-size:\s*([^;]+);/);
     assert.ok(size, 'у кнопок переключателя языка нет своего кегля — его сотрёт общий font-size: 0');
     assert.notStrictEqual(size[1].trim(), '0');
+    // 44dp и 56dp — цель под палец.
+    assert.match(own[1], /min-height:\s*44px/, 'сегмент языка ниже 44dp');
+    assert.match(own[1], /min-width:\s*56px/, 'сегмент языка уже 56dp');
 
-    assert.match(css, /\.md-segmented\.md-segmented--lang\s*\{[^}]*position:\s*relative/,
-        'подложке не от чего считать половину ширины — у группы нет position: relative');
-    assert.match(css, /\.md-segmented--lang\[data-lang="en"\]\s+\.lang-switch__thumb\s*\{[^}]*translateX/,
-        'подложка не переезжает ко второму языку');
-    assert.match(css, /@media \(max-width: 420px\)[\s\S]*?\.md-segmented\.md-segmented--lang button\s*\{/,
-        'на узком экране у переключателя языка нет своих полей');
+    const group = css.match(/\.md-segmented\.md-segmented--lang\s*\{([^}]*)\}/);
+    assert.ok(group, 'нет собственного правила контейнера переключателя языка');
+    assert.match(group[1], /width:\s*13[0-9]px/, 'контейнер не компактный');
+    assert.match(group[1], /padding:\s*3px/, 'у контейнера нет одинакового внутреннего отступа');
+    assert.match(group[1], /border-radius:/, 'у контейнера нет скругления');
+
+    assert.match(css, /\.md-segmented\.md-segmented--lang button\[aria-checked="true"\]\s*\{[^}]*background:\s*var\(--md-sys-color-primary\)/,
+        'выбранный язык не залит акцентным цветом');
+    assert.match(css, /\.md-segmented\.md-segmented--lang button\[aria-checked="true"\]\s*\{[^}]*color:\s*var\(--md-sys-color-on-primary\)/,
+        'у заливки нет контрастной пары on-primary');
+    assert.match(css, /\.md-segmented\.md-segmented--lang:has\(button:focus-visible\)\s*\{[^}]*outline:/,
+        'у переключателя языка нет видимого клавиатурного фокуса');
+
+    // Разметка: код на экране, полное название — в aria-label и title.
+    const html = readIndex();
+    assert.match(html, /id="appLangSegmented"[\s\S]*?role="radiogroup"[\s\S]*?aria-label="Язык интерфейса и уроков"/,
+        'у группы языков нет роли radiogroup с подписью');
+    for (const [lang, code, name] of [['ru', 'RU', 'Русский'], ['en', 'EN', 'English']]) {
+        const at = html.indexOf('data-app-lang="' + lang + '"');
+        assert.ok(at > 0, 'нет кнопки языка ' + lang);
+        const tagStart = html.lastIndexOf('<button', at);
+        const tag = html.slice(tagStart, html.indexOf('</button>', at) + '</button>'.length);
+        assert.match(tag, /role="radio"/, 'кнопка языка ' + lang + ' без role="radio"');
+        assert.match(tag, /aria-checked="/, 'кнопка языка ' + lang + ' без aria-checked');
+        assert.ok(tag.includes('aria-label="' + name + '"'), 'кнопка языка ' + lang + ' без полного названия в aria-label');
+        assert.ok(tag.includes('title="' + name + '"'), 'кнопка языка ' + lang + ' без полного названия в title');
+        assert.ok(tag.includes('>' + code + '<'), 'кнопка языка ' + lang + ' без кода ' + code);
+    }
 });
 
 test('каждый подключённый файл существует', () => {

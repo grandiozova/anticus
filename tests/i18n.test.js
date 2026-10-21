@@ -56,35 +56,48 @@ test('выбор языка переживает перезагрузку', () =
     app.close();
 });
 
-test('переключатель языка показывает выбранный язык и код каждого', () => {
+test('переключатель языка показывает код каждого языка и полное название в aria-label', () => {
     const app = loadApp();
     app.window.showSettings();
     const group = app.document.getElementById('appLangSegmented');
-    const labels = () => Array.from(group.querySelectorAll('.lang-switch__label')).map(el => el.textContent);
-    const checked = () => Array.from(group.querySelectorAll('[data-app-lang]'))
+    const buttons = () => Array.from(group.querySelectorAll('[data-app-lang]'));
+    const codes = () => Array.from(group.querySelectorAll('.lang-switch__code')).map(el => el.textContent);
+    const names = () => buttons().map(b => b.getAttribute('aria-label'));
+    const titles = () => buttons().map(b => b.getAttribute('title'));
+    const checked = () => buttons()
         .filter(b => b.getAttribute('aria-checked') === 'true')
         .map(b => b.getAttribute('data-app-lang'));
 
-    // Подложка едет по data-lang на группе, а не по inline-стилю: после
-    // перезагрузки она обязана стоять под сохранённым языком.
+    // Группа — настоящий radiogroup: имя у неё то же, что у подписи слева.
+    assert.strictEqual(group.getAttribute('role'), 'radiogroup');
+    assert.strictEqual(group.getAttribute('aria-label'), 'Язык интерфейса и уроков');
+    assert.deepStrictEqual(buttons().map(b => b.getAttribute('role')), ['radio', 'radio']);
+    assert.deepStrictEqual(Array.from(app.document.querySelectorAll('.settings-row__label')).map(el => el.textContent),
+        ['Язык интерфейса и уроков']);
+
+    // data-lang — состояние, а не inline-стиль: после перезагрузки в английском
+    // режиме выбранный сегмент обязан остаться вторым.
     assert.strictEqual(group.getAttribute('data-lang'), 'ru');
     assert.deepStrictEqual(checked(), ['ru']);
 
-    // Код языка — знак, а не подпись: он не переводится и не исчезает.
-    assert.deepStrictEqual(Array.from(group.querySelectorAll('.lang-switch__badge')).map(b => b.textContent),
-        ['RU', 'EN']);
+    // На экране только код; полное название читают скринридер и подсказка.
+    assert.deepStrictEqual(codes(), ['RU', 'EN']);
+    assert.deepStrictEqual(names(), ['Русский', 'English']);
+    assert.deepStrictEqual(titles(), ['Русский', 'English']);
 
     app.window.setAppLang('en');
     assert.strictEqual(group.getAttribute('data-lang'), 'en');
     assert.deepStrictEqual(checked(), ['en']);
-    assert.deepStrictEqual(labels(), ['Russian', 'English']);
+    // Код не переводится и не исчезает, а название переводится из снимка.
+    assert.deepStrictEqual(codes(), ['RU', 'EN']);
+    assert.deepStrictEqual(names(), ['Russian', 'English']);
+    assert.deepStrictEqual(titles(), ['Russian', 'English']);
 
-    // Обратно: подпись возвращается из снимка, коды остаются собой.
+    // Обратно: name и title возвращаются из снимка, коды остаются собой.
     app.window.setAppLang('ru');
     assert.strictEqual(group.getAttribute('data-lang'), 'ru');
-    assert.deepStrictEqual(labels(), ['Русский', 'English']);
-    assert.deepStrictEqual(Array.from(group.querySelectorAll('.lang-switch__badge')).map(b => b.textContent),
-        ['RU', 'EN']);
+    assert.deepStrictEqual(codes(), ['RU', 'EN']);
+    assert.deepStrictEqual(names(), ['Русский', 'English']);
     assert.deepStrictEqual(app.errors, []);
     app.close();
 });

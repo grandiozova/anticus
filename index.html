@@ -200,20 +200,19 @@
 
     <div class="card">
         <h3><span class="msym">translate</span>Язык</h3>
-        <p class="md-body-medium settings-hint">Язык интерфейса и уроков</p>
-        <div class="md-segmented md-segmented--lang" id="appLangSegmented"
-             role="radiogroup" aria-label="Язык" data-lang="ru">
-            <span class="lang-switch__thumb" aria-hidden="true"></span>
-            <button type="button" role="radio" data-app-lang="ru" onclick="setAppLang('ru')" aria-checked="true">
-                <span class="lang-switch__badge" aria-hidden="true">RU</span>
-                <span class="lang-switch__label">Русский</span>
-                <span class="msym lang-switch__check" aria-hidden="true">check</span>
-            </button>
-            <button type="button" role="radio" data-app-lang="en" onclick="setAppLang('en')" aria-checked="false">
-                <span class="lang-switch__badge" aria-hidden="true">EN</span>
-                <span class="lang-switch__label">English</span>
-                <span class="msym lang-switch__check" aria-hidden="true">check</span>
-            </button>
+        <div class="settings-row">
+            <span class="settings-row__label">Язык интерфейса и уроков</span>
+            <div class="md-segmented md-segmented--lang" id="appLangSegmented"
+                 role="radiogroup" aria-label="Язык интерфейса и уроков" data-lang="ru">
+                <button type="button" role="radio" data-app-lang="ru" onclick="setAppLang('ru')"
+                        aria-checked="true" aria-label="Русский" title="Русский">
+                    <span class="lang-switch__code" aria-hidden="true">RU</span>
+                </button>
+                <button type="button" role="radio" data-app-lang="en" onclick="setAppLang('en')"
+                        aria-checked="false" aria-label="English" title="English">
+                    <span class="lang-switch__code" aria-hidden="true">EN</span>
+                </button>
+            </div>
         </div>
     </div>
 
