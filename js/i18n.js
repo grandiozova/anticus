@@ -494,8 +494,6 @@ const UI_EN = {
     // ---------------------------------------------------------- настройки
     'Язык': 'Language',
     'Язык интерфейса и уроков': 'The language of the interface and lessons',
-    'Английский охватывает материал всех уроков: грамматику и словарь. Упражнения в нём недоступны.':
-        'English covers the material of every lesson: grammar and vocabulary. Exercises are not available in it.',
     'Русский': 'Russian',
     'Курс': 'Course',
     'Сменить курс': 'Switch course',
@@ -738,8 +736,6 @@ function syncLanguageControls() {
                 b.getAttribute('data-app-lang') === appLang ? 'true' : 'false');
         });
     }
-    let hint = document.getElementById('appLangHint');
-    if (hint) hint.textContent = t('Английский охватывает материал всех уроков: грамматику и словарь. Упражнения в нём недоступны.');
 }
 
 // ------------------------------------------------------------ текст уроков
