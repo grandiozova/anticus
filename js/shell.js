@@ -137,11 +137,6 @@ function navigateTo(dest) {
         else showAllVocab();
         return;
     }
-    if (dest === 'cards' && isEnglish()) {
-        // Карточки — упражнение, а упражнения английская версия не поддерживает.
-        showToast(t('Карточки пока не переведены на английский.'), 'info');
-        return;
-    }
     if (dest === 'cards') {
         // не сбрасываем начатую колоду при переключении разделов
         if (allFlashcardState.total && allFlashcardState.index < allFlashcardState.total) {

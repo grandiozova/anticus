@@ -78,12 +78,12 @@ function prayerDayFootHtml() {
     let html = '<div class="prayer-day-foot">';
     if (prayerDayIndex > 0) {
         html += `<button class="menu-btn text" onclick="stepPrayerDay(-1)">` +
-            `<span class="msym">arrow_back</span>День ${prayerDayIndex}</button>`;
+            `<span class="msym">arrow_back</span>${tPrayerDay(prayerDayIndex)}</button>`;
     } else {
         html += '<span></span>';
     }
     if (prayerDayIndex < days.length - 1) {
-        html += `<button class="menu-btn text" onclick="stepPrayerDay(1)">День ${prayerDayIndex + 2}` +
+        html += `<button class="menu-btn text" onclick="stepPrayerDay(1)">${tPrayerDay(prayerDayIndex + 2)}` +
             `<span class="msym">arrow_forward</span></button>`;
     }
     html += '</div>';
@@ -100,7 +100,7 @@ function prayerDayNavHtml() {
     html += '<div class="chip-set prayer-day-chips">';
     days.forEach((d, i) => {
         html += `<button type="button" class="filter-chip" aria-pressed="${i === prayerDayIndex ? 'true' : 'false'}"` +
-            ` onclick="setPrayerDay(${i})"><span class="filter-chip__body">День ${i + 1}</span></button>`;
+            ` onclick="setPrayerDay(${i})"><span class="filter-chip__body">${tPrayerDay(i + 1)}</span></button>`;
     });
     html += '</div>';
     return html;
@@ -117,7 +117,7 @@ function renderPrayerText() {
     const container = document.getElementById('prayerContent');
     let html = '';
     if (prayerDay()) html += prayerDayNavHtml();
-    html += '<p class="md-body-medium mb-12">Нажмите на любое слово, чтобы увидеть разбор формы.</p>';
+    html += '<p class="md-body-medium mb-12">' + t('Нажмите на любое слово, чтобы увидеть разбор формы.') + '</p>';
     prayerDayVerseIndices().forEach(verseIdx => {
         const verse = data.verses[verseIdx];
         html += `<div class="prayer-verse">`;
@@ -167,8 +167,10 @@ function showWordAnalysis(verseIdx, wordIdx) {
     // Чтение слова необязательно: у греческой молитвы транскрипция стоит
     // под стихом целиком, у еврейского чтения — ещё и у каждого слова,
     // как в словаре иврита.
+    // Чтение ивритского слова записано «русскими (latin)»: в английском режиме
+    // остаётся латинская половина — то же чтение, а не второе (displayTranslit).
     const reading = word.translit
-        ? `<span class="prayer-word-reading">${word.translit}</span>`
+        ? `<span class="prayer-word-reading">${escHtml(displayTranslit(word.translit))}</span>`
         : '';
     analysisDiv.innerHTML = `
         <strong>${prayerWordText(word)}</strong> — ${word.translation}<br>
@@ -185,8 +187,8 @@ function renderPrayerExercise() {
         ? `<div class="prayer-exercise-day">${day.title} · ${prayerRangeLabel(day)}</div>`
         : '';
     html += `<div class="md-button-row" style="margin-top:0;">
-        <button class="menu-btn" onclick="startPrayerFill()"><span class="msym">edit</span>Заполни пропуски</button>
-        <button class="menu-btn primary" onclick="startPrayerTranslate()"><span class="msym">translate</span>Перевод на ${courseLang()}</button>
+        <button class="menu-btn" onclick="startPrayerFill()"><span class="msym">edit</span>${t('Заполни пропуски')}</button>
+        <button class="menu-btn primary" onclick="startPrayerTranslate()"><span class="msym">translate</span>${t('Перевод на ')}${courseLang()}</button>
     </div>`;
     html += `<div id="prayerExerciseQuestion"></div>`;
     container.innerHTML = html;
@@ -268,9 +270,9 @@ function showPrayerExerciseQuestion() {
     const state = prayerExerciseState;
     const container = document.getElementById('prayerExerciseQuestion');
     if (state.index >= state.total) {
-        container.innerHTML = resultBlock(state.correct, state.total, 'Упражнение завершено') +
+        container.innerHTML = resultBlock(state.correct, state.total, t('Упражнение завершено')) +
             drillReviewHtml(state.mistakes, 'retryPrayerMistakes()') +
-            `<button class="menu-btn primary" onclick="startPrayer${state.type==='fill'?'Fill':'Translate'}()"><span class="msym">restart_alt</span>Ещё раз</button>`;
+            `<button class="menu-btn primary" onclick="startPrayer${state.type==='fill'?'Fill':'Translate'}()"><span class="msym">restart_alt</span>${t('Ещё раз')}</button>`;
         return;
     }
     const q = state.questions[state.index];
@@ -280,7 +282,7 @@ function showPrayerExerciseQuestion() {
             return w;
         });
         const text = displayWords.join(' ');
-        let html = progressHead(`Вопрос ${state.index+1} из ${state.total}`, state.index, state.total);
+        let html = progressHead(tProgress('Вопрос', state.index + 1, state.total), state.index, state.total);
         html += `<div class="question"><span class="script">${text}</span></div>`;
         html += `<div class="prayer-russian mb-12">${q.russian}</div>`;
         html += `<div class="options options--script">`;
@@ -291,12 +293,12 @@ function showPrayerExerciseQuestion() {
         html += `</div>`;
         container.innerHTML = html;
     } else if (state.type === 'translate') {
-        let html = progressHead(`Вопрос ${state.index+1} из ${state.total}`, state.index, state.total);
+        let html = progressHead(tProgress('Вопрос', state.index + 1, state.total), state.index, state.total);
         html += `<div class="question">${q.russian}</div>`;
         // Подсказку можно выключить в данных: у еврейского чтения она убрана,
         // потому что задание и так понятно, а лишняя строка отвлекает.
         if (!coursePrayer().hideTranslateHint) {
-            html += `<div class="prayer-russian mb-12">Соберите перевод на ${courseLang()} из слов</div>`;
+            html += `<div class="prayer-russian mb-12">${t('Соберите перевод на ')}${courseLang()}${t(' из слов')}</div>`;
         }
         html += `<div class="build-area build-area--script" id="prayerBuildArea" data-hint="${escHtml(t('Выберите слова по порядку'))}"></div>`;
         html += `<div class="word-bank word-bank--script" id="prayerWordBank">`;
@@ -304,8 +306,8 @@ function showPrayerExerciseQuestion() {
             html += `<span class="chip" onclick="prayerPickWord('${escArg(w)}')">${w}</span>`;
         });
         html += `</div>`;
-        html += `<div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="prayerClearTranslate()"><span class="msym">undo</span>Очистить</button>`;
-        html += `<button class="menu-btn primary" onclick="prayerCheckTranslate()"><span class="msym">check</span>Проверить</button></div>`;
+        html += `<div class="md-button-row md-button-row--split"><button class="menu-btn text" onclick="prayerClearTranslate()"><span class="msym">undo</span>${t('Очистить')}</button>`;
+        html += `<button class="menu-btn primary" onclick="prayerCheckTranslate()"><span class="msym">check</span>${t('Проверить')}</button></div>`;
         container.innerHTML = html;
         prayerExerciseState.chosen = [];
     }
@@ -361,13 +363,13 @@ function prayerCheckTranslate() {
     if (ok) {
         state.correct++;
         stats.totalCorrect++;
-        container.innerHTML = '<div class="feedback ok"><span>Верно!</span></div>';
+        container.innerHTML = '<div class="feedback ok"><span>' + t('Верно!') + '</span></div>';
     } else {
         stats.totalWrong++;
         noteDrillMistake(state, { word: q.russian, correct: correct.join(' '), your: chosen.join(' '), q: q });
         // Порядок слов — текст изучаемого языка: без .script иврит остался бы
         // в интерфейсной гарнитуре и слева направо.
-        container.innerHTML = `<div class="feedback fail"><span>Неверно. Правильный порядок: <strong class="script">${correct.join(' ')}</strong></span></div>`;
+        container.innerHTML = `<div class="feedback fail"><span>${t('Неверно. Правильный порядок:')} <strong class="script">${correct.join(' ')}</strong></span></div>`;
     }
     saveStats();
     state.index++;

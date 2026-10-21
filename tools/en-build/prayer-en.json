@@ -1,0 +1,82 @@
+{
+  "title": "Our Father",
+  "analyses": {
+    "артикль, ж.р., ед.ч., им.п.": "article, fem., sg., nominative",
+    "артикль, ж.р., ед.ч., род.п.": "article, fem., sg., genitive",
+    "артикль, м.р., ед.ч., вин.п.": "article, masc., sg., accusative",
+    "артикль, м.р., ед.ч., им.п.": "article, masc., sg., nominative",
+    "артикль, м.р., ед.ч., род.п.": "article, masc., sg., genitive",
+    "артикль, м.р., мн.ч., дат.п.": "article, masc., pl., dative",
+    "артикль, ср.р., ед.ч., им./вин.п.": "article, neut., sg., nominative/accusative",
+    "артикль, ср.р., мн.ч., вин.п.": "article, neut., pl., accusative",
+    "глагол, аорист, актив, 1-е л., мн.ч.": "verb, aorist, active, 1st pers., pl.",
+    "глагол, аорист, актив, 2-е л., ед.ч., повел.": "verb, aorist, active, 2nd pers., sg., imperative",
+    "глагол, аорист, актив, 3-е л., ед.ч., повел.": "verb, aorist, active, 3rd pers., sg., imperative",
+    "глагол, аорист, пассив, 3-е л., ед.ч., повел.": "verb, aorist, passive, 3rd pers., sg., imperative",
+    "глагол, аорист, средн., 2-е л., ед.ч., повел.": "verb, aorist, middle, 2nd pers., sg., imperative",
+    "мест., 1-е л., мн.ч., вин.п.": "pronoun, 1st pers., pl., accusative",
+    "мест., 1-е л., мн.ч., дат.п.": "pronoun, 1st pers., pl., dative",
+    "мест., 1-е л., мн.ч., им.п.": "pronoun, 1st pers., pl., nominative",
+    "мест., 1-е л., мн.ч., род.п.": "pronoun, 1st pers., pl., genitive",
+    "мест., 2-е л., ед.ч., род.п.": "pronoun, 2nd pers., sg., genitive",
+    "наречие": "adverb",
+    "предлог (с вин.п.)": "preposition (with accusative)",
+    "предлог (с дат.п.)": "preposition (with dative)",
+    "предлог (с род./вин.п.)": "preposition (with genitive/accusative)",
+    "предлог (с род.п.)": "preposition (with genitive)",
+    "прил., м.р., ед.ч., вин.п.": "adjective, masc., sg., accusative",
+    "прил., м.р., ед.ч., род.п.": "adjective, masc., sg., genitive",
+    "союз": "conjunction",
+    "сущ., ж.р., ед.ч., им.п.": "noun, fem., sg., nominative",
+    "сущ., ж.р., ед.ч., род.п.": "noun, fem., sg., genitive",
+    "сущ., м.р., ед.ч., вин.п.": "noun, masc., sg., accusative",
+    "сущ., м.р., ед.ч., дат.п.": "noun, masc., sg., dative",
+    "сущ., м.р., ед.ч., зват.п.": "noun, masc., sg., vocative",
+    "сущ., м.р., мн.ч., дат.п.": "noun, masc., pl., dative",
+    "сущ., ср.р., ед.ч., им.п.": "noun, neut., sg., nominative",
+    "сущ., ср.р., мн.ч., вин.п.": "noun, neut., pl., accusative",
+    "частица": "particle"
+  },
+  "verses": [
+    {
+      "text": "Our Father, who art in heaven",
+      "words": ["Father", "our", "who art (article)", "in", "the (article)", "heavens"]
+    },
+    {
+      "text": "Hallowed be thy name",
+      "words": ["be hallowed", "the (article)", "name", "thy"]
+    },
+    {
+      "text": "Thy kingdom come",
+      "words": ["let come", "the (article)", "kingdom", "thy"]
+    },
+    {
+      "text": "Thy will be done",
+      "words": ["let be done", "the (article)", "will", "thy"]
+    },
+    {
+      "text": "as in heaven, so on earth",
+      "words": ["as", "in", "heaven", "and", "on", "the (article)", "earth"]
+    },
+    {
+      "text": "our daily bread give us today",
+      "words": ["the (article)", "bread", "our", "the (article)", "daily", "give", "us", "today"]
+    },
+    {
+      "text": "and forgive us our debts",
+      "words": ["and", "forgive", "us", "the (article)", "debts", "our"]
+    },
+    {
+      "text": "as we also have forgiven our debtors",
+      "words": ["as", "and", "we", "have forgiven", "the (article)", "debtors", "our"]
+    },
+    {
+      "text": "and lead us not into temptation",
+      "words": ["and", "not", "lead", "us", "into", "temptation"]
+    },
+    {
+      "text": "but deliver us from the evil one",
+      "words": ["but", "deliver", "us", "from", "the (article)", "evil one"]
+    }
+  ]
+}

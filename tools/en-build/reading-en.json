@@ -1,0 +1,316 @@
+{
+  "title": "Bible reading",
+  "book": "Genesis",
+  "source": {
+    "label": "English translation",
+    "site": "King James Version",
+    "title": "public domain",
+    "url": "https://www.gutenberg.org/ebooks/10"
+  },
+  "days": ["First day", "Second day", "Third day", "Fourth day", "Fifth day", "Sixth day"],
+  "analyses": {
+    "артикль + порядковое прил. м.р., ед.ч., абсолютное состояние": "article + ordinal adjective, masc., sg., absolute state",
+    "артикль + прил. ж.р., ед.ч., абсолютное состояние": "article + adjective, fem., sg., absolute state",
+    "артикль + прил. м.р., ед.ч., абсолютное состояние": "article + adjective, masc., sg., absolute state",
+    "артикль + прил. м.р., мн.ч., абсолютное состояние": "article + adjective, masc., pl., absolute state",
+    "артикль + причастие, порода Qal, ж.р., ед.ч., абсолютное состояние": "article + participle, Qal stem, fem., sg., absolute state",
+    "артикль + причастие, порода Qal, м.р., ед.ч., абсолютное состояние": "article + participle, Qal stem, masc., sg., absolute state",
+    "артикль + сущ. ж.р., ед.ч. («земля»)": "article + noun, fem., sg. (“earth”)",
+    "артикль + сущ. ж.р., ед.ч., абсолютное состояние": "article + noun, fem., sg., absolute state",
+    "артикль + сущ. м.р., ед.ч. («свет»)": "article + noun, masc., sg. (“light”)",
+    "артикль + сущ. м.р., ед.ч. («тьма»)": "article + noun, masc., sg. (“darkness”)",
+    "артикль + сущ. м.р., ед.ч., абсолютное состояние": "article + noun, masc., sg., absolute state",
+    "артикль + сущ. м.р., мн.ч. («вода, воды»)": "article + noun, masc., pl. (“water, waters”)",
+    "артикль + сущ. м.р., мн.ч. («небо, небеса»)": "article + noun, masc., pl. (“heaven, heavens”)",
+    "артикль + сущ. м.р., мн.ч., абсолютное состояние": "article + noun, masc., pl., absolute state",
+    "артикль + сущ., ед.ч., абсолютное состояние": "article + noun, sg., absolute state",
+    "глагол, порода Hiphil, юссив, 3-е л., ж.р., ед.ч.": "verb, Hiphil stem, jussive, 3rd pers., fem., sg.",
+    "глагол, порода Niphal, юссив, 3-е л., м.р., мн.ч.": "verb, Niphal stem, jussive, 3rd pers., masc., pl.",
+    "глагол, порода Polel, имперфект, 3-е л., м.р., ед.ч.": "verb, Polel stem, imperfect, 3rd pers., masc., sg.",
+    "глагол, порода Qal, императив, 2-е л., м.р., мн.ч.": "verb, Qal stem, imperative, 2nd pers., masc., pl.",
+    "глагол, порода Qal, имперфект, 1-е л., мн.ч.": "verb, Qal stem, imperfect, 1st pers., pl.",
+    "глагол, порода Qal, имперфект, 3-е л., м.р., ед.ч.": "verb, Qal stem, imperfect, 3rd pers., masc., sg.",
+    "глагол, порода Qal, имперфект, 3-е л., м.р., мн.ч.": "verb, Qal stem, imperfect, 3rd pers., masc., pl.",
+    "глагол, порода Qal, перфект, 1-е л., ед.ч.": "verb, Qal stem, perfect, 1st pers., sg.",
+    "глагол, порода Qal, перфект, 3-е л., ж.р., ед.ч.": "verb, Qal stem, perfect, 3rd pers., fem., sg.",
+    "глагол, порода Qal, перфект, 3-е л., м.р., ед.ч.": "verb, Qal stem, perfect, 3rd pers., masc., sg.",
+    "глагол, порода Qal, перфект, 3-е л., мн.ч.": "verb, Qal stem, perfect, 3rd pers., pl.",
+    "глагол, порода Qal, юссив (пожелание), 3-е л., м.р., ед.ч.": "verb, Qal stem, jussive (wish), 3rd pers., masc., sg.",
+    "глагол, порода Qal, юссив, 3-е л., м.р., ед.ч.": "verb, Qal stem, jussive, 3rd pers., masc., sg.",
+    "наречие": "adverb",
+    "относительное слово «который»": "relative word “which”",
+    "относительное слово «который»; предлог + местоименный суффикс 3-го л., м.р., ед.ч.": "relative word “which”; preposition + pronominal suffix, 3rd pers., masc., sg.",
+    "порядковое прил. м.р., ед.ч., абсолютное состояние": "ordinal adjective, masc., sg., absolute state",
+    "предлог": "preposition",
+    "предлог + артикль + сущ. ж.р., ед.ч., абсолютное состояние": "preposition + article + noun, fem., sg., absolute state",
+    "предлог + артикль + сущ. м.р., ед.ч., абсолютное состояние": "preposition + article + noun, masc., sg., absolute state",
+    "предлог + артикль + сущ. м.р., мн.ч., абсолютное состояние": "preposition + article + noun, masc., pl., absolute state",
+    "предлог + артикль + сущ., ед.ч., абсолютное состояние": "preposition + article + noun, sg., absolute state",
+    "предлог + глагол, порода Hiphil, инфинитив сопряжённый": "preposition + verb, Hiphil stem, construct infinitive",
+    "предлог + глагол, порода Qal, инфинитив сопряжённый": "preposition + verb, Qal stem, construct infinitive",
+    "предлог + местоименный суффикс 2-го л., м.р., мн.ч.": "preposition + pronominal suffix, 2nd pers., masc., pl.",
+    "предлог + местоименный суффикс 3-го л., м.р., мн.ч.": "preposition + pronominal suffix, 3rd pers., masc., pl.",
+    "предлог + сущ. ж.р., ед.ч., абсолютное состояние": "preposition + noun, fem., sg., absolute state",
+    "предлог + сущ. ж.р., ед.ч., сопряжённое состояние": "preposition + noun, fem., sg., construct state",
+    "предлог + сущ. ж.р., ед.ч., сопряжённое состояние + местоименный суффикс 1-го л., мн.ч.": "preposition + noun, fem., sg., construct state + pronominal suffix, 1st pers., pl.",
+    "предлог + сущ. м.р., ед.ч., сопряжённое состояние": "preposition + noun, masc., sg., construct state",
+    "предлог + сущ. м.р., ед.ч., сопряжённое состояние + местоименный суффикс 1-го л., мн.ч.": "preposition + noun, masc., sg., construct state + pronominal suffix, 1st pers., pl.",
+    "предлог + сущ. м.р., ед.ч., сопряжённое состояние + местоименный суффикс 3-го л., ж.р., ед.ч.": "preposition + noun, masc., sg., construct state + pronominal suffix, 3rd pers., fem., sg.",
+    "предлог + сущ. м.р., ед.ч., сопряжённое состояние + местоименный суффикс 3-го л., м.р., ед.ч.": "preposition + noun, masc., sg., construct state + pronominal suffix, 3rd pers., masc., sg.",
+    "предлог + сущ. м.р., ед.ч., сопряжённое состояние + местоименный суффикс 3-го л., м.р., мн.ч.": "preposition + noun, masc., sg., construct state + pronominal suffix, 3rd pers., masc., pl.",
+    "предлог + сущ. м.р., мн.ч., абсолютное состояние": "preposition + noun, masc., pl., absolute state",
+    "предлог + сущ., ед.ч., сопряжённое состояние": "preposition + noun, sg., construct state",
+    "предлог + сущ., мн.ч., абсолютное состояние": "preposition + noun, pl., absolute state",
+    "предлог «в» + сущ. ж.р., ед.ч., абсолютное состояние («начало»)": "preposition “in” + noun, fem., sg., absolute state (“beginning”)",
+    "предлог «к, для» + артикль + сущ. м.р., ед.ч. («свет»)": "preposition “to, for” + article + noun, masc., sg. (“light”)",
+    "предлог «между»": "preposition “between”",
+    "предлог «над, на» + сущ. мн.ч. в сопряжённом состоянии («лицо, поверхность»)": "preposition “over, on” + noun, pl., construct state (“face, surface”)",
+    "предлог; артикль + сущ., ед.ч., абсолютное состояние": "preposition; article + noun, sg., absolute state",
+    "предлог; сущ. м.р., ед.ч., абсолютное состояние": "preposition; noun, masc., sg., absolute state",
+    "предлог; сущ., мн.ч., сопряжённое состояние": "preposition; noun, pl., construct state",
+    "прил. ж.р., ед.ч., абсолютное состояние": "adjective, fem., sg., absolute state",
+    "прил. м.р., ед.ч., абсолютное состояние": "adjective, masc., sg., absolute state",
+    "причастие, порода Hiphil, м.р., ед.ч., абсолютное состояние": "participle, Hiphil stem, masc., sg., absolute state",
+    "причастие, порода Piel, ж.р., ед.ч.; согласовано с сущ. «дух»": "participle, Piel stem, fem., sg.; agrees with the noun “spirit”",
+    "причастие, порода Qal, м.р., ед.ч., абсолютное состояние": "participle, Qal stem, masc., sg., absolute state",
+    "причастие, порода Qal, м.р., ед.ч., абсолютное состояние; сущ. м.р., ед.ч., абсолютное состояние": "participle, Qal stem, masc., sg., absolute state; noun, masc., sg., absolute state",
+    "составной предлог": "compound preposition",
+    "союз + артикль + сущ. ж.р., ед.ч. («земля»)": "conjunction + article + noun, fem., sg. (“earth”)",
+    "союз + глагол «быть», Qal, wayyiqtol, 3-е л., м.р., ед.ч. + сущ. «вечер»": "conjunction + verb “to be”, Qal, wayyiqtol, 3rd pers., masc., sg. + noun “evening”",
+    "союз + глагол «быть», Qal, wayyiqtol, 3-е л., м.р., ед.ч. + сущ. «свет»": "conjunction + verb “to be”, Qal, wayyiqtol, 3rd pers., masc., sg. + noun “light”",
+    "союз + глагол «быть», Qal, wayyiqtol, 3-е л., м.р., ед.ч. + сущ. «утро»": "conjunction + verb “to be”, Qal, wayyiqtol, 3rd pers., masc., sg. + noun “morning”",
+    "союз + глагол, порода Hifil, wayyiqtol, 3-е л., м.р., ед.ч.": "conjunction + verb, Hiphil stem, wayyiqtol, 3rd pers., masc., sg.",
+    "союз + глагол, порода Qal, wayyiqtol, 3-е л., м.р., ед.ч.": "conjunction + verb, Qal stem, wayyiqtol, 3rd pers., masc., sg.",
+    "союз + глагол, порода Qal, имперфект с вав-консекутивом (wayyiqtol), 3-е л., м.р., ед.ч.": "conjunction + verb, Qal stem, imperfect with waw-consecutive (wayyiqtol), 3rd pers., masc., sg.",
+    "союз + предлог «к, для» + артикль + сущ. м.р., ед.ч. («тьма»)": "conjunction + preposition “to, for” + article + noun, masc., sg. (“darkness”)",
+    "союз + предлог «между»": "conjunction + preposition “between”",
+    "союз + сущ. ж.р., ед.ч. в сопряжённом состоянии («дух, ветер»)": "conjunction + noun, fem., sg., construct state (“spirit, wind”)",
+    "союз + сущ. м.р., ед.ч. («пустота»); вместе с предыдущим — «безвидна и пуста»": "conjunction + noun, masc., sg. (“emptiness”); with the previous word — “without form, and void”",
+    "союз + сущ. м.р., ед.ч. («тьма»)": "conjunction + noun, masc., sg. (“darkness”)",
+    "союз «и» + артикль + сущ. м.р., ед.ч., абсолютное состояние": "conjunction “and” + article + noun, masc., sg., absolute state",
+    "союз «и» + глагол, порода Hiphil, имперфект с вау-конверсией, 3-е л., ж.р., ед.ч.": "conjunction “and” + verb, Hiphil stem, imperfect with waw-conversion, 3rd pers., fem., sg.",
+    "союз «и» + глагол, порода Hiphil, имперфект с вау-конверсией, 3-е л., м.р., ед.ч.": "conjunction “and” + verb, Hiphil stem, imperfect with waw-conversion, 3rd pers., masc., sg.",
+    "союз «и» + глагол, порода Niphal, имперфект, 3-е л., ж.р., ед.ч.": "conjunction “and” + verb, Niphal stem, imperfect, 3rd pers., fem., sg.",
+    "союз «и» + глагол, порода Piel, имперфект с вау-конверсией, 3-е л., м.р., ед.ч.": "conjunction “and” + verb, Piel stem, imperfect with waw-conversion, 3rd pers., masc., sg.",
+    "союз «и» + глагол, порода Qal, императив, 2-е л., м.р., мн.ч.": "conjunction “and” + verb, Qal stem, imperative, 2nd pers., masc., pl.",
+    "союз «и» + глагол, порода Qal, императив, 2-е л., м.р., мн.ч. + местоименный суффикс 3-го л., ж.р., ед.ч.": "conjunction “and” + verb, Qal stem, imperative, 2nd pers., masc., pl. + pronominal suffix, 3rd pers., fem., sg.",
+    "союз «и» + глагол, порода Qal, имперфект с вау-конверсией, 3-е л., м.р., ед.ч.": "conjunction “and” + verb, Qal stem, imperfect with waw-conversion, 3rd pers., masc., sg.",
+    "союз «и» + глагол, порода Qal, имперфект с вау-конверсией, 3-е л., м.р., ед.ч.; наречие": "conjunction “and” + verb, Qal stem, imperfect with waw-conversion, 3rd pers., masc., sg.; adverb",
+    "союз «и» + глагол, порода Qal, имперфект с вау-конверсией, 3-е л., м.р., ед.ч.; сущ. м.р., ед.ч., абсолютное состояние": "conjunction “and” + verb, Qal stem, imperfect with waw-conversion, 3rd pers., masc., sg.; noun, masc., sg., absolute state",
+    "союз «и» + глагол, порода Qal, имперфект, 3-е л., м.р., ед.ч.": "conjunction “and” + verb, Qal stem, imperfect, 3rd pers., masc., sg.",
+    "союз «и» + глагол, порода Qal, перфект с вау-конверсией, 3-е л., мн.ч.": "conjunction “and” + verb, Qal stem, perfect with waw-conversion, 3rd pers., pl.",
+    "союз «и» + глагол, порода Qal, юссив, 3-е л., м.р., мн.ч.": "conjunction “and” + verb, Qal stem, jussive, 3rd pers., masc., pl.",
+    "союз «и» + предлог": "conjunction “and” + preposition",
+    "союз «и» + предлог + артикль + сущ. ж.р., ед.ч., абсолютное состояние": "conjunction “and” + preposition + article + noun, fem., sg., absolute state",
+    "союз «и» + предлог + артикль + сущ. м.р., ед.ч., абсолютное состояние": "conjunction “and” + preposition + article + noun, masc., sg., absolute state",
+    "союз «и» + предлог + глагол, порода Hiphil, инфинитив сопряжённый": "conjunction “and” + preposition + verb, Hiphil stem, construct infinitive",
+    "союз «и» + предлог + глагол, порода Qal, инфинитив сопряжённый": "conjunction “and” + preposition + verb, Qal stem, construct infinitive",
+    "союз «и» + предлог + сущ. м.р., ед.ч., сопряжённое состояние": "conjunction “and” + preposition + noun, masc., sg., construct state",
+    "союз «и» + предлог + сущ. м.р., ед.ч., сопряжённое состояние; артикль + сущ. м.р., ед.ч., абсолютное состояние": "conjunction “and” + preposition + noun, masc., sg., construct state; article + noun, masc., sg., absolute state",
+    "союз «и» + предлог + сущ. м.р., ед.ч., сопряжённое состояние; артикль + сущ., ед.ч., абсолютное состояние": "conjunction “and” + preposition + noun, masc., sg., construct state; article + noun, sg., absolute state",
+    "союз «и» + предлог + сущ. м.р., ед.ч., сопряжённое состояние; сущ. ж.р., ед.ч., сопряжённое состояние": "conjunction “and” + preposition + noun, masc., sg., construct state; noun, fem., sg., construct state",
+    "союз «и» + предлог + сущ. м.р., ед.ч., сопряжённое состояние; сущ. м.р., ед.ч., сопряжённое состояние": "conjunction “and” + preposition + noun, masc., sg., construct state; noun, masc., sg., construct state",
+    "союз «и» + предлог + сущ. м.р., ед.ч., сопряжённое состояние; сущ., ед.ч., абсолютное состояние": "conjunction “and” + preposition + noun, masc., sg., construct state; noun, sg., absolute state",
+    "союз «и» + предлог + сущ. м.р., мн.ч., абсолютное состояние": "conjunction “and” + preposition + noun, masc., pl., absolute state",
+    "союз «и» + сущ. ж.р., ед.ч., абсолютное состояние": "conjunction “and” + noun, fem., sg., absolute state",
+    "союз «и» + сущ. ж.р., ед.ч., сопряжённое состояние; сущ., ед.ч., абсолютное состояние": "conjunction “and” + noun, fem., sg., construct state; noun, sg., absolute state",
+    "союз «и» + сущ. ж.р., мн.ч., абсолютное состояние": "conjunction “and” + noun, fem., pl., absolute state",
+    "союз «и» + сущ. м.р., ед.ч., абсолютное состояние": "conjunction “and” + noun, masc., sg., absolute state",
+    "союз «и» + частица «вот»; прил. м.р., ед.ч., абсолютное состояние": "conjunction “and” + particle “behold”; adjective, masc., sg., absolute state",
+    "союз «и» + частица прямого дополнения": "conjunction “and” + direct-object marker",
+    "союз «и» + частица прямого дополнения; артикль + сущ. ж.р., ед.ч., абсолютное состояние": "conjunction “and” + direct-object marker; article + noun, fem., sg., absolute state",
+    "союз «и» + частица прямого дополнения; артикль + сущ. м.р., ед.ч., абсолютное состояние": "conjunction “and” + direct-object marker; article + noun, masc., sg., absolute state",
+    "союз «и» + частица прямого дополнения; сущ. м.р., ед.ч., сопряжённое состояние; артикль + сущ. м.р., ед.ч., абсолютное состояние": "conjunction “and” + direct-object marker; noun, masc., sg., construct state; article + noun, masc., sg., absolute state",
+    "союз «что, ибо»; прил. м.р., ед.ч., абсолютное состояние": "conjunction “that, for”; adjective, masc., sg., absolute state",
+    "союз «что» + прилагательное м.р., ед.ч. («хороший, хорош»)": "conjunction “that” + adjective, masc., sg. (“good”)",
+    "сущ. ж.р., ед.ч. («бездна, пучина»)": "noun, fem., sg. (“deep, abyss”)",
+    "сущ. ж.р., ед.ч., абсолютное состояние": "noun, fem., sg., absolute state",
+    "сущ. м.р., ед.ч. («день»)": "noun, masc., sg. (“day”)",
+    "сущ. м.р., ед.ч. («день»); повтор в конце стиха": "noun, masc., sg. (“day”); repeated at the end of the verse",
+    "сущ. м.р., ед.ч. («ночь»); форма с конечным -а": "noun, masc., sg. (“night”); form with final -a",
+    "сущ. м.р., ед.ч. («пустота, хаос»); здесь сказуемое": "noun, masc., sg. (“emptiness, chaos”); here the predicate",
+    "сущ. м.р., ед.ч. («свет»)": "noun, masc., sg. (“light”)",
+    "сущ. м.р., ед.ч., абсолютное состояние": "noun, masc., sg., absolute state",
+    "сущ. м.р., ед.ч., сопряжённое состояние": "noun, masc., sg., construct state",
+    "сущ. м.р., ед.ч., сопряжённое состояние + местоименный суффикс 3-го л., м.р., ед.ч.; предлог + местоименный суффикс 3-го л., м.р., ед.ч.": "noun, masc., sg., construct state + pronominal suffix, 3rd pers., masc., sg.; preposition + pronominal suffix, 3rd pers., masc., sg.",
+    "сущ. м.р., ед.ч., сопряжённое состояние; артикль + сущ., ед.ч., абсолютное состояние": "noun, masc., sg., construct state; article + noun, sg., absolute state",
+    "сущ. м.р., ед.ч., сопряжённое состояние; сущ. м.р., ед.ч., абсолютное состояние": "noun, masc., sg., construct state; noun, masc., sg., absolute state",
+    "сущ. м.р., ед.ч., сопряжённое состояние; сущ. м.р., ед.ч., сопряжённое состояние": "noun, masc., sg., construct state; noun, masc., sg., construct state",
+    "сущ. м.р., ед.ч., сопряжённое состояние; сущ., ед.ч., абсолютное состояние": "noun, masc., sg., construct state; noun, sg., absolute state",
+    "сущ. м.р., мн.ч., абсолютное состояние": "noun, masc., pl., absolute state",
+    "сущ. м.р., мн.ч.; второе слово сопряжённой конструкции «Дух Божий»": "noun, masc., pl.; the second word of the construct phrase “Spirit of God”",
+    "сущ. м.р., мн.ч.; множественное величия": "noun, masc., pl.; plural of majesty",
+    "сущ., ед.ч., абсолютное состояние": "noun, sg., absolute state",
+    "частица «вот»": "particle “behold”",
+    "частица прямого дополнения + артикль + сущ. м.р., ед.ч. («свет»)": "direct-object marker + article + noun, masc., sg. (“light”)",
+    "частица прямого дополнения + местоименный суффикс 3-го л., м.р., ед.ч.": "direct-object marker + pronominal suffix, 3rd pers., masc., sg.",
+    "частица прямого дополнения + местоименный суффикс 3-го л., м.р., мн.ч.": "direct-object marker + pronominal suffix, 3rd pers., masc., pl.",
+    "частица прямого дополнения перед определённым именем": "direct-object marker before a definite noun",
+    "частица прямого дополнения; артикль + сущ. м.р., ед.ч., абсолютное состояние": "direct-object marker; article + noun, masc., sg., absolute state",
+    "частица прямого дополнения; артикль + сущ. м.р., мн.ч., абсолютное состояние": "direct-object marker; article + noun, masc., pl., absolute state",
+    "частица прямого дополнения; артикль + сущ., ед.ч., абсолютное состояние": "direct-object marker; article + noun, sg., absolute state",
+    "частица прямого дополнения; сущ. ж.р., ед.ч., сопряжённое состояние": "direct-object marker; noun, fem., sg., construct state",
+    "частица прямого дополнения; сущ. м.р., ед.ч., сопряжённое состояние; относительное слово «который»": "direct-object marker; noun, masc., sg., construct state; relative word “which”",
+    "частица прямого дополнения; сущ. м.р., ед.ч., сопряжённое состояние; сущ. м.р., ед.ч., абсолютное состояние": "direct-object marker; noun, masc., sg., construct state; noun, masc., sg., absolute state",
+    "частица прямого дополнения; числительное «два» в сопряжённом состоянии": "direct-object marker; numeral “two” in the construct state",
+    "числительное м.р. («один»)": "numeral, masc. (“one”)",
+    "числительное м.р., ед.ч., абсолютное состояние": "numeral, masc., sg., absolute state"
+  },
+  "verses": [
+    {
+      "text": "In the beginning God created the heaven and the earth.",
+      "segments": ["In the beginning God created", "the heaven and the earth"],
+      "words": ["in the beginning", "created", "God", "“eth” — the marker of the direct object", "heaven", "and “eth”", "the earth"]
+    },
+    {
+      "text": "And the earth was without form, and void; and darkness was upon the face of the deep. And the Spirit of God moved upon the face of the waters.",
+      "segments": ["And the earth was without form, and void", "and darkness upon the face of the deep", "and the Spirit of God moved upon the face of the waters"],
+      "words": ["and the earth", "was", "without form, and void", "and void", "and darkness", "upon the face", "the deep", "and the Spirit", "of God", "moved", "upon the face", "the waters"]
+    },
+    {
+      "text": "And God said, Let there be light: and there was light.",
+      "segments": ["And God said, Let there be light: and there was light"],
+      "words": ["and said", "God", "let there be", "light", "and there was light"]
+    },
+    {
+      "text": "And God saw the light, that it was good: and God divided the light from the darkness.",
+      "segments": ["And God saw the light, that it was good", "and God divided the light from the darkness"],
+      "words": ["and saw", "God", "the light", "that it was good", "and divided", "God", "between", "the light", "and between", "the darkness"]
+    },
+    {
+      "text": "And God called the light Day, and the darkness he called Night. And the evening and the morning were the first day.",
+      "segments": ["And God called the light Day, and the darkness he called Night", "And the evening and the morning were the first day"],
+      "words": ["and called", "God", "the light", "Day", "and the darkness", "called", "Night", "and there was evening", "and there was morning", "day", "one"]
+    },
+    {
+      "text": "And God said, Let there be a firmament in the midst of the waters, and let it divide the waters from the waters.",
+      "segments": ["And God said, Let there be a firmament in the midst of the waters", "and let it divide the waters from the waters"],
+      "words": ["and said", "God", "let there be", "a firmament", "in the midst", "of the waters", "and let it be", "dividing", "between", "waters", "and waters"]
+    },
+    {
+      "text": "And God made the firmament, and divided the waters which were under the firmament from the waters which were above the firmament: and it was so.",
+      "segments": ["And God made the firmament", "and divided the waters which were under the firmament", "from the waters which were above the firmament", "and it was so"],
+      "words": ["and made", "God", "the firmament (as object)", "and divided", "between", "the waters", "which", "from under", "the firmament", "and between", "the waters", "which", "from above", "the firmament", "and it was so"]
+    },
+    {
+      "text": "And God called the firmament Heaven. And the evening and the morning were the second day.",
+      "segments": ["And God called the firmament Heaven", "And the evening and the morning were the second day"],
+      "words": ["and called", "God", "the firmament", "heaven", "and there was evening", "and there was morning", "day", "second"]
+    },
+    {
+      "text": "And God said, Let the waters under the heaven be gathered together unto one place, and let the dry land appear: and it was so.",
+      "segments": ["And God said, Let the waters under the heaven", "be gathered together unto one place, and let the dry land appear", "and it was so"],
+      "words": ["and said", "God", "let be gathered", "the waters", "from under", "the heaven", "into one place", "one", "and let appear", "the dry land", "and it was so"]
+    },
+    {
+      "text": "And God called the dry land Earth; and the gathering together of the waters called he Seas: and God saw that it was good.",
+      "segments": ["And God called the dry land Earth", "and the gathering together of the waters called he Seas", "and God saw that it was good"],
+      "words": ["and called", "God", "the dry land", "Earth", "and to the gathering", "of the waters", "called", "Seas", "and saw", "God", "that it was good"]
+    },
+    {
+      "text": "And God said, Let the earth bring forth grass, the herb yielding seed, and the fruit tree yielding fruit after his kind, whose seed is in itself, upon the earth: and it was so.",
+      "segments": ["And God said, Let the earth bring forth grass", "the herb yielding seed", "the fruit tree yielding fruit after his kind", "whose seed is in itself, upon the earth: and it was so"],
+      "words": ["and said", "God", "let bring forth", "the earth", "grass", "herb", "yielding", "seed", "tree", "fruit", "bearing", "fruit", "after its kind", "whose", "seed in it", "upon the earth", "and it was so"]
+    },
+    {
+      "text": "And the earth brought forth grass, and herb yielding seed after his kind, and the tree yielding fruit, whose seed was in itself, after his kind: and God saw that it was good.",
+      "segments": ["And the earth brought forth grass", "herb yielding seed after his kind", "and the tree yielding fruit, whose seed was in itself, after his kind", "and God saw that it was good"],
+      "words": ["and brought forth", "the earth", "grass", "herb", "yielding", "seed", "after its kind", "and the tree", "bearing fruit", "whose", "seed in it", "after its kind", "and saw", "God", "that it was good"]
+    },
+    {
+      "text": "And the evening and the morning were the third day.",
+      "segments": ["And the evening and the morning were the third day"],
+      "words": ["and there was evening", "and there was morning", "day", "third"]
+    },
+    {
+      "text": "And God said, Let there be lights in the firmament of the heaven to divide the day from the night; and let them be for signs, and for seasons, and for days, and years.",
+      "segments": ["And God said, Let there be lights in the firmament of the heaven", "to divide the day from the night", "and let them be for signs, and for seasons, and for days, and years"],
+      "words": ["and said", "God", "let there be", "lights", "in the firmament", "of the heaven", "to divide", "between", "the day", "and between", "the night", "and let them be", "for signs", "and for festivals", "and for days", "and years"]
+    },
+    {
+      "text": "And let them be for lights in the firmament of the heaven to give light upon the earth: and it was so.",
+      "segments": ["And let them be for lights in the firmament of the heaven, to give light upon the earth", "and it was so"],
+      "words": ["and let them be", "for lights", "in the firmament", "of the heaven", "to give light", "upon the earth", "and it was so"]
+    },
+    {
+      "text": "And God made two great lights; the greater light to rule the day, and the lesser light to rule the night: he made the stars also.",
+      "segments": ["And God made two great lights", "the greater light to rule the day", "and the lesser light to rule the night, and the stars"],
+      "words": ["and made", "God", "two (as object)", "lights", "great", "light (as object)", "the greater", "to rule", "the day", "and the light", "the lesser", "to rule", "the night", "and the marker of the direct object", "the stars"]
+    },
+    {
+      "text": "And God set them in the firmament of the heaven to give light upon the earth,",
+      "segments": ["And God set them in the firmament of the heaven, to give light upon the earth"],
+      "words": ["and set", "them", "God", "in the firmament", "of the heaven", "to give light", "upon the earth"]
+    },
+    {
+      "text": "And to rule over the day and over the night, and to divide the light from the darkness: and God saw that it was good.",
+      "segments": ["and to rule over the day and over the night", "and to divide the light from the darkness", "and God saw that it was good"],
+      "words": ["and to rule", "in the day", "and in the night", "and to divide", "between", "the light", "and between", "the darkness", "and saw", "God", "that it was good"]
+    },
+    {
+      "text": "And the evening and the morning were the fourth day.",
+      "segments": ["And the evening and the morning were the fourth day"],
+      "words": ["and there was evening", "and there was morning", "day", "fourth"]
+    },
+    {
+      "text": "And God said, Let the waters bring forth abundantly the moving creature that hath life, and fowl that may fly above the earth in the open firmament of heaven.",
+      "segments": ["And God said, Let the waters bring forth abundantly the moving creature that hath life", "and fowl that may fly above the earth", "in the open firmament of heaven"],
+      "words": ["and said", "God", "let swarm", "the waters", "swarming creatures", "soul, creature", "living", "and birds", "let fly", "upon the earth", "over the face", "of the firmament", "of heaven"]
+    },
+    {
+      "text": "And God created great whales, and every living creature that moveth, which the waters brought forth abundantly, after their kind, and every winged fowl after his kind: and God saw that it was good.",
+      "segments": ["And God created great whales", "and every living creature that moveth, which the waters brought forth abundantly, after their kind", "and every winged fowl after his kind", "and God saw that it was good"],
+      "words": ["and created", "God", "the great sea creatures", "great", "and the marker of the direct object", "every soul", "living", "that creeps", "which", "swarm", "the waters", "after their kind", "and the marker of the direct object", "every bird", "wing", "after its kind", "and saw", "God", "that it was good"]
+    },
+    {
+      "text": "And God blessed them, saying, Be fruitful, and multiply, and fill the waters in the seas, and let fowl multiply in the earth.",
+      "segments": ["And God blessed them, saying", "Be fruitful, and multiply, and fill the waters in the seas", "and let fowl multiply in the earth"],
+      "words": ["and blessed", "them", "God", "saying", "be fruitful", "and multiply", "and fill", "the water (as object)", "in the seas", "and birds", "let multiply", "upon the earth"]
+    },
+    {
+      "text": "And the evening and the morning were the fifth day.",
+      "segments": ["And the evening and the morning were the fifth day"],
+      "words": ["and there was evening", "and there was morning", "day", "fifth"]
+    },
+    {
+      "text": "And God said, Let the earth bring forth the living creature after his kind, cattle, and creeping thing, and beast of the earth after his kind: and it was so.",
+      "segments": ["And God said, Let the earth bring forth the living creature after his kind", "cattle, and creeping thing, and beast of the earth after his kind", "and it was so"],
+      "words": ["and said", "God", "let bring forth", "the earth", "soul, creature", "living", "after its kind", "cattle", "and creeping things", "and beasts of the earth", "after its kind", "and it was so"]
+    },
+    {
+      "text": "And God made the beast of the earth after his kind, and cattle after their kind, and every thing that creepeth upon the earth after his kind: and God saw that it was good.",
+      "segments": ["And God made the beast of the earth after his kind", "and cattle after their kind", "and every thing that creepeth upon the earth after his kind", "and God saw that it was good"],
+      "words": ["and made", "God", "the beasts (as object)", "of the earth", "after its kind", "and cattle", "after its kind", "and the marker of the direct object", "every creeping thing", "of the earth", "after its kind", "and saw", "God", "that it was good"]
+    },
+    {
+      "text": "And God said, Let us make man in our image, after our likeness: and let them have dominion over the fish of the sea, and over the fowl of the air, and over the cattle, and over all the earth, and over every creeping thing that creepeth upon the earth.",
+      "segments": ["And God said, Let us make man", "in our image, after our likeness", "and let them have dominion over the fish of the sea, and over the fowl of the air", "over the cattle, and over all the earth, and over every creeping thing that creepeth upon the earth"],
+      "words": ["and said", "God", "let us make", "man", "in our image", "after our likeness", "and let them have dominion", "over the fish", "of the sea", "and over the birds", "of the heaven", "and over the cattle", "and over all the earth", "and over every creeping thing", "that creeps", "upon the earth"]
+    },
+    {
+      "text": "So God created man in his own image, in the image of God created he him; male and female created he them.",
+      "segments": ["So God created man in his own image", "in the image of God created he him", "male and female created he them"],
+      "words": ["and created", "God", "man (as object)", "in his image", "in the image", "God", "created", "him", "male", "and female", "created", "them"]
+    },
+    {
+      "text": "And God blessed them, and God said unto them, Be fruitful, and multiply, and replenish the earth, and subdue it: and have dominion over the fish of the sea, and over the fowl of the air, and over every living thing that moveth upon the earth.",
+      "segments": ["And God blessed them, and God said unto them", "Be fruitful, and multiply, and replenish", "the earth, and subdue it", "and have dominion over the fish of the sea, and over the fowl of the air", "and over every living thing that moveth upon the earth"],
+      "words": ["and blessed", "them", "God", "and said", "to them", "God", "be fruitful", "and multiply", "and fill", "the earth (as object)", "and take possession of it", "and have dominion", "over the fish", "of the sea", "and over the birds", "of the heaven", "and over every living thing", "that creeps", "upon the earth"]
+    },
+    {
+      "text": "And God said, Behold, I have given you every herb bearing seed, which is upon the face of all the earth, and every tree, in the which is the fruit of a tree yielding seed; to you it shall be for meat.",
+      "segments": ["And God said, Behold, I have given you", "every herb bearing seed, which is upon the face of all the earth", "and every tree, in the which is the fruit of a tree yielding seed", "to you it shall be for meat"],
+      "words": ["and said", "God", "behold", "I have given", "to you", "every herb (as object)", "bearing", "seed", "which", "upon the face", "of all the earth", "and every tree", "in which", "the fruit of a tree", "bearing", "seed", "to you", "it shall be", "for food"]
+    },
+    {
+      "text": "And to every beast of the earth, and to every fowl of the air, and to every thing that creepeth upon the earth, wherein there is life, I have given every green herb for meat: and it was so.",
+      "segments": ["And to every beast of the earth", "and to every fowl of the air, and to every thing that creepeth upon the earth", "wherein there is life", "I have given every green herb for meat", "and it was so"],
+      "words": ["and to every beast", "of the earth", "and to every bird", "of the heaven", "and to every", "creeping thing", "upon the earth", "in which", "soul, creature", "living", "every green", "herb", "for food", "and it was so"]
+    },
+    {
+      "text": "And God saw every thing that he had made, and, behold, it was very good. And the evening and the morning were the sixth day.",
+      "segments": ["And God saw every thing that he had made", "and, behold, it was very good", "And the evening and the morning were the sixth day"],
+      "words": ["and saw", "God", "everything that", "he had made", "and behold, it was good", "very", "and there was evening", "and there was morning", "day", "sixth"]
+    }
+  ]
+}

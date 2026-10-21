@@ -34,6 +34,15 @@ const EXERCISES_EN = {
     hebrew: EXERCISES_EN_HEBREW
 };
 
+// Английский разбор текста по курсам: «Отче наш» и чтение Бытия. Файлы
+// генерируются из русских данных (tools/en-build/reading.js), поэтому порядок
+// стихов, слов и кусков стиха в них тот же, что в источнике, — оверлей
+// накладывается по месту, а не по ключу.
+const PRAYERS_EN = {
+    greek: typeof PRAYER_EN !== 'undefined' ? PRAYER_EN : null,
+    hebrew: typeof HEBREW_READING_EN !== 'undefined' ? HEBREW_READING_EN : null
+};
+
 const UI_EN = {
     // ---------------------------------------------------------- оболочка
     'Древнегреческий': 'Ancient Greek',
@@ -408,6 +417,9 @@ const UI_EN = {
     'йод': 'yod', 'каф': 'kaf', 'ла́мед': 'lamed', 'мем': 'mem', 'нун': 'nun',
     'са́мех': 'samekh', 'а́йин': 'ayin', 'пе': 'pe', 'ца́де': 'tsade',
     'коф': 'qof', 'реш': 'resh', 'син / шин': 'sin / shin', 'тав': 'taw',
+    // Колода письма держит ש двумя буквами, и спрашивает она каждую по имени:
+    // «син» и «шин» — отдельные ключи, а не половинки «син / шин».
+    'син': 'sin', 'шин': 'shin',
     'не произносится': 'silent', 'б / в': 'b / v', 'г': 'g', 'д': 'd',
     'х': 'kh', 'в': 'v', 'з': 'z', 'т': 't', 'й': 'y', 'к / х': 'k / kh',
     'л': 'l', 'м': 'm', 'н': 'n', 'с': 's', 'п / ф': 'p / f', 'ц': 'ts',
@@ -551,11 +563,18 @@ const UI_EN = {
     'Удалить': 'Delete',
     'Открыт курс «': 'Course opened: “',
 
-    // ---------------------------------------------------------- недоступно
-    'Карточки пока не переведены на английский.':
-        'Flashcards have not been translated into English yet.',
-    'Разбор текста пока не переведён на английский.':
-        'The text analysis has not been translated into English yet.'
+    // ---------------------------------------------------------- разбор текста
+    // Подписи экрана «Отче наш» / чтения Бытия. Сам текст разбора английский
+    // лежит в data/prayer.en.js и data/hebrew-reading.en.js: это материал, а не
+    // оболочка. Здесь только строки, написанные в коде.
+    'Нажмите на любое слово, чтобы увидеть разбор формы.':
+        'Tap any word to see the analysis of its form.',
+    'Заполни пропуски': 'Fill in the blanks',
+    'Перевод на ': 'Translation into ',
+    'Соберите перевод на ': 'Build the translation into ',
+    ' из слов': ' from the words',
+    'День': 'Day',
+    'Неверно. Правильный порядок:': 'Not quite. The correct order:'
 };
 
 // Перевод строки интерфейса. Ключ — русский текст, поэтому перевод виден на
@@ -660,6 +679,7 @@ function setAppLang(lang) {
     // приходит из оверлея, и словарь обязан собраться заново — иначе в нём
     // останутся русские значения прошлого языка.
     clearLocalizedLessonCache();
+    clearLocalizedPrayerCache();
     allVocabCache = null;
     lessonSearchIndex = null;
     allFlashcardState = { words: [], index: 0, revealed: false, correct: 0, total: 0, type: 'all', mistakes: [] };
@@ -693,6 +713,11 @@ function rerenderCurrentScreen() {
             break;
         case 'lessonSection':
             openLesson(currentLesson, currentLessonPart);
+            break;
+        case 'prayerSection':
+            // Разбор текста — тоже переведённый материал, и его кеш только что
+            // сброшен: без перерисовки на экране остался бы прошлый язык.
+            showPrayer();
             break;
         default:
             break;
@@ -770,6 +795,63 @@ function localizedLesson(base, n) {
 function exercisesEnPack(courseId, n) {
     let pack = EXERCISES_EN[courseId || currentCourseId];
     return (pack && (pack[n] || pack[String(n)])) || null;
+}
+
+// ------------------------------------------------------------ разбор текста
+//
+// Русский разбор — канон, английский лежит поверх него: заголовок, книга,
+// название перевода, дни, стихи, куски стихов и разбор каждого слова.
+// Изучаемый язык (греческий текст, иврит, его чтение) не переводится вовсе —
+// он берётся из источника как есть, поэтому оверлей трогает только русские
+// поля. Кеш — на курс: он говорит на одном языке и живёт до смены языка.
+let localizedPrayerCache = new Map();
+
+function clearLocalizedPrayerCache() {
+    localizedPrayerCache = new Map();
+}
+
+function localizedPrayer(base) {
+    if (!isEnglish() || !base) return base;
+    let pack = PRAYERS_EN[currentCourseId];
+    if (!pack) return base;
+    if (localizedPrayerCache.has(currentCourseId)) return localizedPrayerCache.get(currentCourseId);
+
+    let out = Object.assign({}, base);
+    if (pack.title) out.title = pack.title;
+    if (pack.book) out.book = pack.book;
+    if (pack.source) out.source = pack.source;
+    if (Array.isArray(pack.days) && Array.isArray(base.days)) {
+        out.days = base.days.map((day, i) => Object.assign({}, day, {
+            title: pack.days[i] == null ? day.title : pack.days[i]
+        }));
+    }
+    if (Array.isArray(pack.verses) && Array.isArray(base.verses)) {
+        out.verses = base.verses.map((verse, i) => {
+            let en = pack.verses[i];
+            if (!en) return verse;
+            let copy = Object.assign({}, verse);
+            if (en.russian != null) copy.russian = en.russian;
+            if (Array.isArray(en.segments) && Array.isArray(verse.segments)) {
+                copy.segments = verse.segments.map((segment, j) => {
+                    let prompt = en.segments[j] && en.segments[j].russian;
+                    return prompt == null ? segment : Object.assign({}, segment, { russian: prompt });
+                });
+            }
+            if (Array.isArray(en.words) && Array.isArray(verse.words)) {
+                copy.words = verse.words.map((word, j) => {
+                    let w = en.words[j];
+                    if (!w) return word;
+                    let local = Object.assign({}, word);
+                    if (w.translation != null) local.translation = w.translation;
+                    if (w.analysis != null) local.analysis = w.analysis;
+                    return local;
+                });
+            }
+            return copy;
+        });
+    }
+    localizedPrayerCache.set(currentCourseId, out);
+    return out;
 }
 
 // Проверяемые ответы переводятся по ключу, а не по месту в массиве: ключ —
@@ -899,3 +981,7 @@ function tOf(value, total) { return value + t(' из ') + total; }
 // как и весь остальной текст в коде; переводится оно здесь же, а «из» —
 // общий ключ, тот же, что у tOf.
 function tProgress(noun, value, total) { return t(noun) + ' ' + value + t(' из ') + total; }
+
+// «День 3» в чипах и на кнопках перехода по дням: число подставляется, поэтому
+// точным ключом строку не перевести.
+function tPrayerDay(n) { return t('День') + ' ' + n; }

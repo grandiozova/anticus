@@ -21,7 +21,7 @@ function writeStore(key, value) {
 
 function activeCourse() { return COURSES[currentCourseId] || COURSES.greek; }
 function courseLessons() { return activeCourse().lessons || {}; }
-function coursePrayer() { return activeCourse().prayer || null; }
+function coursePrayer() { return localizedPrayer(activeCourse().prayer || null); }
 
 // Название и источник курса на языке приложения. Английские поля лежат в
 // реестре рядом с русскими (data/courses.js): это свойство курса, как tagline,
@@ -181,10 +181,9 @@ function applyCourseChrome() {
     // чтение Бытия 1 по дням творения. У курса без разбора её нет.
     let card = document.getElementById('prayerFeatureCard');
     if (card) {
-        // В английском режиме разбор текста не переведён и карточки нет:
-        // открывать русский текст под английской подписью хуже, чем не
-        // показывать её вовсе.
-        let has = !!(course.prayer && course.prayerCard) && !isEnglish();
+        // Разбор текста переведён на английский целиком (data/prayer.en.js и
+        // data/hebrew-reading.en.js), поэтому карточка есть на обоих языках.
+        let has = !!(course.prayer && course.prayerCard);
         card.classList.toggle('hidden', !has);
         if (has) {
             let cardData = coursePrayerCard();

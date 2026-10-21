@@ -458,6 +458,11 @@ test('подписи пулов букв и огласовок переведе�
         (pool.accents || []).forEach(a => check(courseId + '.accent', a.correct));
         (pool.vowels || []).forEach(v => ['name', 'sound'].forEach(f => check(courseId + '.vowel.' + f, v[f])));
     });
+    // Колода письма — не пул: ש стоит в ней двумя буквами со своими именами,
+    // и вопрос о письме называет именно их. Проверять только пул значит не
+    // увидеть «шин» до тех пор, пока он не выпадет в случайном вопросе.
+    app.window.applyCourse('hebrew');
+    (app.get('HEBREW_WRITE_LETTERS') || []).forEach(l => check('writing.name', l.name));
     assert.deepStrictEqual(missing, [], 'нет перевода: ' + missing.join(' | '));
     app.close();
 });
@@ -677,5 +682,181 @@ test('переводы обоих курсов переведены целико
         });
     });
     assert.deepStrictEqual(bad, [], bad.slice(0, 12).join('\n'));
+    app.close();
+});
+
+// ------------------------------------------------------------ карточки
+//
+// Карточки — то же упражнение, что и остальные: слово, перевод и тренировка
+// форм. Подписи у них давно в UI_EN, поэтому английский режим открывает их
+// как есть, и проверять здесь надо не подписи, а содержимое колоды: оно
+// приходит из английского словаря, а форма — из парадигмы слова.
+
+test('карточки открываются в английском режиме и не показывают русского', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.startAllFlashcards();
+    assert.strictEqual(app.screen(), 'allFlashcardsSection');
+    const box = app.document.querySelector('#allFlashcardsSection');
+    assert.ok(!CYR.test(box.textContent), 'русский текст в карточках: ' + around(box.textContent));
+    app.window.allFlashcardReveal();
+    assert.ok(!CYR.test(box.textContent), 'русский перевод на обороте: ' + around(box.textContent));
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('оборот карточки спрашивает форму по-английски', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const word = app.window.getAllVocab().find(w => w.declension_forms && w.lesson);
+    assert.ok(word, 'в словаре нет слова с парадигмой');
+    app.window.startAllFlashcards('all', [word]);
+    app.window.allFlashcardReveal();
+    const box = app.document.querySelector('#allFlashcardsSection');
+    const flip = box.querySelector('.flashcard-flip-btn');
+    assert.ok(flip, 'у слова с парадигмой нет кнопки тренировки форм');
+    flip.click();
+    const back = box.querySelector('#cardDeclension');
+    assert.ok(back && back.textContent.trim(), 'оборот карточки пуст');
+    assert.ok(!CYR.test(back.textContent), 'русский текст на обороте: ' + around(back.textContent));
+    assert.ok(back.querySelectorAll('.option-btn').length >= 2, 'нет вариантов формы');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+// ------------------------------------------------------------ разбор текста
+//
+// «Отче наш» и чтение Бытия — материал, а не оболочка, поэтому английский
+// лежит в data/prayer.en.js и data/hebrew-reading.en.js и накладывается на
+// русский источник по месту (js/i18n.js). Проверяем и данные, и экран: в
+// данных не должно остаться ни одной русской строки, а на экране — ни одного
+// русского слова, включая разбор формы по клику.
+
+test('английский разбор покрывает каждый стих, слово и кусок стиха обоих курсов', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const bad = [];
+    app.get('COURSE_ORDER').forEach(course => {
+        app.window.applyCourse(course);
+        const data = app.window.coursePrayer();
+        const base = app.window.eval('COURSES["' + course + '"].prayer');
+        const at = course;
+        if (CYR.test(data.title || '')) bad.push(at + ': заголовок');
+        if (data.book && CYR.test(data.book)) bad.push(at + ': книга');
+        if (data.source && (CYR.test(data.source.label || '') || CYR.test(data.source.site || '')))
+            bad.push(at + ': источник');
+        assert.strictEqual(data.verses.length, base.verses.length, at + ': стихи');
+        (data.days || []).forEach((d, i) => { if (CYR.test(d.title)) bad.push(at + ' day ' + i); });
+        data.verses.forEach((v, i) => {
+            if (CYR.test(v.russian || '')) bad.push(at + ' verse ' + i + ': ' + around(v.russian));
+            assert.strictEqual(v.words.length, base.verses[i].words.length, at + ' verse ' + i + ': слова');
+            v.words.forEach((w, j) => {
+                if (CYR.test(w.translation || '')) bad.push(at + ' ' + i + '.' + j + ' gloss: ' + around(w.translation));
+                if (CYR.test(w.analysis || '')) bad.push(at + ' ' + i + '.' + j + ' analysis: ' + around(w.analysis));
+            });
+            if (base.verses[i].segments) {
+                assert.strictEqual((v.segments || []).length, base.verses[i].segments.length,
+                    at + ' verse ' + i + ': куски стиха');
+                v.segments.forEach((s, j) => { if (CYR.test(s.russian)) bad.push(at + ' segment ' + i + '.' + j); });
+            }
+        });
+    });
+    assert.deepStrictEqual(bad, [], bad.slice(0, 12).join('\n'));
+    app.close();
+});
+
+test('«Отче наш» открывается по-английски и разбор слова английский', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.showPrayer();
+    assert.strictEqual(app.screen(), 'prayerSection');
+    assert.strictEqual(app.appBarTitle(), 'Our Father');
+    const box = app.document.querySelector('#prayerSection');
+    assert.ok(!CYR.test(box.textContent), 'русский текст в молитве: ' + around(box.textContent));
+    box.querySelector('.prayer-word').click();
+    const analysis = app.document.querySelector('#analysis-0');
+    assert.strictEqual(analysis.style.display, 'block');
+    assert.ok(!CYR.test(analysis.textContent), 'русский разбор формы: ' + around(analysis.textContent));
+    assert.ok(/noun, masc\., sg\., vocative/.test(analysis.textContent), analysis.textContent);
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('чтение Бытия по-английски: дни, стих, чтение слова и разбор', () => {
+    const app = loadApp({ storage: { app_lang: 'en', app_course: 'hebrew', app_default_course: 'hebrew' } });
+    app.window.showPrayer();
+    assert.strictEqual(app.appBarTitle(), 'Bible reading');
+    const box = app.document.querySelector('#prayerSection');
+    assert.ok(!CYR.test(box.textContent), 'русский текст в чтении: ' + around(box.textContent));
+    const chips = box.querySelectorAll('.prayer-day-chips .filter-chip');
+    assert.strictEqual(chips.length, 6, 'чипы дней');
+    assert.strictEqual(chips[0].textContent.trim(), 'Day 1');
+    assert.ok(/In the beginning God created/.test(box.querySelector('.prayer-russian').textContent),
+        'стих не по-английски');
+    box.querySelector('.prayer-word').click();
+    const analysis = app.document.querySelector('#analysis-0');
+    assert.ok(!CYR.test(analysis.textContent), 'русский разбор слова: ' + around(analysis.textContent));
+    // Чтение ивритского слова в английском режиме — латинская половина.
+    assert.ok(/bǝrēʾšîṯ/.test(analysis.textContent), analysis.textContent);
+    assert.ok(!/\(bǝrēʾšîṯ\)/.test(analysis.textContent), 'чтение осталось двойным');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('упражнения разбора спрашивают по-английски', () => {
+    const app = loadApp({ storage: { app_lang: 'en', app_course: 'hebrew', app_default_course: 'hebrew' } });
+    app.window.showPrayer();
+    app.window.startPrayerFill();
+    let q = app.document.querySelector('#prayerExerciseQuestion');
+    assert.ok(q.textContent.trim(), 'вопрос «заполни пропуски» не нарисован');
+    assert.ok(!CYR.test(q.textContent), 'русский текст в вопросе: ' + around(q.textContent));
+    app.window.startPrayerTranslate();
+    q = app.document.querySelector('#prayerExerciseQuestion');
+    assert.ok(!CYR.test(q.textContent), 'русский текст в переводе: ' + around(q.textContent));
+    // Подсказки у ивритского чтения нет (hideTranslateHint), а кнопки есть.
+    assert.ok(/Check/.test(q.textContent) && /Clear/.test(q.textContent), q.textContent);
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('переключение языка сбрасывает английский разбор', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    const english = app.window.coursePrayer();
+    assert.strictEqual(english.title, 'Our Father');
+    app.window.setAppLang('ru');
+    const russian = app.window.coursePrayer();
+    assert.strictEqual(russian.title, 'Отче наш');
+    assert.strictEqual(russian.verses[0].russian, 'Отче наш, сущий на небесах');
+    app.window.setAppLang('en');
+    assert.strictEqual(app.window.coursePrayer().title, 'Our Father');
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
+test('перевод стихов чтения назван в лицензиях на обоих языках', () => {
+    const app = loadApp();
+    const entry = app.get('LICENSES').find(l => /King James/.test(l.name));
+    assert.ok(entry, 'нет записи о переводе стихов чтения');
+    assert.ok(entry.terms && entry.termsEn && entry.termsEn !== entry.terms, 'запись не переведена');
+    ['ru', 'en'].forEach(lang => {
+        const a = loadApp({ storage: { app_lang: lang } });
+        a.window.showSettings();
+        const items = Array.from(a.document.querySelectorAll('#licenseList .license-item'));
+        assert.strictEqual(items.filter(el => /King James/.test(el.textContent)).length, 1,
+            'запись о переводе стихов не показана (' + lang + ')');
+        a.close();
+    });
+    app.close();
+});
+
+test('смена языка перерисовывает открытый разбор текста', () => {
+    const app = loadApp({ storage: { app_lang: 'en' } });
+    app.window.showPrayer();
+    const box = app.document.querySelector('#prayerSection');
+    assert.strictEqual(app.appBarTitle(), 'Our Father');
+    app.window.setAppLang('ru');
+    assert.strictEqual(app.appBarTitle(), 'Отче наш');
+    assert.ok(/Отче наш, сущий на небесах/.test(box.textContent), 'экран остался английским');
+    assert.strictEqual(app.screen(), 'prayerSection');
+    app.window.setAppLang('en');
+    assert.strictEqual(app.appBarTitle(), 'Our Father');
+    assert.ok(!CYR.test(box.textContent), 'русский текст остался после возврата на английский');
+    assert.deepStrictEqual(app.errors, []);
     app.close();
 });

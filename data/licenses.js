@@ -85,6 +85,19 @@ const LICENSES = [
                  'the Synodal translation, in the public domain.',
         url: null
     },
+    // Английский текст стихов чтения Бытия — отдельная запись: это другой
+    // перевод и другое правовое положение, чем у русского текста рядом.
+    {
+        name: 'King James Version',
+        nameEn: 'King James Version',
+        terms: 'Стихи Бытия на экране «Чтение Библии» даны по-английски в переводе ' +
+               'короля Иакова (1611); он общественное достояние за пределами ' +
+               'Великобритании. Проект некоммерческий и образовательный.',
+        termsEn: 'The Genesis verses on the “Bible reading” screen are quoted in the ' +
+                 'King James Version (1611), in the public domain outside the ' +
+                 'United Kingdom. This is a non-commercial educational project.',
+        url: 'https://www.gutenberg.org/ebooks/10'
+    },
     {
         name: 'Учебные материалы: греческий',
         nameEn: 'Course materials: Greek',
