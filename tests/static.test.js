@@ -119,6 +119,27 @@ test('правило перевода не перекраивает шеврон
     }
 });
 
+test('переключатель языка не остаётся без подписей на узком экране', () => {
+    // Общее правило узкого экрана гасит подписи сегментов ради четырёх иконок
+    // темы (font-size: 0). У языка иконки-заменителя нет, и до этой правки
+    // карточка «Язык» на телефоне показывала два пустых поля. Поэтому у
+    // переключателя языка свой кегль — и он не нулевой, — а подложка
+    // выбранного языка едет по data-lang, а не по inline-стилю.
+    const css = read('styles/settings.css').replace(/\/\*[\s\S]*?\*\//g, '');
+    const own = css.match(/\.md-segmented\.md-segmented--lang button\s*\{([^}]*)\}/);
+    assert.ok(own, 'нет собственного правила кнопок переключателя языка');
+    const size = own[1].match(/font-size:\s*([^;]+);/);
+    assert.ok(size, 'у кнопок переключателя языка нет своего кегля — его сотрёт общий font-size: 0');
+    assert.notStrictEqual(size[1].trim(), '0');
+
+    assert.match(css, /\.md-segmented\.md-segmented--lang\s*\{[^}]*position:\s*relative/,
+        'подложке не от чего считать половину ширины — у группы нет position: relative');
+    assert.match(css, /\.md-segmented--lang\[data-lang="en"\]\s+\.lang-switch__thumb\s*\{[^}]*translateX/,
+        'подложка не переезжает ко второму языку');
+    assert.match(css, /@media \(max-width: 420px\)[\s\S]*?\.md-segmented\.md-segmented--lang button\s*\{/,
+        'на узком экране у переключателя языка нет своих полей');
+});
+
 test('каждый подключённый файл существует', () => {
     for (const rel of [...SCRIPTS, ...STYLES]) {
         assert.ok(fs.existsSync(repoPath(rel)), 'index.html ссылается на несуществующий ' + rel);

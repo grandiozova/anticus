@@ -480,6 +480,13 @@ is documented at the top of `js/declension.js` and again in `data/hebrew-lessons
 Russian is the source language; English is an overlay. The switch is the
 language card in settings, stored under `app_lang`.
 
+- The switch (`#appLangSegmented`, `md-segmented--lang`) has its own styles in
+  `styles/settings.css`: a code badge (`RU`/`EN`, never translated), a check on
+  the chosen segment and a thumb that slides by `data-lang` on the group (set in
+  `syncLanguageControls`). Its buttons carry their **own `font-size`** because the
+  ≤420px rule sizes segmented buttons at `0` for the theme icons — without it the
+  language card was two empty fields on a phone.
+
 - `t('Уроки')` returns `Lessons`; **the key is the Russian string itself**, so a
   missing translation stays Russian instead of going blank. `UI_EN` lives in
   `js/i18n.js`.

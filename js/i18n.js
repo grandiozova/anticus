@@ -727,6 +727,10 @@ function rerenderCurrentScreen() {
 function syncLanguageControls() {
     let group = document.getElementById('appLangSegmented');
     if (group) {
+        // Подложка выбранного языка едет по data-lang, а не по inline-стилю:
+        // положение — часть состояния, как data-theme у темы. Иначе после
+        // перезагрузки в английском режиме подложка стояла бы под русским.
+        group.setAttribute('data-lang', appLang);
         group.querySelectorAll('[data-app-lang]').forEach(b => {
             b.setAttribute('aria-checked',
                 b.getAttribute('data-app-lang') === appLang ? 'true' : 'false');

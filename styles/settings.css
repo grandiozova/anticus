@@ -57,6 +57,98 @@
     color: var(--md-sys-color-on-surface-variant);
 }
 
+/* ============================================================
+   ПЕРЕКЛЮЧАТЕЛЬ ЯЗЫКА
+   ============================================================
+   Обычная сегментированная кнопка на два пункта читалась как две подписи в
+   рамке, а на телефоне общее правило прятало у сегментов текст (там он
+   уступает место иконкам темы) — и в карточке оставались два пустых поля.
+   Здесь у каждого языка есть круглая метка-код, галочка выбранного и своя
+   подложка, которая переезжает под выбранный язык тем же движением, что
+   индикатор вкладок урока (styles/components.css, .md-tabs__indicator).
+   Выбранный сегмент при этом больше не красит себя сам: цвет пары
+   on/container несёт подложка, а кнопка остаётся прозрачной. */
+.md-segmented.md-segmented--lang {
+    position: relative;
+    isolation: isolate;
+}
+.lang-switch__thumb {
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 4px;
+    width: calc(50% - 8px);
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-secondary-container);
+    pointer-events: none;
+    transition: transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized);
+}
+/* Два сегмента — половина ширины каждый; 8px прибавки к 100% — это отступ
+   подложки слева и справа, ведь 100% считается от её собственной ширины. */
+.md-segmented--lang[data-lang="en"] .lang-switch__thumb {
+    transform: translateX(calc(100% + 8px));
+}
+/* 48dp, а не общие 40: переключатель языка — цель, в которую попадают
+   пальцем, и заодно он выглядит весомее двух подписей в рамке. Разделители
+   между сегментами убраны: подложка едет поверх них, и черта под ней
+   читалась бы как обрыв. */
+.md-segmented.md-segmented--lang button {
+    min-height: 48px;
+    gap: 8px;
+    padding: 0 12px;
+    border-left: 0;
+    background: transparent;
+    font-size: 0.875rem;
+}
+.md-segmented.md-segmented--lang button[aria-checked="true"] {
+    background: transparent;
+    color: var(--md-sys-color-on-secondary-container);
+}
+/* Слой состояния у клавиатуры: у общих сегментов его нет, а кнопка, по
+   которой ходят Tab'ом, обязана показывать фокус. */
+.md-segmented.md-segmented--lang button:focus-visible::before { opacity: var(--md-sys-state-focus-opacity); }
+.md-segmented.md-segmented--lang button:focus-visible { outline: none; }
+.lang-switch__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--md-sys-shape-corner-full);
+    background: var(--md-sys-color-surface-container-highest);
+    color: var(--md-sys-color-on-surface-variant);
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    transition: background-color var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard),
+                color var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+}
+.md-segmented.md-segmented--lang button[aria-checked="true"] .lang-switch__badge {
+    background: var(--md-sys-color-primary);
+    color: var(--md-sys-color-on-primary);
+}
+/* Место под галочку занято всегда, поэтому подпись не сдвигается, когда
+   отметка появляется. */
+.lang-switch__check {
+    flex: 0 0 auto;
+    font-size: 18px;
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard),
+                transform var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized);
+}
+.md-segmented.md-segmented--lang button[aria-checked="true"] .lang-switch__check {
+    opacity: 1;
+    transform: scale(1);
+}
+.lang-switch__label {
+    min-width: 0;
+    font-weight: 500;
+    letter-spacing: 0.00625rem;
+}
+
 /* Буква курса в переключателе «Курс при запуске» — вместо иконки книги.
    Это знак роста самой иконки (.md-segmented button .msym — те же 18px), а не
    текст для чтения: буква стоит рядом с подписью «Греческий», а не вместо неё.
@@ -436,6 +528,18 @@
     .md-segmented button .msym {
         font-size: 20px;
     }
+    /* У языка нет иконки, которая заменила бы подпись, — подпись остаётся.
+       Место освобождает галочка: выбранный язык и так виден по подложке и
+       залитой метке, а кегль подписи здесь приходит из своего правила выше
+       (.md-segmented.md-segmented--lang button), специфичность которого выше
+       общего font-size: 0. */
+    .md-segmented.md-segmented--lang button {
+        padding: 0 8px;
+        gap: 6px;
+    }
+    .md-segmented.md-segmented--lang .lang-switch__check {
+        display: none;
+    }
     /* Буква курса — тоже знак, поэтому растёт вместе с иконкой рядом (20px).
        Своё значение здесь обязательно: font-size: 0 у кнопки её не прячет,
        кегль задан явно, и буква остаётся единственной меткой курса, когда
@@ -443,6 +547,14 @@
     .course-glyph.greek,
     .course-glyph.hebrew {
         font-size: 20px;
+    }
+}
+
+/* Совсем узкий экран вместе с крупным общим размером: метка-код уступает
+   место подписи, иначе «Русский» при 160% упирается в половину карточки. */
+@media (max-width: 360px) {
+    .md-segmented.md-segmented--lang .lang-switch__badge {
+        display: none;
     }
 }
 

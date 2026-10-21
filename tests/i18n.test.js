@@ -56,6 +56,39 @@ test('выбор языка переживает перезагрузку', () =
     app.close();
 });
 
+test('переключатель языка показывает выбранный язык и код каждого', () => {
+    const app = loadApp();
+    app.window.showSettings();
+    const group = app.document.getElementById('appLangSegmented');
+    const labels = () => Array.from(group.querySelectorAll('.lang-switch__label')).map(el => el.textContent);
+    const checked = () => Array.from(group.querySelectorAll('[data-app-lang]'))
+        .filter(b => b.getAttribute('aria-checked') === 'true')
+        .map(b => b.getAttribute('data-app-lang'));
+
+    // Подложка едет по data-lang на группе, а не по inline-стилю: после
+    // перезагрузки она обязана стоять под сохранённым языком.
+    assert.strictEqual(group.getAttribute('data-lang'), 'ru');
+    assert.deepStrictEqual(checked(), ['ru']);
+
+    // Код языка — знак, а не подпись: он не переводится и не исчезает.
+    assert.deepStrictEqual(Array.from(group.querySelectorAll('.lang-switch__badge')).map(b => b.textContent),
+        ['RU', 'EN']);
+
+    app.window.setAppLang('en');
+    assert.strictEqual(group.getAttribute('data-lang'), 'en');
+    assert.deepStrictEqual(checked(), ['en']);
+    assert.deepStrictEqual(labels(), ['Russian', 'English']);
+
+    // Обратно: подпись возвращается из снимка, коды остаются собой.
+    app.window.setAppLang('ru');
+    assert.strictEqual(group.getAttribute('data-lang'), 'ru');
+    assert.deepStrictEqual(labels(), ['Русский', 'English']);
+    assert.deepStrictEqual(Array.from(group.querySelectorAll('.lang-switch__badge')).map(b => b.textContent),
+        ['RU', 'EN']);
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 // ------------------------------------------------------------ уроки
 
 test('английский урок 1 отдаёт английскую грамматику', () => {

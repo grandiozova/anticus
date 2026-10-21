@@ -208,12 +208,18 @@
     <div class="card">
         <h3><span class="msym">translate</span>Язык</h3>
         <p class="md-body-medium settings-hint">Язык интерфейса и уроков</p>
-        <div class="md-segmented" id="appLangSegmented" role="radiogroup" aria-label="Язык">
+        <div class="md-segmented md-segmented--lang" id="appLangSegmented"
+             role="radiogroup" aria-label="Язык" data-lang="ru">
+            <span class="lang-switch__thumb" aria-hidden="true"></span>
             <button type="button" role="radio" data-app-lang="ru" onclick="setAppLang('ru')" aria-checked="true">
-                Русский
+                <span class="lang-switch__badge" aria-hidden="true">RU</span>
+                <span class="lang-switch__label">Русский</span>
+                <span class="msym lang-switch__check" aria-hidden="true">check</span>
             </button>
             <button type="button" role="radio" data-app-lang="en" onclick="setAppLang('en')" aria-checked="false">
-                English
+                <span class="lang-switch__badge" aria-hidden="true">EN</span>
+                <span class="lang-switch__label">English</span>
+                <span class="msym lang-switch__check" aria-hidden="true">check</span>
             </button>
         </div>
         <p class="md-body-medium settings-hint" id="appLangHint"></p>
