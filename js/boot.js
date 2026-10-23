@@ -68,6 +68,7 @@ window.addEventListener('scroll', function () {
 }, { passive: true });
 
 window.addEventListener('resize', moveTabIndicator);
+window.addEventListener('resize', fitCourseSwitch);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(moveTabIndicator);
 
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

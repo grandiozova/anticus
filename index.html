@@ -225,15 +225,15 @@
         <div class="md-button-row">
             <button class="menu-btn outlined" onclick="switchCourse()"><span class="msym">swap_horiz</span>Сменить курс</button>
         </div>
-        <div class="md-segmented" id="defaultCourseSegmented" role="radiogroup" aria-label="Курс при запуске">
+        <div class="md-segmented md-segmented--course" id="defaultCourseSegmented" role="radiogroup" aria-label="Курс при запуске">
             <button type="button" role="radio" data-default-course="ask" onclick="setDefaultCourse('ask')" aria-checked="true">
-                <span class="msym">help</span>Спрашивать
+                <span class="course-glyph" aria-hidden="true"><span class="course-glyph__mark course-glyph__mark--ask">?</span></span>Спрашивать
             </button>
             <button type="button" role="radio" data-default-course="greek" onclick="setDefaultCourse('greek')" aria-checked="false">
-                <span class="course-glyph" data-course-glyph="greek" aria-hidden="true"></span>Греческий
+                <span class="course-glyph" aria-hidden="true"><span class="course-glyph__mark course-glyph__mark--greek greek" data-course-glyph="greek"></span></span>Греческий
             </button>
             <button type="button" role="radio" data-default-course="hebrew" onclick="setDefaultCourse('hebrew')" aria-checked="false">
-                <span class="course-glyph" data-course-glyph="hebrew" aria-hidden="true"></span>Еврейский
+                <span class="course-glyph" aria-hidden="true"><span class="course-glyph__mark course-glyph__mark--hebrew hebrew" data-course-glyph="hebrew"></span></span>Еврейский
             </button>
         </div>
     </div>

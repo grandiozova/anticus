@@ -119,6 +119,9 @@ function applyFontScales() {
     // в пикселях: без пересчёта он остался бы под прежней шириной. resize при
     // смене размера шрифта не срабатывает, поэтому зовём руками.
     if (typeof moveTabIndicator === 'function') moveTabIndicator();
+    // Переключатель курса мерится по содержимому: при крупном общем кегле
+    // слово со знаком перестаёт помещаться в сегмент, и знак убирается.
+    if (typeof fitCourseSwitch === 'function') fitCourseSwitch();
 }
 
 function setFontScale(which, value) {

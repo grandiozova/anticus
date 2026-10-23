@@ -294,16 +294,31 @@ function syncCourseControls() {
             b.setAttribute('aria-checked',
                 b.getAttribute('data-default-course') === value ? 'true' : 'false');
         });
-        // Буква курса вместо иконки книги — та же и из того же поля реестра,
-        // что буква на бейдже стартового экрана (renderStartScreen): знак
-        // курса должен быть один, иначе он разъедется в двух местах.
+        // Символ курса — глиф из того же поля реестра, что и буква на бейдже
+        // стартового экрана (renderStartScreen): знак курса должен быть один.
+        // Классы метки не перезаписываем целиком: на ней уже лежат её размер
+        // (.course-glyph__mark--greek) и язык шрифта (.greek / .hebrew).
         group.querySelectorAll('[data-course-glyph]').forEach(el => {
             let c = COURSES[el.getAttribute('data-course-glyph')];
             if (!c) return;
             el.textContent = c.glyph || '';
-            el.className = 'course-glyph' + (c.glyphClass ? ' ' + c.glyphClass : '');
+            if (c.glyphClass) el.classList.add(c.glyphClass);
         });
     }
+    fitCourseSwitch();
+}
+
+// Три подписи со знаками в узкой строке: если сегмент не вмещает слово со
+// знаком (узкий экран с крупным общим кеглем), знак уступает — слово важнее.
+// CSS не измеряет содержимое, поэтому решает не медиазапрос, а факт
+// переполнения; медиазапрос до 381px в settings.css делает то же заранее.
+function fitCourseSwitch() {
+    let group = document.getElementById('defaultCourseSegmented');
+    if (!group) return;
+    group.classList.remove('is-tight');
+    let tight = Array.from(group.querySelectorAll('button'))
+        .some(b => b.scrollWidth > b.clientWidth + 1);
+    group.classList.toggle('is-tight', tight);
 }
 
 // ------------------------------------------------------------ запуск

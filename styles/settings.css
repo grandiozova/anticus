@@ -141,19 +141,92 @@
     text-transform: uppercase;
 }
 
-/* Буква курса в переключателе «Курс при запуске» — вместо иконки книги.
-   Это знак роста самой иконки (.md-segmented button .msym — те же 18px), а не
-   текст для чтения: буква стоит рядом с подписью «Греческий», а не вместо неё.
-   Поэтому кегль в px и без множителей вообще — иначе на языковом ползунке
-   160% буква вырастала до 28.8px и перевешивала подпись, рядом с которой
-   стоит. Так же сделан бейдж на стартовом экране (.course-card__glyph,
-   styles/screens.css). Исключение из правила «кегль изучаемого языка несёт
-   множитель» закреплено в tests/fontscale.test.js. */
-.course-glyph.greek,
-.course-glyph.hebrew {
-    font-size: 18px;
+/* Символ курса в переключателе «Курс при запуске» — настоящий глиф шрифта,
+   а не иконка: «?», «Ω», «א». Это знак рядом с подписью «Греческий», а не
+   текст для чтения, поэтому кегль в px и без множителей ползунков — иначе на
+   160% символ перевешивал бы слово, рядом с которым стоит.
+   Одинаковый font-size здесь ничего не выравнивает: у знака вопроса,
+   греческой омеги и еврейского алефа разные пропорции, и по высоте чернил
+   они выходят разными. Поэтому у каждого своя переменная размера, подобранная
+   по измеренной высоте рисунка (canvas measureText, actualBoundingBox), и
+   своя поправка по базовой линии; бокс же у всех один — --glyph-box.
+   Исключение из правила «кегль изучаемого языка несёт множитель» закреплено
+   в tests/fontscale.test.js. */
+.course-glyph {
+    --glyph-box: 20px;
+    /* Высота чернил у всех трёх одинаковая — 11px с точностью до 0,1px
+       (canvas measureText, actualBoundingBox): знак вопроса 11,07px,
+       омега 11,06px, алеф 11,00px. Кегль разный именно потому, что рисунок
+       у знаков разный. */
+    --glyph-size-ask: 15px;
+    --glyph-size-greek: 15.25px;
+    --glyph-size-hebrew: 16.75px;
+    /* Поправка по базовой линии: line-height: 1 центрует строку, но
+       чернила в ней стоят по-своему, поэтому каждый знак получает свой
+       сдвиг, чтобы центры рисунков легли на одну линию. */
+    --glyph-shift-ask: -0.7px;
+    --glyph-shift-greek: -0.5px;
+    --glyph-shift-hebrew: 0.3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: var(--glyph-box);
+    height: var(--glyph-box);
+    overflow: hidden;
     line-height: 1;
+    color: var(--md-sys-color-on-surface-variant);
+    transition: color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
 }
+/* Свой font-size у метки обязателен ещё и потому, что .greek / .hebrew в
+   base.css задают кегль calc(1em * языковой множитель): более точный
+   селектор ниже перебивает его по специфичности, а не по порядку файлов. */
+.course-glyph__mark {
+    display: block;
+    line-height: 1;
+    font-weight: 400;
+    font-size: var(--glyph-size-ask);
+    transform: translateY(var(--glyph-shift-ask));
+}
+.course-glyph .course-glyph__mark--greek {
+    font-size: var(--glyph-size-greek);
+    transform: translateY(var(--glyph-shift-greek));
+}
+.course-glyph .course-glyph__mark--hebrew {
+    font-size: var(--glyph-size-hebrew);
+    transform: translateY(var(--glyph-shift-hebrew));
+}
+/* У выбранного сегмента знак того же цвета, что и слово; у остальных —
+   приглушённый. Переход идёт вместе с заливкой кнопки. */
+.md-segmented button[aria-checked="true"] .course-glyph { color: inherit; }
+/* Подпись курса остаётся видимой и на телефоне: общее правило узкого экрана
+   гасит подписи сегментов ради иконок темы (font-size: 0). Своё значение
+   здесь обязательно, иначе от трёх пунктов остались бы одни знаки и не было
+   бы ничего, что можно прочитать. Поля и зазор чуть теснее общих, чтобы
+   «Спрашивать · Греческий · Еврейский» со знаками уложились в строку. */
+.md-segmented.md-segmented--course button {
+    font-size: 0.875rem;
+    gap: 4px;
+    padding: 0 6px;
+}
+/* На телефоне у подписи есть потолок — как у подписей нижней навигации:
+   три слова со знаками должны уложиться в строку. Потолок в vw, а не в px,
+   потому что важен не сам кегль, а ширина строки: при общем размере 160%
+   на 412px «Спрашивать» в сегмент уже не влезает. */
+@media (max-width: 420px) {
+    .md-segmented.md-segmented--course button {
+        font-size: min(0.875rem, 4vw);
+    }
+}
+/* Узкий экран: слово важнее знака, поэтому знак уступает место, а не
+   переносится и не обрезается. */
+@media (max-width: 380px) {
+    .course-glyph { display: none; }
+}
+/* То же, но по факту переполнения — fitCourseSwitch() в js/course.js:
+   на узком экране с крупным общим кеглем слово со знаком не влезает
+   и в 412px. */
+.md-segmented--course.is-tight .course-glyph { display: none; }
 
 /* ============================================================
    РАЗМЕР ТЕКСТА
@@ -524,14 +597,9 @@
        только код. Его кегль приходит из своего правила выше
        (.md-segmented.md-segmented--lang button и .lang-switch__code),
        специфичность которого выше общего font-size: 0. */
-    /* Буква курса — тоже знак, поэтому растёт вместе с иконкой рядом (20px).
-       Своё значение здесь обязательно: font-size: 0 у кнопки её не прячет,
-       кегль задан явно, и буква остаётся единственной меткой курса, когда
-       подписи спрятаны. */
-    .course-glyph.greek,
-    .course-glyph.hebrew {
-        font-size: 20px;
-    }
+    /* Подпись курса тоже остаётся: её кегль приходит из своего правила выше
+       (.md-segmented.md-segmented--course button), специфичность которого
+       выше общего font-size: 0. */
 }
 
 /* Широкое окно (expanded): navigation bar превращается в navigation rail */

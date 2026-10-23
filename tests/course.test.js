@@ -67,6 +67,41 @@ test('карточки курса показывают реальные букв
     app.close();
 });
 
+test('знаки в переключателе курса — «?», «Ω» и «א», а не иконки', () => {
+    // Владелец попросил заменить icons на настоящие глифы шрифта: слева от
+    // каждого слова свой знак, и ни один из них не залит кружком.
+    const app = loadApp();
+    app.window.showSettings();
+    const group = app.document.getElementById('defaultCourseSegmented');
+    const marks = Array.from(group.querySelectorAll('.course-glyph__mark'));
+    assert.deepStrictEqual(marks.map(m => m.textContent), ['?', 'Ω', 'א']);
+
+    // Смысл несёт слово рядом со знаком, поэтому сами знаки — декор.
+    group.querySelectorAll('.course-glyph').forEach(g => {
+        assert.strictEqual(g.getAttribute('aria-hidden'), 'true', 'знак должен быть aria-hidden');
+    });
+    assert.ok(!group.querySelector('.msym'), 'в переключателе курса осталась иконка Material Symbols');
+
+    // Буквы курса приходят из реестра, как и на стартовом экране, но классы
+    // метки (свой размер и язык шрифта) syncCourseControls не стирает:
+    // раньше он перезаписывал className целиком.
+    const greek = group.querySelector('[data-course-glyph="greek"]');
+    const hebrew = group.querySelector('[data-course-glyph="hebrew"]');
+    assert.ok(greek.classList.contains('course-glyph__mark--greek'), 'потерян класс размера «Ω»');
+    assert.ok(greek.classList.contains('greek'), 'потерян греческий шрифт');
+    assert.ok(hebrew.classList.contains('course-glyph__mark--hebrew'), 'потерян класс размера «א»');
+    assert.ok(hebrew.classList.contains('hebrew'), 'потерян еврейский шрифт');
+
+    // Проверяем и после переключения курса: syncCourseControls зовётся снова.
+    app.window.switchCourse();
+    app.window.showSettings();
+    assert.deepStrictEqual(
+        Array.from(group.querySelectorAll('.course-glyph__mark')).map(m => m.textContent), ['?', 'Ω', 'א']);
+    assert.ok(group.querySelector('[data-course-glyph="hebrew"]').classList.contains('course-glyph__mark--hebrew'));
+    assert.deepStrictEqual(app.errors, []);
+    app.close();
+});
+
 test('карточка курса считает уроки, а пустому курсу пишет честную подпись', () => {
     const app = withEmptyCourse(loadApp());
     const notes = Array.from(app.document.querySelectorAll('#startCourseList .course-card__note'))

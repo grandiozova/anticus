@@ -165,6 +165,45 @@ test('переключатель языка — компактная пара с
     }
 });
 
+test('знаки курса в настройках — в одном боксе и уступают место слову', () => {
+    // Высота рисунка у «?», «Ω» и «א» разная при одном кегле, поэтому размер
+    // задан каждому своей переменной (это проверяет fontscale.test.js), а
+    // бокс один на всех. Знак — декор и в узкой строке исчезает, чтобы слово
+    // не переносилось и не обрезалось.
+    const css = read('styles/settings.css').replace(/\/\*[\s\S]*?\*\//g, '');
+    const at = css.indexOf('\n.course-glyph {');
+    assert.notStrictEqual(at, -1, 'нет правила .course-glyph');
+    const box = css.slice(at, css.indexOf('}', at));
+    assert.match(box, /width:\s*var\(--glyph-box\)/, 'у знака нет общего бокса по ширине');
+    assert.match(box, /height:\s*var\(--glyph-box\)/, 'у знака нет общего бокса по высоте');
+    assert.match(box, /overflow:\s*hidden/, 'рисунок знака не ограничен боксом');
+
+    const narrow = css.indexOf('@media (max-width: 380px)');
+    assert.notStrictEqual(narrow, -1, 'нет правила узкого экрана');
+    const narrowBlock = css.slice(narrow, css.indexOf('\n}', narrow));
+    assert.ok(/\.course-glyph\s*\{[^}]*display:\s*none/.test(narrowBlock),
+        'до 380px знак должен уступать место слову');
+
+    // Второй рубеж — по факту переполнения: на узком экране с крупным общим
+    // кеглем слово со знаком не влезает и в 412px.
+    assert.match(css, /\.md-segmented--course\.is-tight\s+\.course-glyph\s*\{[^}]*display:\s*none/,
+        'нет правила, убирающего знак при переполнении');
+    assert.match(read('js/course.js'), /function fitCourseSwitch\(\)/,
+        'нет функции, которая мерит переполнение переключателя курса');
+
+    const html = readIndex();
+    const atGroup = html.indexOf('id="defaultCourseSegmented"');
+    const groupHtml = html.slice(atGroup, html.indexOf('</div>', atGroup));
+    // «?» — статичный знак, буквы курсов приходят из реестра (как и на
+    // стартовом экране), поэтому в разметке у них пустые метки.
+    assert.ok(groupHtml.includes('>?<'), 'в переключателе курса нет знака ?');
+    assert.deepStrictEqual((groupHtml.match(/data-course-glyph="(\w+)"/g) || []),
+        ['data-course-glyph="greek"', 'data-course-glyph="hebrew"']);
+    assert.ok(!/class="msym"/.test(groupHtml), 'в переключателе курса осталась иконка Material Symbols');
+    assert.ok((groupHtml.match(/class="course-glyph" aria-hidden="true"/g) || []).length === 3,
+        'знаки курса должны быть декоративными: три бокса с aria-hidden');
+});
+
 test('каждый подключённый файл существует', () => {
     for (const rel of [...SCRIPTS, ...STYLES]) {
         assert.ok(fs.existsSync(repoPath(rel)), 'index.html ссылается на несуществующий ' + rel);
