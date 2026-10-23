@@ -503,7 +503,7 @@ const UI_EN = {
         'At launch the app will ask',
     'При запуске откроется ': 'At launch the app will open ',
     'Новый Завет по учебнику Мейчена': 'The New Testament with Machen’s textbook',
-    'Пособие Новосибирской библейской семинарии':
+    'Пособие Новосибирской Библейской Богословской семинарии':
         'The Novosibirsk Biblical Theological Seminary textbook',
     'Оформление': 'Appearance',
     'Тема оформления': 'Theme',

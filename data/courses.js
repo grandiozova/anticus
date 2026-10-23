@@ -93,7 +93,7 @@ const COURSES = {
         id: 'hebrew',
         name: 'Древнееврейский',
         nameEn: 'Biblical Hebrew',
-        tagline: 'Пособие Новосибирской библейской семинарии',
+        tagline: 'Пособие Новосибирской Библейской Богословской семинарии',
         taglineEn: 'The Novosibirsk Biblical Theological Seminary textbook',
         icon: 'menu_book',
         glyph: 'א',
